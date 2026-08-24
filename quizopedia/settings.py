@@ -128,5 +128,5 @@ MAILERS = {
 }
 
 LOGIN_URL = '/login/'
-LOGIN_REDDIRECT_URL = '/admins'
-LOGOUT_REDDIRECT_URL = '/login'
+LOGIN_REDIRECT_URL = '/admins'
+LOGOUT_REDIRECT_URL = '/login'
