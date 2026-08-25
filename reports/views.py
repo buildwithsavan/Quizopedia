@@ -21,3 +21,22 @@ def student_list(request):
     students = Student.objects.all()
 
     return render(request,'reports/student_list.html',{'students': students})
+
+@login_required
+def profile(request):
+
+    if request.user.is_staff:
+        profile = request.user.admin_profile
+        profile_type = 'Admin'
+    else:
+        profile = request.user.student_profile
+        profile_type = 'Student'
+
+    return render(
+        request,
+        'reports/profile.html',
+        {
+            'profile': profile,
+            'profile_type': profile_type
+        }
+    )
