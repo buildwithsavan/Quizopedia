@@ -7,3 +7,4 @@ class StudentAdmin(admin.ModelAdmin):
     list_display = ('id','name', 'email', 'phone')
 
 admin.site.register(Question)    
+admin.site.register(Subject)
