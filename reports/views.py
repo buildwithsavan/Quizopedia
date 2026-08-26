@@ -34,13 +34,7 @@ def profile(request):
         profile_type = 'Student'
 
     return render(
-        request,
-        'reports/profile.html',
-        {
-            'profile': profile,
-            'profile_type': profile_type
-        }
-    )
+        request,'reports/profile.html',{'profile': profile,'profile_type': profile_type})
 
 @login_required
 def student_profile_update(request):
@@ -72,8 +66,4 @@ def student_profile_update(request):
             }
         )
 
-    return render(
-        request,
-        'reports/student_profile_update.html',
-        {'form': form}
-    )
+    return render(request, 'reports/student_profile_update.html', {'form': form})
