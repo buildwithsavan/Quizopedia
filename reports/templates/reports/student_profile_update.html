@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Update Student Profile</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+        }
+
+        .form-card {
+            width: 100%;
+            max-width: 500px;
+
+            background: white;
+            padding: 40px;
+
+            border-radius: 18px;
+
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.10);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #4f46e5;
+        }
+
+        .errorlist {
+            list-style: none;
+            color: #dc2626;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .submit-button {
+            width: 100%;
+            margin-top: 10px;
+
+            padding: 12px;
+
+            border: none;
+            border-radius: 9px;
+
+            background: #4f46e5;
+            color: white;
+
+            font-weight: 600;
+            font-size: 15px;
+
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background: #4338ca;
+        }
+
+        .back-button {
+            display: block;
+            margin-top: 12px;
+
+            padding: 12px;
+
+            text-align: center;
+            text-decoration: none;
+
+            border-radius: 9px;
+
+            background: #e2e8f0;
+            color: #1e293b;
+
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-card">
+
+        <div class="header">
+            <h1>Update Profile</h1>
+            <p>Update your student information</p>
+        </div>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            <div class="form-group">
+                {{ form.name.errors }}
+                <label for="{{ form.name.id_for_label }}">Name</label>
+                {{ form.name }}
+            </div>
+
+            <div class="form-group">
+                {{ form.email.errors }}
+                <label for="{{ form.email.id_for_label }}">Email</label>
+                {{ form.email }}
+            </div>
+
+            <div class="form-group">
+                {{ form.phone.errors }}
+                <label for="{{ form.phone.id_for_label }}">Phone</label>
+                {{ form.phone }}
+            </div>
+
+            <button type="submit" class="submit-button">
+                Submit for Approval
+            </button>
+
+        </form>
+
+        <a href="{% url 'profile' %}" class="back-button">
+            Cancel
+        </a>
+
+    </div>
+
+</body>
+</html>

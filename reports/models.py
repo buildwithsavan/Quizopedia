@@ -20,6 +20,12 @@ class Admin(models.Model):
 
 
 class Student(models.Model):
+
+    APPROVAL_STATUS = [
+    ('pending', 'Pending'),
+    ('approved', 'Approved'),
+    ]
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -31,6 +37,16 @@ class Student(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(max_length=50)
     phone = models.CharField(max_length=15)
+
+    approval_status = models.CharField(
+        max_length=20,
+        choices=APPROVAL_STATUS,
+        default='approved'
+    )
+
+    pending_name = models.CharField(max_length=100, blank=True)
+    pending_email = models.EmailField(max_length=50, blank=True)
+    pending_phone = models.CharField(max_length=15, blank=True)
 
     def __str__(self):
         return self.name
@@ -48,4 +64,4 @@ class Question(models.Model):
     question_text = models.TextField()
 
     def __str__(self):
-        return self.question_tex
+        return self.question_text

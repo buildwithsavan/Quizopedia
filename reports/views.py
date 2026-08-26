@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Admin, Student
+from .forms import StudentProfileForm
 
 @login_required
-def dashboard   (request):
+def dashboard(request):
 
     if request.user.is_staff:
         return redirect('admin_list')
@@ -39,4 +40,40 @@ def profile(request):
             'profile': profile,
             'profile_type': profile_type
         }
+    )
+
+@login_required
+def student_profile_update(request):
+
+    if request.user.is_staff:
+        return redirect('profile')
+
+    student = request.user.student_profile
+
+    if request.method == 'POST':
+        form = StudentProfileForm(request.POST)
+
+        if form.is_valid():
+            student.pending_name = form.cleaned_data['name']
+            student.pending_email = form.cleaned_data['email']
+            student.pending_phone = form.cleaned_data['phone']
+
+            student.approval_status = 'pending'
+            student.save()
+
+            return redirect('profile')
+
+    else:
+        form = StudentProfileForm(
+            initial={
+                'name': student.name,
+                'email': student.email,
+                'phone': student.phone,
+            }
+        )
+
+    return render(
+        request,
+        'reports/student_profile_update.html',
+        {'form': form}
     )
