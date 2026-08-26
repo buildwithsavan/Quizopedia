@@ -1,14 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Admin, Student
+from .models import Admin, Student, Question
 from .forms import StudentProfileForm
 
 @login_required
 def dashboard(request):
 
     if request.user.is_staff:
-        return redirect('admin_list')
+        total_students = Student.objects.count()
+        total_questions = Question.objects.count()
 
+        return render(request, 'reports/dashboard.html', {'total_students': total_students, 'total_questions': total_questions})
+    
     return redirect('student_list')
 
 @login_required
