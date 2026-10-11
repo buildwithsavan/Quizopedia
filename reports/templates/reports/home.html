@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizopedia | Welcome</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #111827;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+        }
+
+        .brand-name {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #4f46e5;
+            background: #f1f5f9;
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            background: #4f46e5;
+            color: white;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #4338ca;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: radial-gradient(circle at top center, #e0e7ff 0%, #f8fafc 60%);
+            padding: 70px 24px 60px;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: #ede9fe;
+            color: #6366f1;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: 44px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 span {
+            color: #4f46e5;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 35px;
+        }
+
+        /* Quick Action Buttons */
+        .actions-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 26px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+            box-shadow: 0 8px 18px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 22px rgba(79, 70, 229, 0.30);
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #4f46e5;
+            border: 1.5px solid #4f46e5;
+        }
+
+        .btn-outline:hover {
+            background: #ede9fe;
+            transform: translateY(-2px);
+        }
+
+        /* Subjects Section */
+        .subjects-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 50px 24px 80px;
+            flex: 1;
+            width: 100%;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .section-header p {
+            font-size: 15px;
+            color: #64748b;
+        }
+
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 22px;
+        }
+
+        .subject-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 26px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+            border-color: #c7d2fe;
+        }
+
+        .subject-top {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .subject-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: #ede9fe;
+            color: #4f46e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .subject-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .subject-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .question-badge {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .subject-btn {
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            background: #f1f5f9;
+            color: #4f46e5;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .subject-btn:hover {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            background: white;
+            border-radius: 12px;
+            border: 1px dashed #cbd5e1;
+            grid-column: 1 / -1;
+        }
+
+        /* Footer */
+        .footer {
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            padding: 24px;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: auto;
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 14px 20px;
+            }
+
+            .hero {
+                padding: 45px 16px 40px;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .actions-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar">
+        <a href="{% url 'home' %}" class="brand">
+            <div class="brand-icon">Q</div>
+            <span class="brand-name">Quizopedia</span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="#subjects" class="nav-link">Subjects</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+                <a href="{% url 'dashboard' %}" class="nav-btn">Dashboard</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-btn">Sign In</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-container">
+            <span class="hero-badge">Academic Quiz & Evaluation</span>
+            <h1>Welcome to <span>Quizopedia</span></h1>
+            <p>
+                Your central hub for testing knowledge, tracking academic progress,
+                and generating comprehensive student report cards.
+            </p>
+
+            <div class="actions-group">
+                <a href="#subjects" class="btn btn-primary">Take a Quiz</a>
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Go to Dashboard</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}" class="btn btn-outline">My Profile</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <main class="subjects-section" id="subjects">
+        <div class="section-header">
+            <h2>Available Subjects</h2>
+            <p>Explore the categories and test your knowledge</p>
+        </div>
+
+        <div class="subjects-grid">
+            {% for subject in subjects %}
+                <div class="subject-card">
+                    <div>
+                        <div class="subject-top">
+                            <div class="subject-icon">
+                                {{ subject.name|first|upper }}
+                            </div>
+                            <h3 class="subject-name">{{ subject.name }}</h3>
+                        </div>
+                    </div>
+
+                    <div class="subject-info">
+                        <span class="question-badge">
+                            {{ subject.question_count }} Question{{ subject.question_count|pluralize }}
+                        </span>
+                        <a href="javascript:void(0)" onclick="notifyQuiz('{{ subject.name }}')" class="subject-btn">
+                            Start Quiz &rarr;
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    <p>No subjects currently available. Please check back later!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer class="footer">
+        &copy; 2026 Quizopedia &middot; Report Card Generation System
+    </footer>
+
+    <script>
+        function notifyQuiz(subjectName) {
+            alert("Subject: " + subjectName + "\nThe interactive quiz-taking module is coming soon! You can view existing questions in the Dashboard or Admin area.");
+        }
+    </script>
+</body>
+</html>

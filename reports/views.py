@@ -1,7 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Admin, Student, Question
+from django.db.models import Count
+from .models import Admin, Student, Question, Subject
 from .forms import StudentProfileForm
+
+def home(request):
+    subjects = Subject.objects.annotate(question_count=Count('question'))
+    return render(request, 'reports/home.html', {'subjects': subjects})
+
 
 @login_required
 def dashboard(request):
