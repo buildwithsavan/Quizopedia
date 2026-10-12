@@ -1,30 +1,128 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Student List</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizopedia | Student List</title>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 40px;
+            padding: 0;
         }
 
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 14px 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #111827;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: color 0.15s;
+        }
+
+        .nav-links a:hover {
+            color: #4f46e5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 36px auto;
+            padding: 0 20px;
+            flex: 1;
+            width: 100%;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        /* Message Banner */
+        .message-box {
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .message-box.success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .message-box.info {
+            background: #f8fafc;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+
+        .table-card {
+            background-color: white;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            overflow: hidden;
         }
 
         table {
-            margin: 0 auto;
+            width: 100%;
             border-collapse: collapse;
-            background-color: white;
-            min-width: 700px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
         }
 
         th {
@@ -32,54 +130,200 @@
             color: white;
             padding: 14px 20px;
             text-align: left;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         td {
-            padding: 12px 20px;
-            border-bottom: 1px solid #ddd;
+            padding: 14px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14.5px;
+            vertical-align: middle;
         }
 
         tr:hover {
-            background-color: #f1f1f1;
+            background-color: #f8fafc;
         }
 
         tr:last-child td {
             border-bottom: none;
         }
 
+        /* Status Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-approved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .pending-details {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Action Buttons */
+        .btn-action {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-right: 6px;
+            transition: opacity 0.15s;
+        }
+
+        .btn-approve {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-reject {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 24px;
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
         .no-records {
             text-align: center;
-            color: #777;
+            color: #64748b;
+            padding: 30px;
+        }
+
+        .footer {
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
             padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-top: auto;
         }
     </style>
 </head>
 <body>
 
-    <h1>Student Details</h1>
+    <header class="navbar">
+        <a href="{% url 'home' %}" class="brand">
+            <div class="brand-icon">Q</div>
+            <span class="brand-name">Quizopedia</span>
+        </a>
+        <nav class="nav-links">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'profile' %}">Profile</a>
+        </nav>
+    </header>
 
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-        </tr>
+    <div class="container">
 
-        {% for student in students %}
-        <tr>
-            <td>{{ student.id }}</td>
-            <td>{{ student.name }}</td>
-            <td>{{ student.email }}</td>
-            <td>{{ student.phone }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="4">No student records found.</td>
-        </tr>
-        {% endfor %}
+        <div class="page-header">
+            <h1>Student Records</h1>
+        </div>
 
-    </table>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message-box {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        {% if user.is_staff %}
+                            <th>Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>#{{ student.id }}</td>
+                        <td>
+                            <strong>{{ student.name }}</strong>
+                            {% if student.approval_status == 'pending' and student.pending_name %}
+                                <div class="pending-details">Requested: {{ student.pending_name }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ student.email }}
+                            {% if student.approval_status == 'pending' and student.pending_email %}
+                                <div class="pending-details">Requested: {{ student.pending_email }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ student.phone }}
+                            {% if student.approval_status == 'pending' and student.pending_phone %}
+                                <div class="pending-details">Requested: {{ student.pending_phone }}</div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if student.approval_status == 'pending' %}
+                                <span class="badge badge-pending">Pending Approval</span>
+                            {% else %}
+                                <span class="badge badge-approved">Approved</span>
+                            {% endif %}
+                        </td>
+                        {% if user.is_staff %}
+                            <td>
+                                {% if student.approval_status == 'pending' %}
+                                    <a href="{% url 'approve_student' student.id %}" class="btn-action btn-approve">Approve</a>
+                                    <a href="{% url 'reject_student' student.id %}" class="btn-action btn-reject" onclick="return confirm('Reject this update request?')">Reject</a>
+                                {% else %}
+                                    <span style="color: #94a3b8; font-size: 13px;">None</span>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="{% if user.is_staff %}6{% else %}5{% endif %}" class="no-records">
+                            No student records found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="{% url 'dashboard' %}" class="back-link">&larr; Back to Dashboard</a>
+    </div>
+
+    <footer class="footer">
+        &copy; 2026 Quizopedia &middot; Report Card Generation
+    </footer>
 
 </body>
 </html>
