@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db.models import Count
 from django.db import transaction
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
+import random
+import time
 from .models import Admin, Student, Question, Subject, Option
 from .forms import StudentProfileForm
 
@@ -254,3 +257,161 @@ def create_question(request):
         'subjects': subjects,
         'selected_subject_id': str(selected_subject_id),
     })
+
+
+# -------------------------------------------------------------
+# OTP-based Password Reset Views
+# -------------------------------------------------------------
+
+def password_reset_request(request):
+    """Step 1: User enters email address to receive an OTP."""
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip()
+        user = User.objects.filter(email__iexact=email).first()
+
+        if user:
+            otp = f"{random.randint(100000, 999999)}"
+            expiry = time.time() + 120  # 2 minutes = 120 seconds
+
+            request.session['pw_reset_user_id'] = user.id
+            request.session['pw_reset_email'] = user.email
+            request.session['pw_reset_otp'] = otp
+            request.session['pw_reset_expiry'] = expiry
+            request.session['pw_reset_verified'] = False
+
+            try:
+                send_mail(
+                    subject='Quizopedia - Password Reset OTP',
+                    message=(
+                        f'Hello {user.username},\n\n'
+                        'A request was made to reset your Quizopedia account password.\n\n'
+                        f'Your One-Time Password (OTP) is:\n\n'
+                        f'    {otp}\n\n'
+                        'This OTP is valid for 2 minutes. Please enter this code promptly.\n\n'
+                        'If you did not request this, please ignore this email.\n\n'
+                        'Best regards,\n'
+                        'The Quizopedia Team'
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+                return redirect('password_reset_verify_otp')
+            except Exception as e:
+                messages.error(request, 'Unable to send email at this moment. Please try again.')
+        else:
+            messages.error(request, 'No registered user was found with that email address.')
+
+    return render(request, 'reports/password_reset.html')
+
+
+def password_reset_verify_otp(request):
+    """Step 2: User enters the OTP before the countdown timer expires."""
+    email = request.session.get('pw_reset_email')
+    otp = request.session.get('pw_reset_otp')
+    expiry = request.session.get('pw_reset_expiry', 0)
+
+    if not email or not otp:
+        return redirect('password_reset')
+
+    now = time.time()
+    remaining_seconds = max(0, int(expiry - now))
+    is_expired = remaining_seconds <= 0
+
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp', '').strip()
+
+        if now > expiry:
+            is_expired = True
+            remaining_seconds = 0
+            messages.error(request, 'Your OTP has expired! Please click "Resend OTP" below to receive a new code.')
+        elif entered_otp != str(otp):
+            messages.error(request, 'Invalid OTP code. Please check your email and try again.')
+        else:
+            request.session['pw_reset_verified'] = True
+            return redirect('password_reset_new_password')
+
+    return render(request, 'reports/password_reset_verify_otp.html', {
+        'email': email,
+        'remaining_seconds': remaining_seconds,
+        'is_expired': is_expired,
+    })
+
+
+def password_reset_resend_otp(request):
+    """Step 2b: Generate a new OTP and resend it to the same email address."""
+    email = request.session.get('pw_reset_email')
+    user_id = request.session.get('pw_reset_user_id')
+
+    if not email or not user_id:
+        return redirect('password_reset')
+
+    user = User.objects.filter(id=user_id).first()
+    if not user:
+        return redirect('password_reset')
+
+    new_otp = f"{random.randint(100000, 999999)}"
+    expiry = time.time() + 120  # 2 minutes
+
+    request.session['pw_reset_otp'] = new_otp
+    request.session['pw_reset_expiry'] = expiry
+    request.session['pw_reset_verified'] = False
+
+    try:
+        send_mail(
+            subject='Quizopedia - New Password Reset OTP',
+            message=(
+                f'Hello {user.username},\n\n'
+                'Here is your new One-Time Password (OTP) for resetting your Quizopedia password:\n\n'
+                f'    {new_otp}\n\n'
+                'This OTP is valid for 2 minutes.\n\n'
+                'Best regards,\n'
+                'The Quizopedia Team'
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+        messages.success(request, f'A new OTP has been sent to {email}.')
+    except Exception:
+        messages.error(request, 'Failed to send new OTP. Please check your connection and try again.')
+
+    return redirect('password_reset_verify_otp')
+
+
+def password_reset_new_password(request):
+    """Step 3: User sets their new password after successful OTP verification."""
+    user_id = request.session.get('pw_reset_user_id')
+    verified = request.session.get('pw_reset_verified')
+
+    if not user_id or not verified:
+        return redirect('password_reset')
+
+    user = get_object_or_404(User, id=user_id)
+
+    if request.method == 'POST':
+        p1 = request.POST.get('password', '')
+        p2 = request.POST.get('confirm_password', '')
+
+        if not p1 or not p2:
+            messages.error(request, 'Please provide both password fields.')
+        elif p1 != p2:
+            messages.error(request, 'Passwords do not match.')
+        elif len(p1) < 4:
+            messages.error(request, 'Password must be at least 4 characters.')
+        else:
+            user.set_password(p1)
+            user.save()
+
+            # Clear session variables
+            for key in ['pw_reset_user_id', 'pw_reset_email', 'pw_reset_otp', 'pw_reset_expiry', 'pw_reset_verified']:
+                request.session.pop(key, None)
+
+            return redirect('password_reset_complete')
+
+    return render(request, 'reports/password_reset_new_password.html')
+
+
+def password_reset_complete(request):
+    """Step 4: Password update confirmation page."""
+    return render(request, 'reports/password_reset_complete.html')
