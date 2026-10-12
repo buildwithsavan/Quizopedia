@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Count
 from django.db import transaction
 from django.contrib import messages
@@ -259,10 +261,6 @@ def create_question(request):
     })
 
 
-# -------------------------------------------------------------
-# OTP-based Password Reset Views
-# -------------------------------------------------------------
-
 def password_reset_request(request):
     """Step 1: User enters email address to receive an OTP."""
     if request.method == 'POST':
@@ -271,7 +269,7 @@ def password_reset_request(request):
 
         if user:
             otp = f"{random.randint(100000, 999999)}"
-            expiry = time.time() + 120  # 2 minutes = 120 seconds
+            expiry = time.time() + 120  
 
             request.session['pw_reset_user_id'] = user.id
             request.session['pw_reset_email'] = user.email
@@ -351,7 +349,7 @@ def password_reset_resend_otp(request):
         return redirect('password_reset')
 
     new_otp = f"{random.randint(100000, 999999)}"
-    expiry = time.time() + 120  # 2 minutes
+    expiry = time.time() + 120 
 
     request.session['pw_reset_otp'] = new_otp
     request.session['pw_reset_expiry'] = expiry
@@ -403,7 +401,6 @@ def password_reset_new_password(request):
             user.set_password(p1)
             user.save()
 
-            # Clear session variables
             for key in ['pw_reset_user_id', 'pw_reset_email', 'pw_reset_otp', 'pw_reset_expiry', 'pw_reset_verified']:
                 request.session.pop(key, None)
 
@@ -414,4 +411,163 @@ def password_reset_new_password(request):
 
 def password_reset_complete(request):
     """Step 4: Password update confirmation page."""
-    return render(request, 'reports/password_reset_complete.html')
+    return render(request, 'reports/password_reset_complete.html')
+
+def user_login(request):
+    """
+    Handles user login.
+    Staff/Admin accounts log in directly.
+    Student accounts require a 6-digit OTP sent to their email.
+    """
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            return redirect('dashboard')
+        return redirect('profile')
+
+    next_url = request.POST.get('next') or request.GET.get('next') or ''
+
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+
+            if user.is_staff:
+        
+                auth_login(request, user)
+                if next_url:
+                    return redirect(next_url)
+                return redirect('dashboard')
+            else:
+                
+                student_profile = getattr(user, 'student_profile', None)
+                student_email = getattr(student_profile, 'email', None) or user.email
+
+                if not student_email:
+                    messages.error(
+                        request,
+                        'No email address is linked with this student account. Please contact an administrator.'
+                    )
+                    return render(request, 'reports/login.html', {'form': form, 'next': next_url})
+
+                otp = f"{random.randint(100000, 999999)}"
+                expiry = time.time() + 120  
+
+                request.session['student_login_user_id'] = user.id
+                request.session['student_login_email'] = student_email
+                request.session['student_login_otp'] = otp
+                request.session['student_login_expiry'] = expiry
+                request.session['student_login_next'] = next_url
+
+                try:
+                    send_mail(
+                        subject='Quizopedia - Student Login OTP',
+                        message=(
+                            f'Hello {user.username},\n\n'
+                            'A login attempt was made for your Quizopedia student account.\n\n'
+                            f'Your One-Time Password (OTP) is:\n\n'
+                            f'    {otp}\n\n'
+                            'This OTP is valid for 2 minutes. Please enter it to complete your sign in.\n\n'
+                            'If you did not attempt to sign in, please contact support or change your password.\n\n'
+                            'Best regards,\n'
+                            'The Quizopedia Team'
+                        ),
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[student_email],
+                        fail_silently=False,
+                    )
+                    return redirect('student_login_verify_otp')
+                except Exception as e:
+                    messages.error(request, 'Unable to send OTP email at this moment. Please try again.')
+    else:
+        form = AuthenticationForm(request)
+
+    return render(request, 'reports/login.html', {'form': form, 'next': next_url})
+
+
+def student_login_verify_otp(request):
+    """
+    Verifies student OTP within the expiration window (2 minutes).
+    Completes login on success.
+    """
+    user_id = request.session.get('student_login_user_id')
+    email = request.session.get('student_login_email')
+    otp = request.session.get('student_login_otp')
+    expiry = request.session.get('student_login_expiry', 0)
+
+    if not user_id or not otp or not email:
+        return redirect('login')
+
+    now = time.time()
+    remaining_seconds = max(0, int(expiry - now))
+    is_expired = remaining_seconds <= 0
+
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp', '').strip()
+
+        if now > expiry:
+            is_expired = True
+            remaining_seconds = 0
+            messages.error(request, 'Your OTP has expired! Please click "Resend OTP" below to receive a new code.')
+        elif entered_otp != str(otp):
+            messages.error(request, 'Invalid OTP code. Please check your email and try again.')
+        else:
+            user = get_object_or_404(User, id=user_id)
+            auth_login(request, user)
+
+            next_url = request.session.get('student_login_next')
+
+            for key in ['student_login_user_id', 'student_login_email', 'student_login_otp', 'student_login_expiry', 'student_login_next']:
+                request.session.pop(key, None)
+
+            if next_url:
+                return redirect(next_url)
+            return redirect('student_list')
+
+    return render(request, 'reports/student_login_verify_otp.html', {
+        'email': email,
+        'remaining_seconds': remaining_seconds,
+        'is_expired': is_expired,
+    })
+
+
+def student_login_resend_otp(request):
+    """
+    Generates and emails a new OTP for the pending student login attempt.
+    """
+    user_id = request.session.get('student_login_user_id')
+    email = request.session.get('student_login_email')
+
+    if not user_id or not email:
+        return redirect('login')
+
+    user = User.objects.filter(id=user_id).first()
+    if not user:
+        return redirect('login')
+
+    new_otp = f"{random.randint(100000, 999999)}"
+    expiry = time.time() + 120
+
+    request.session['student_login_otp'] = new_otp
+    request.session['student_login_expiry'] = expiry
+
+    try:
+        send_mail(
+            subject='Quizopedia - New Student Login OTP',
+            message=(
+                f'Hello {user.username},\n\n'
+                'Here is your new One-Time Password (OTP) for signing into Quizopedia:\n\n'
+                f'    {new_otp}\n\n'
+                'This OTP is valid for 2 minutes.\n\n'
+                'Best regards,\n'
+                'The Quizopedia Team'
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+        messages.success(request, f'A new login OTP has been sent to {email}.')
+    except Exception:
+        messages.error(request, 'Failed to send new OTP. Please check your connection and try again.')
+
+    return redirect('student_login_verify_otp')
+

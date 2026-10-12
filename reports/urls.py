@@ -4,11 +4,9 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path(
-        'login/',
-        auth_views.LoginView.as_view(template_name='reports/login.html'),
-        name='login'
-    ),
+    path('login/', views.user_login, name='login'),
+    path('login/verify-otp/', views.student_login_verify_otp, name='student_login_verify_otp'),
+    path('login/resend-otp/', views.student_login_resend_otp, name='student_login_resend_otp'),
     path(
         'logout/',
         auth_views.LogoutView.as_view(),
@@ -23,7 +21,6 @@ urlpatterns = [
     path('students/<int:student_id>/approve/', views.approve_student, name='approve_student'),
     path('students/<int:student_id>/reject/', views.reject_student, name='reject_student'),
 
-    # OTP-based Password Reset
     path('password-reset/', views.password_reset_request, name='password_reset'),
     path('password-reset/verify-otp/', views.password_reset_verify_otp, name='password_reset_verify_otp'),
     path('password-reset/resend-otp/', views.password_reset_resend_otp, name='password_reset_resend_otp'),
