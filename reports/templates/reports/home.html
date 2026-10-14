@@ -69,7 +69,8 @@
 
         .nav-link {
             text-decoration: none;
-            color: #64748b;
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
             font-weight: 600;
             font-size: 14px;
             padding: 8px 14px;
@@ -78,8 +79,8 @@
         }
 
         .nav-link:hover {
-            color: #4f46e5;
-            background: #f1f5f9;
+            color: white;
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
         }
 
         .nav-btn {
@@ -338,36 +339,37 @@
             margin: 0 auto;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
+            justify-content: flex-start;
+        }
+
+        .footer-left-content {
+            display: flex;
+            align-items: center;
             gap: 14px;
+            flex-wrap: wrap;
         }
 
         .footer-admin-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
             text-decoration: none;
-            color: #475569;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            background: #f8fafc;
-            transition: all 0.15s;
+            color: #0a0b0b;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: color 0.15s;
         }
 
         .footer-admin-link:hover {
             color: #4f46e5;
-            border-color: #818cf8;
-            background: #eef2ff;
-            transform: translateY(-1px);
+            text-decoration: underline;
         }
 
-        .admin-lock-icon {
-            font-size: 12px;
+        .footer-dot {
+            color: #cbd5e1;
         }
+
+        .footer-copy {
+            color: #64748b;
+        }
+
 
         @media (max-width: 600px) {
             .navbar {
@@ -414,11 +416,11 @@
                     <a href="{% url 'student_list' %}" class="nav-link">Students</a>
                     <a href="{% url 'create_question' %}" class="nav-link">+ Question</a>
                 {% else %}
-                    <a href="{% url 'profile' %}" class="nav-link">My Profile ({{ user.username }})</a>
+                    <a href="{% url 'profile' %}" class="nav-link">My Profile</a>
                 {% endif %}
                 <a href="{% url 'logout' %}" class="nav-btn nav-btn-logout">Log Out</a>
             {% else %}
-                <a href="{% url 'login' %}" class="nav-btn">Student Login</a>
+                <a href="{% url 'login' %}" class="nav-link">Login</a>
             {% endif %}
         </nav>
     </header>
@@ -441,13 +443,12 @@
                         <a href="{% url 'create_question' %}" class="btn btn-secondary">+ Create Question</a>
                     {% else %}
                         <a href="#subjects" class="btn btn-primary">Take a Quiz</a>
-                        <a href="{% url 'profile' %}" class="btn btn-outline">My Profile</a>
+                        
                     {% endif %}
 
                     
                 {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-primary">🎓 Student Login</a>
-                    <a href="#subjects" class="btn btn-secondary">Explore Subjects</a>
+                    <a href="#subjects" class="btn btn-primary">Explore Subjects</a>
                 {% endif %}
             </div>
         </div>
@@ -469,6 +470,11 @@
                             </div>
                             <h3 class="subject-name">{{ subject.name }}</h3>
                         </div>
+                        {% if subject.description %}
+                            <p style="font-size: 13.5px; color: #64748b; line-height: 1.5; margin-bottom: 16px;">
+                                {{ subject.description }}
+                            </p>
+                        {% endif %}
                     </div>
 
                     <div class="subject-info">
@@ -490,19 +496,14 @@
 
     <footer class="footer">
         <div class="footer-container">
-            <div>
-                &copy; 2026 Quizopedia &middot; Academic Quiz &amp; Student Report System
-            </div>
-            <div>
+            <div class="footer-left-content">
                 {% if user.is_authenticated and user.is_staff %}
-                    <a href="{% url 'dashboard' %}" class="footer-admin-link">
-                        <span class="admin-lock-icon">⚡</span> Admin Dashboard
-                    </a>
+                    <a href="{% url 'dashboard' %}" class="footer-admin-link">Admin Dashboard</a>
                 {% else %}
-                    <a href="{% url 'login' %}?next={% url 'dashboard' %}" class="footer-admin-link">
-                        <span class="admin-lock-icon">🔒</span> Admin Login
-                    </a>
+                    <a href="{% url 'admin_login' %}" class="footer-admin-link">Admin Login</a>
                 {% endif %}
+                <span class="footer-dot">&middot;</span>
+                <span class="footer-copy">&copy; 2026 Quizopedia &middot; Academic Quiz &amp; Student Report System</span>
             </div>
         </div>
     </footer>

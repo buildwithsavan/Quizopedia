@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quizopedia | Administrator Details</title>
+    <title>Quizopedia | Administrator Accounts</title>
 
     <style>
         * {
@@ -18,83 +18,28 @@
             color: #1e293b;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
         }
 
-        .navbar {
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 14px 36px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: #111827;
-        }
-
-        .brand-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #4f46e5, #6366f1);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: 700;
-            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
-        }
-
-        .brand-name {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.4px;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .nav-link {
-            text-decoration: none;
-            color: #64748b;
-            font-weight: 600;
-            font-size: 14px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: color 0.15s, background 0.15s;
-        }
-
-        .nav-link:hover {
-            color: #4f46e5;
-            background: #f1f5f9;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
+        /* Main Content Layout */
+        .admin-main {
             flex: 1;
-            width: 100%;
+            min-width: 0;
+            padding: 32px 36px 60px;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            max-width: 1180px;
+            margin: 0 auto;
         }
 
         .page-header {
-            margin-bottom: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .page-header h1 {
@@ -103,12 +48,50 @@
             color: #0f172a;
         }
 
-        .table-card {
-            background: white;
-            border-radius: 12px;
+        .header-subtext {
+            font-size: 13.5px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: #ffffff;
             border: 1px solid #e2e8f0;
-            box-shadow: none;
+            border-radius: 12px;
+            margin-bottom: 28px;
             overflow: hidden;
+        }
+
+        .section-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .count-pill {
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
         }
 
         table {
@@ -117,22 +100,30 @@
         }
 
         th {
-            background: #4f46e5;
-            color: white;
-            padding: 14px 20px;
+            background-color: #f8fafc;
+            color: #475569;
+            padding: 12px 18px;
             text-align: left;
-            font-size: 13.5px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         td {
-            padding: 14px 20px;
+            padding: 14px 18px;
             border-bottom: 1px solid #f1f5f9;
-            font-size: 14px;
+            font-size: 13.5px;
+            vertical-align: middle;
         }
 
         tr:last-child td {
             border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
         }
 
         .badge-role {
@@ -140,75 +131,100 @@
             color: #4f46e5;
             padding: 3px 10px;
             border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11.5px;
+            font-weight: 700;
+            display: inline-block;
         }
 
-        .footer {
+        .info-card {
             background: #ffffff;
-            border-top: 1px solid #e2e8f0;
-            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            font-size: 13.5px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .empty-box {
             text-align: center;
-            font-size: 13px;
-            color: #94a3b8;
-            margin-top: auto;
+            color: #64748b;
+            padding: 32px 20px;
+            font-size: 13.5px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .admin-main {
+                padding: 20px 16px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header class="navbar">
-        <a href="{% url 'home' %}" class="brand">
-            <div class="brand-icon">Q</div>
-            <span class="brand-name">Quizopedia <span style="font-size: 12px; font-weight: 600; color: #4f46e5; background: #ede9fe; padding: 3px 8px; border-radius: 6px; margin-left: 6px;">Admin Portal</span></span>
-        </a>
+    {% include 'reports/includes/admin_sidebar.html' with active_page='admins' %}
 
-        <nav class="nav-links">
-            <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-            <a href="{% url 'student_list' %}" class="nav-link">Students</a>
-            <a href="{% url 'create_question' %}" class="nav-link">+ Create Question</a>
-            <a href="/admin/" target="_blank" class="nav-link">Django Admin &UpperRightArrow;</a>
-            <a href="{% url 'logout' %}" class="nav-link" style="color: #ef4444;">Log Out</a>
-        </nav>
-    </header>
+    <main class="admin-main">
+        <div class="main-container">
 
-    <div class="container">
-        <div class="page-header">
-            <h1>Active Administrator Accounts</h1>
-            <a href="{% url 'dashboard' %}" style="color: #4f46e5; text-decoration: none; font-weight: 600; font-size: 14px;">&larr; Back to Dashboard</a>
+            <div class="page-header">
+                <div>
+                    <h1>Administrator Accounts</h1>
+                    <div class="header-subtext">System administrators authorized to manage questions, curriculum, and student records</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <strong>Administrative Access Policy:</strong> Only designated administrators have access to the Quizopedia Admin Suite and Django Admin. Primary admin account is verified with staff status.
+            </div>
+
+            <!-- Administrators Table Card -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>Active System Administrators</span>
+                        <span class="count-pill">{{ admins|length }} Active</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Admin ID</th>
+                                <th>Full Name</th>
+                                <th>Associated Email Address</th>
+                                <th>Access Level</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for admin in admins %}
+                            <tr>
+                                <td><strong>#{{ admin.id }}</strong></td>
+                                <td><strong>{{ admin.name }}</strong></td>
+                                <td>{{ admin.email }}</td>
+                                <td><span class="badge-role">System Administrator</span></td>
+                                <td><span style="color: #16a34a; font-weight: 600; font-size: 13px;">● Active</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="empty-box">
+                                    No admin records found.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
-
-        <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Admin ID</th>
-                        <th>Name</th>
-                        <th>Email Address</th>
-                        <th>Role</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for admin in admins %}
-                    <tr>
-                        <td><strong>#{{ admin.id }}</strong></td>
-                        <td><strong>{{ admin.name }}</strong></td>
-                        <td>{{ admin.email }}</td>
-                        <td><span class="badge-role">System Administrator</span></td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" style="text-align: center; padding: 30px; color: #64748b;">No admin records found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <footer class="footer">
-        &copy; 2026 Quizopedia &middot; Academic Quiz &amp; Student Evaluation System
-    </footer>
+    </main>
 
 </body>
 </html>

@@ -18,23 +18,41 @@
             color: #1e293b;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
         }
 
-        /* Admin Navbar */
-        .navbar {
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 14px 36px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        /* Scrollable Left Sidebar */
+        .admin-sidebar {
+            width: 270px;
+            min-width: 270px;
+            height: 100vh;
             position: sticky;
             top: 0;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
             z-index: 100;
         }
 
-        .brand {
+        .admin-sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .admin-sidebar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .sidebar-brand-wrapper {
+            padding: 22px 20px 18px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .sidebar-brand {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -51,94 +69,180 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 19px;
             font-weight: 700;
-            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
         }
 
-        .brand-name {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: -0.4px;
+        .brand-text {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
         }
 
-        .admin-badge {
-            font-size: 12px;
-            font-weight: 600;
+        .brand-pill {
+            font-size: 11px;
+            font-weight: 700;
             color: #4f46e5;
             background: #ede9fe;
-            padding: 3px 8px;
+            padding: 2px 7px;
             border-radius: 6px;
-            margin-left: 6px;
+            display: inline-block;
+            margin-top: 2px;
         }
 
-        .nav-links {
+        /* Sidebar Nav */
+        .sidebar-nav {
+            padding: 16px 14px;
+            flex: 1;
+        }
+
+        .sidebar-heading {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #94a3b8;
+            padding: 12px 10px 6px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            margin-bottom: 8px;
+        }
+
+        .sidebar-link {
             display: flex;
             align-items: center;
-            gap: 14px;
-        }
-
-        .nav-link {
-            text-decoration: none;
-            color: #64748b;
-            font-weight: 600;
-            font-size: 14px;
-            padding: 8px 12px;
+            justify-content: space-between;
+            padding: 9px 12px;
             border-radius: 8px;
-            transition: color 0.15s, background 0.15s;
-        }
-
-        .nav-link:hover {
-            color: #4f46e5;
-            background: #f1f5f9;
-        }
-
-        .nav-link.active {
-            color: #4f46e5;
-            background: #eef2ff;
-        }
-
-        .nav-btn-logout {
+            color: #475569;
             text-decoration: none;
-            color: #ef4444;
+            font-size: 13.5px;
             font-weight: 600;
-            font-size: 14px;
-            padding: 8px 14px;
-            border-radius: 8px;
-            border: 1px solid #fee2e2;
-            background: #fff;
             transition: all 0.15s;
+            margin-bottom: 2px;
         }
 
-        .nav-btn-logout:hover {
-            background: #fef2f2;
-            border-color: #fca5a5;
-            color: #dc2626;
+        .sidebar-link:hover {
+            background: #f1f5f9;
+            color: #0f172a;
         }
 
-        /* Container */
-        .container {
-            max-width: 1180px;
-            margin: 32px auto;
-            padding: 0 24px;
-            flex: 1;
-            width: 100%;
+        .sidebar-link.active {
+            background: #eef2ff;
+            color: #4f46e5;
+            font-weight: 700;
         }
 
-        /* Flash Messages */
-        .messages-container {
-            margin-bottom: 24px;
-        }
-
-        .message-alert {
-            padding: 14px 18px;
+        .sidebar-badge {
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 2px 7px;
             border-radius: 10px;
-            margin-bottom: 12px;
-            font-size: 14.5px;
-            font-weight: 500;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .sidebar-badge.badge-amber {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .sidebar-badge.badge-indigo {
+            background: #ede9fe;
+            color: #4f46e5;
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid #f1f5f9;
+            background: #ffffff;
+        }
+
+        .admin-user-card {
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #eef2ff;
+            color: #4f46e5;
+            font-weight: 700;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #c7d2fe;
+        }
+
+        .user-info {
+            overflow: hidden;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-email {
+            font-size: 11.5px;
+            color: #64748b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .btn-sidebar-logout {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #fee2e2;
+            background: #ffffff;
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .btn-sidebar-logout:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        /* Main Content Area */
+        .admin-main {
+            flex: 1;
+            min-width: 0;
+            padding: 32px 36px 60px;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        /* Flash Messages */
+        .message-alert {
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
         }
 
         .message-alert.success {
@@ -159,7 +263,7 @@
             border: 1px solid #e2e8f0;
         }
 
-        /* Dashboard Header */
+        /* Dashboard Top Banner */
         .dash-header {
             display: flex;
             justify-content: space-between;
@@ -171,34 +275,33 @@
             border: 1px solid #e2e8f0;
             padding: 24px 28px;
             border-radius: 12px;
-            box-shadow: none;
         }
 
         .dash-title-group h1 {
-            font-size: 26px;
+            font-size: 25px;
             font-weight: 800;
             color: #0f172a;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .dash-title-group p {
             color: #64748b;
-            font-size: 14.5px;
+            font-size: 14px;
         }
 
         .dash-actions {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            border-radius: 9px;
-            font-size: 14px;
+            padding: 9px 16px;
+            border-radius: 8px;
+            font-size: 13.5px;
             font-weight: 600;
             text-decoration: none;
             cursor: pointer;
@@ -207,88 +310,59 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            background: #4f46e5;
             color: white;
-            box-shadow: none;
         }
 
         .btn-primary:hover {
             background: #4338ca;
-            box-shadow: none;
         }
 
         .btn-secondary {
-            background: #f8fafc;
+            background: #ffffff;
             color: #334155;
             border: 1px solid #cbd5e1;
         }
 
         .btn-secondary:hover {
-            background: #f1f5f9;
-            color: #0f172a;
+            background: #f8fafc;
             border-color: #94a3b8;
         }
 
-        /* Stats Grid */
+        /* Stats Grid (Flat simple border, no icons) */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 18px;
+            margin-bottom: 28px;
         }
 
         .stat-card {
             background: white;
-            padding: 22px 24px;
+            padding: 20px 22px;
             border-radius: 12px;
             border: 1px solid #e2e8f0;
-            box-shadow: none;
             transition: border-color 0.15s;
-            position: relative;
-            overflow: hidden;
         }
 
         .stat-card:hover {
             border-color: #cbd5e1;
-            box-shadow: none;
-        }
-
-        .stat-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: #4f46e5;
-        }
-
-        .stat-card.card-amber::before {
-            background: #f59e0b;
-        }
-
-        .stat-card.card-emerald::before {
-            background: #10b981;
-        }
-
-        .stat-card.card-sky::before {
-            background: #0284c7;
         }
 
         .stat-top {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .stat-label {
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 12.5px;
+            font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .stat-value {
-            font-size: 32px;
+            font-size: 30px;
             font-weight: 800;
             color: #0f172a;
             line-height: 1.1;
@@ -296,7 +370,7 @@
         }
 
         .stat-subtext {
-            font-size: 13px;
+            font-size: 12.5px;
             color: #94a3b8;
             display: flex;
             align-items: center;
@@ -319,13 +393,12 @@
             background: white;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
-            box-shadow: none;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
             overflow: hidden;
         }
 
         .section-header {
-            padding: 18px 24px;
+            padding: 16px 22px;
             border-bottom: 1px solid #f1f5f9;
             display: flex;
             align-items: center;
@@ -334,7 +407,7 @@
         }
 
         .section-title {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 700;
             color: #0f172a;
             display: flex;
@@ -343,10 +416,10 @@
         }
 
         .count-pill {
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 700;
             padding: 2px 8px;
-            border-radius: 12px;
+            border-radius: 10px;
             background: #fef3c7;
             color: #b45309;
         }
@@ -365,19 +438,19 @@
         th {
             background: #f8fafc;
             color: #475569;
-            font-size: 12.5px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 12px 20px;
+            padding: 12px 18px;
             text-align: left;
             border-bottom: 1px solid #e2e8f0;
         }
 
         td {
-            padding: 14px 20px;
+            padding: 13px 18px;
             border-bottom: 1px solid #f1f5f9;
-            font-size: 14px;
+            font-size: 13.5px;
             vertical-align: middle;
         }
 
@@ -389,10 +462,10 @@
             background: #fcfcfd;
         }
 
-        /* Status & Badges */
+        /* Badges */
         .badge {
             display: inline-block;
-            padding: 4px 10px;
+            padding: 3px 9px;
             border-radius: 12px;
             font-size: 12px;
             font-weight: 600;
@@ -412,23 +485,31 @@
             background: #ede9fe;
             color: #4f46e5;
             font-weight: 600;
-            padding: 3px 8px;
+            padding: 2px 8px;
             border-radius: 6px;
             font-size: 12px;
         }
 
-        /* Action Buttons */
+        .badge-used {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .badge-active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
         .btn-action {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 6px 12px;
+            padding: 5px 11px;
             border-radius: 6px;
-            font-size: 12.5px;
+            font-size: 12px;
             font-weight: 600;
             text-decoration: none;
-            transition: opacity 0.15s;
-            margin-right: 6px;
+            margin-right: 5px;
         }
 
         .btn-approve {
@@ -441,72 +522,68 @@
             color: white;
         }
 
-        .btn-action:hover {
-            opacity: 0.88;
-        }
-
         .empty-box {
             text-align: center;
-            padding: 36px 20px;
+            padding: 34px 20px;
             color: #64748b;
         }
 
-        /* Two Column Grid */
-        .dash-cols {
+        /* Question Card Item */
+        .q-card-item {
+            padding: 18px 22px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .q-card-item:last-child {
+            border-bottom: none;
+        }
+
+        .q-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .q-text {
+            font-size: 14.5px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .options-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
         }
 
-        .question-item {
-            padding: 14px 20px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .question-item:last-child {
-            border-bottom: none;
-        }
-
-        .question-item-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .question-text {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .subject-bar-row {
-            padding: 12px 20px;
-            border-bottom: 1px solid #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .subject-bar-row:last-child {
-            border-bottom: none;
-        }
-
-        .subject-bar-name {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 14px;
-        }
-
-        .subject-bar-count {
+        .opt-item {
+            padding: 8px 12px;
+            border-radius: 6px;
             font-size: 13px;
-            color: #64748b;
-            background: #f1f5f9;
-            padding: 3px 10px;
-            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .opt-item.is-correct {
+            background: #f0fdf4;
+            border-color: #86efac;
+            color: #166534;
             font-weight: 600;
+        }
+
+        .correct-tag {
+            font-size: 11px;
+            font-weight: 700;
+            background: #16a34a;
+            color: white;
+            padding: 1px 6px;
+            border-radius: 4px;
         }
 
         /* Admin Info Bar */
@@ -514,358 +591,358 @@
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
-            padding: 16px 22px;
+            padding: 16px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 14px;
-            margin-bottom: 30px;
-            font-size: 13.5px;
+            gap: 12px;
+            font-size: 13px;
             color: #475569;
         }
 
-        .admin-meta {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .meta-item strong {
-            color: #1e293b;
-        }
-
-        /* Footer */
-        .footer {
-            background: #ffffff;
-            border-top: 1px solid #e2e8f0;
-            padding: 20px 24px;
-            text-align: center;
-            font-size: 13px;
-            color: #94a3b8;
-            margin-top: auto;
-        }
-
-        @media (max-width: 900px) {
+        @media (max-width: 1024px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-            .dash-cols {
+            .options-grid {
                 grid-template-columns: 1fr;
             }
         }
 
-        @media (max-width: 600px) {
-            .navbar {
-                padding: 12px 18px;
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .admin-sidebar {
+                width: 100%;
+                min-width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .admin-main {
+                padding: 20px 16px;
             }
             .stats-grid {
                 grid-template-columns: 1fr;
-            }
-            .dash-actions {
-                width: 100%;
-                flex-direction: column;
-            }
-            .btn {
-                width: 100%;
-                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
 
-    <header class="navbar">
-        <a href="{% url 'home' %}" class="brand">
-            <div class="brand-icon">Q</div>
-            <span class="brand-name">Quizopedia <span class="admin-badge">Admin Portal</span></span>
-        </a>
+    {% include 'reports/includes/admin_sidebar.html' with active_page='dashboard' %}
 
-        <nav class="nav-links">
-            <a href="{% url 'dashboard' %}" class="nav-link active">Dashboard</a>
-            <a href="{% url 'student_list' %}" class="nav-link">Students</a>
-            <a href="{% url 'create_question' %}" class="nav-link">+ Create Question</a>
-            <a href="/admin/" target="_blank" class="nav-link">Django Admin &UpperRightArrow;</a>
-            <a href="{% url 'home' %}" class="nav-link">Home</a>
-            <a href="{% url 'logout' %}" class="nav-btn-logout">Log Out</a>
-        </nav>
-    </header>
+    <main class="admin-main">
+        <div class="main-container">
 
-    <div class="container">
-
-        {% if messages %}
-            <div class="messages-container">
+            {% if messages %}
                 {% for message in messages %}
                     <div class="message-alert {{ message.tags }}">
-                        <span>{{ message }}</span>
+                        {{ message }}
                     </div>
                 {% endfor %}
-            </div>
-        {% endif %}
+            {% endif %}
 
-        <div class="dash-header">
-            <div class="dash-title-group">
-                <h1>Admin Dashboard</h1>
-                <p>Overview of academic evaluations, students, questions, and approval workflows.</p>
-            </div>
-            <div class="dash-actions">
-                <a href="{% url 'create_question' %}" class="btn btn-primary">
-                    + Create Question
-                </a>
-                <a href="{% url 'student_list' %}" class="btn btn-secondary">
-                    Manage Students
-                </a>
-                <a href="/admin/" target="_blank" class="btn btn-secondary">
-                    Django Admin &UpperRightArrow;
-                </a>
-            </div>
-        </div>
-
-        <div class="stats-grid">
-
-            <div class="stat-card">
-                <div class="stat-top">
-                    <span class="stat-label">Total Students</span>
+            <div class="dash-header">
+                <div class="dash-title-group">
+                    <h1>Admin Dashboard</h1>
+                    <p>Overview of academic evaluations, students, questions, and approval workflows.</p>
                 </div>
-                <div class="stat-value">{{ total_students }}</div>
-                <div class="stat-subtext">
-                    <span>Active student records</span>
-                    <a href="{% url 'student_list' %}" class="stat-link">View all &rarr;</a>
+                <div class="dash-actions">
+                    <a href="{% url 'create_question' %}" class="btn btn-primary">
+                        + Create Question
+                    </a>
+                    <a href="{% url 'student_list' %}" class="btn btn-secondary">
+                        Manage Students
+                    </a>
+                    <a href="/admin/" target="_blank" class="btn btn-secondary">
+                        Django Admin &UpperRightArrow;
+                    </a>
                 </div>
             </div>
 
-            <div class="stat-card card-sky">
-                <div class="stat-top">
-                    <span class="stat-label">Total Questions</span>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Total Students</span>
+                    </div>
+                    <div class="stat-value">{{ total_students }}</div>
+                    <div class="stat-subtext">
+                        <span>Active student records</span>
+                        <a href="{% url 'student_list' %}" class="stat-link">View all &rarr;</a>
+                    </div>
                 </div>
-                <div class="stat-value">{{ total_questions }}</div>
-                <div class="stat-subtext">
-                    <span>MCQ question bank</span>
-                    <a href="{% url 'create_question' %}" class="stat-link">+ Add new &rarr;</a>
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Total Questions</span>
+                    </div>
+                    <div class="stat-value">{{ total_questions }}</div>
+                    <div class="stat-subtext">
+                        <span>Across all subjects</span>
+                        <a href="{% url 'create_question' %}" class="stat-link">+ Add new &rarr;</a>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Quiz Subjects</span>
+                    </div>
+                    <div class="stat-value">{{ total_subjects }}</div>
+                    <div class="stat-subtext">
+                        <span>Categories available</span>
+                        <a href="#subjects-section" class="stat-link">Explore &rarr;</a>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <span class="stat-label">Pending Approvals</span>
+                    </div>
+                    <div class="stat-value">{{ pending_count }}</div>
+                    <div class="stat-subtext">
+                        <span>Profile update requests</span>
+                        {% if pending_count > 0 %}
+                            <a href="#pending-approvals" class="stat-link" style="color: #b45309; font-weight: 700;">Review &rarr;</a>
+                        {% else %}
+                            <span style="color: #10b981; font-weight: 600;">All Clear ✓</span>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
-            <div class="stat-card card-emerald">
-                <div class="stat-top">
-                    <span class="stat-label">Quiz Subjects</span>
+            <div class="section-card" id="pending-approvals">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>Pending Profile Update Requests</span>
+                        <span class="count-pill {% if pending_count == 0 %}pill-zero{% endif %}">
+                            {{ pending_count }} Pending
+                        </span>
+                    </div>
+                    <a href="{% url 'student_list' %}" class="stat-link">Open Student Management &rarr;</a>
                 </div>
-                <div class="stat-value">{{ total_subjects }}</div>
-                <div class="stat-subtext">
-                    <span>Categories available</span>
-                    <a href="{% url 'home' %}#subjects" class="stat-link">Explore &rarr;</a>
+
+                {% if pending_updates %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Current Name</th>
+                                <th>Requested Name</th>
+                                <th>Requested Email</th>
+                                <th>Requested Phone</th>
+                                <th>Submitted At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for update in pending_updates %}
+                                <tr>
+                                    <td><strong>#{{ update.student.id }}</strong></td>
+                                    <td>{{ update.student.name }}</td>
+                                    <td><span style="color: #4f46e5; font-weight: 600;">{{ update.name }}</span></td>
+                                    <td>{{ update.email }}</td>
+                                    <td>{{ update.phone }}</td>
+                                    <td>{{ update.submitted_at|date:"d M Y, H:i" }}</td>
+                                    <td>
+                                        <a href="{% url 'approve_profile_update' update.id %}?next={% url 'dashboard' %}"
+                                           class="btn-action btn-approve"
+                                           title="Approve and notify student by email">
+                                            ✓ Approve
+                                        </a>
+                                        <a href="{% url 'reject_profile_update' update.id %}?next={% url 'dashboard' %}"
+                                           class="btn-action btn-reject"
+                                           onclick="return confirm('Decline this profile update request?');"
+                                           title="Decline request">
+                                            ✕ Reject
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="empty-box">
+                        <h3 style="font-size: 15px; color: #1e293b; margin-bottom: 4px;">All caught up!</h3>
+                        <p style="font-size: 13px; color: #64748b;">There are currently no pending student profile update requests to review.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="section-card" id="question-bank">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>Question Bank &amp; Answer Keys</span>
+                        <span class="count-pill pill-zero">{{ total_questions }} Questions</span>
+                    </div>
+                    <a href="{% url 'create_question' %}" class="stat-link">+ Create New Question</a>
+                </div>
+
+                <div>
+                    {% for q in all_questions %}
+                        <div class="q-card-item">
+                            <div class="q-top">
+                                <span class="badge-subject">{{ q.subject.name }}</span>
+                                <span style="font-size: 12px; color: #94a3b8;">Question #{{ q.id }}</span>
+                            </div>
+                            <div class="q-text">{{ q.question_text }}</div>
+                            <div class="options-grid">
+                                {% for opt in q.option_set.all %}
+                                    <div class="opt-item {% if opt.is_answer %}is-correct{% endif %}">
+                                        <span>{{ opt.option_text }}</span>
+                                        {% if opt.is_answer %}
+                                            <span class="correct-tag">✓ Correct Answer</span>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="empty-box">
+                            <p>No questions created yet.</p>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
 
-            <div class="stat-card {% if pending_count > 0 %}card-amber{% else %}card-emerald{% endif %}">
-                <div class="stat-top">
-                    <span class="stat-label">Pending Approvals</span>
+            <div class="section-card" id="otp-logs">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>Student OTP Authentication Logs</span>
+                        <span class="count-pill pill-zero">Recent Security Logs</span>
+                    </div>
+                    <span style="font-size: 12.5px; color: #64748b;">Expiry: 2 Minutes</span>
                 </div>
-                <div class="stat-value">{{ pending_count }}</div>
-                <div class="stat-subtext">
-                    <span>Profile update requests</span>
-                    {% if pending_count > 0 %}
-                        <a href="{% url 'student_list' %}" class="stat-link" style="color: #b45309; font-weight: 700;">Review &rarr;</a>
-                    {% else %}
-                        <span style="color: #10b981; font-weight: 600;">All Clear ✓</span>
-                    {% endif %}
-                </div>
-            </div>
 
-        </div>
-
-        <div class="section-card">
-            <div class="section-header">
-                <div class="section-title">
-                    <span>Pending Profile Update Requests</span>
-                    <span class="count-pill {% if pending_count == 0 %}pill-zero{% endif %}">
-                        {{ pending_count }} Pending
-                    </span>
-                </div>
-                <a href="{% url 'student_list' %}" class="stat-link">Open Student Management &rarr;</a>
-            </div>
-
-            {% if pending_updates %}
                 <table>
                     <thead>
                         <tr>
-                            <th>Student ID</th>
-                            <th>Current Name</th>
-                            <th>Requested Name</th>
-                            <th>Requested Email</th>
-                            <th>Requested Phone</th>
-                            <th>Submitted At</th>
-                            <th>Actions</th>
+                            <th>Student</th>
+                            <th>OTP Code</th>
+                            <th>Generated At</th>
+                            <th>Expires At</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for update in pending_updates %}
+                        {% for otp_record in recent_otps %}
                             <tr>
-                                <td><strong>#{{ update.student.id }}</strong></td>
-                                <td>{{ update.student.name }}</td>
-                                <td><span style="color: #4f46e5; font-weight: 600;">{{ update.name }}</span></td>
-                                <td>{{ update.email }}</td>
-                                <td>{{ update.phone }}</td>
-                                <td>{{ update.submitted_at|date:"d M Y, H:i" }}</td>
+                                <td><strong>{{ otp_record.student.name }}</strong> (ID #{{ otp_record.student.id }})</td>
+                                <td><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-weight: 700; color: #4f46e5;">{{ otp_record.otp }}</code></td>
+                                <td>{{ otp_record.created_at|date:"d M Y, H:i:s" }}</td>
+                                <td>{{ otp_record.expires_at|date:"d M Y, H:i:s" }}</td>
                                 <td>
-                                    <a href="{% url 'approve_profile_update' update.id %}?next={% url 'dashboard' %}"
-                                       class="btn-action btn-approve"
-                                       title="Approve and notify student by email">
-                                        ✓ Approve
-                                    </a>
-                                    <a href="{% url 'reject_profile_update' update.id %}?next={% url 'dashboard' %}"
-                                       class="btn-action btn-reject"
-                                       onclick="return confirm('Decline this profile update request?');"
-                                       title="Decline request">
-                                        ✕ Reject
-                                    </a>
+                                    {% if otp_record.is_used %}
+                                        <span class="badge badge-used">Verified &amp; Used</span>
+                                    {% elif otp_record.is_expired %}
+                                        <span class="badge badge-pending">Expired</span>
+                                    {% else %}
+                                        <span class="badge badge-active">Active</span>
+                                    {% endif %}
                                 </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="empty-box">No student OTP logs recorded yet.</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-            {% else %}
-                <div class="empty-box">
-                    <h3 style="font-size: 16px; color: #1e293b; margin-bottom: 4px;">All caught up!</h3>
-                    <p style="font-size: 13.5px; color: #64748b;">There are currently no pending student profile update requests to review.</p>
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="dash-cols">
-
-            <div class="section-card" style="margin-bottom: 0;">
-                <div class="section-header">
-                    <div class="section-title">
-                        <span>Recent Quiz Questions</span>
-                    </div>
-                    <a href="{% url 'create_question' %}" class="stat-link">+ Add Question</a>
-                </div>
-
-                {% if recent_questions %}
-                    <div>
-                        {% for q in recent_questions %}
-                            <div class="question-item">
-                                <div class="question-item-top">
-                                    <span class="badge-subject">{{ q.subject.name }}</span>
-                                    <span style="font-size: 12px; color: #94a3b8;">ID: #{{ q.id }}</span>
-                                </div>
-                                <div class="question-text">{{ q.question_text }}</div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="empty-box">
-                        <p>No questions created yet.</p>
-                        <a href="{% url 'create_question' %}" class="btn btn-primary" style="margin-top: 12px; display: inline-flex;">
-                            Create First Question
-                        </a>
-                    </div>
-                {% endif %}
             </div>
 
-            <div class="section-card" style="margin-bottom: 0;">
+            <div class="section-card" id="subjects-section">
                 <div class="section-header">
                     <div class="section-title">
-                        <span>Subjects & Question Breakdown</span>
+                        <span>Curriculum Subjects &amp; Descriptions</span>
+                        <span class="count-pill pill-zero">{{ total_subjects }} Subjects</span>
                     </div>
-                    <a href="/admin/reports/subject/" target="_blank" class="stat-link">Manage in Admin &UpperRightArrow;</a>
+                    <a href="/admin/reports/subject/" target="_blank" class="stat-link">Manage in Django Admin &UpperRightArrow;</a>
                 </div>
 
-                {% if subjects_summary %}
-                    <div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Subject Name</th>
+                            <th>Description</th>
+                            <th>Question Bank</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {% for s in subjects_summary %}
-                            <div class="subject-bar-row">
-                                <span class="subject-bar-name">{{ s.name }}</span>
-                                <span class="subject-bar-count">{{ s.q_count }} Question{{ s.q_count|pluralize }}</span>
-                            </div>
+                            <tr>
+                                <td><strong>#{{ s.id }}</strong></td>
+                                <td><strong style="color: #4f46e5;">{{ s.name }}</strong></td>
+                                <td style="color: #64748b; font-size: 13px;">{{ s.description|default:"No description provided." }}</td>
+                                <td><span class="sidebar-badge">{{ s.q_count }} Question{{ s.q_count|pluralize }}</span></td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="empty-box">No subjects found.</td>
+                            </tr>
                         {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>Enrolled Student Roster</span>
                     </div>
-                {% else %}
-                    <div class="empty-box">
-                        <p>No subjects found.</p>
-                    </div>
-                {% endif %}
-            </div>
-
-        </div>
-
-        <div class="section-card" style="margin-top: 30px;">
-            <div class="section-header">
-                <div class="section-title">
-                    <span>Student Records Snapshot</span>
+                    <a href="{% url 'student_list' %}" class="stat-link">View Full Student Management &rarr;</a>
                 </div>
-                <a href="{% url 'student_list' %}" class="stat-link">View All {{ total_students }} Students &rarr;</a>
-            </div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Student Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Approval Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for student in recent_students %}
+                <table>
+                    <thead>
                         <tr>
-                            <td><strong>#{{ student.id }}</strong></td>
-                            <td><strong>{{ student.name }}</strong></td>
-                            <td>{{ student.email }}</td>
-                            <td>{{ student.phone }}</td>
-                            <td>
-                                {% if student.approval_status == 'pending' %}
-                                    <span class="badge badge-pending">Pending Approval</span>
-                                {% else %}
-                                    <span class="badge badge-approved">Approved</span>
-                                {% endif %}
-                            </td>
+                            <th>ID</th>
+                            <th>Student Name</th>
+                            <th>Email Address</th>
+                            <th>Phone</th>
+                            <th>Status</th>
                         </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="5" class="empty-box">No student records found.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        {% for student in recent_students %}
+                            <tr>
+                                <td><strong>#{{ student.id }}</strong></td>
+                                <td><strong>{{ student.name }}</strong></td>
+                                <td>{{ student.email }}</td>
+                                <td>{{ student.phone }}</td>
+                                <td>
+                                    {% if student.approval_status == 'pending' %}
+                                        <span class="badge badge-pending">Pending Approval</span>
+                                    {% else %}
+                                        <span class="badge badge-approved">Approved</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="empty-box">No student records found.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-        <div class="admin-info-bar">
-            <div class="admin-meta">
-                <div class="meta-item">
-                    <span>Superuser:</span>
-                    <strong>{{ user.username }}</strong>
+            <div class="admin-info-bar">
+                <div>
+                    <span>Super Administrator: <strong>{{ user.username }}</strong></span> &middot;
+                    <span>Email: <strong>{{ user.email }}</strong></span>
                 </div>
-                <div class="meta-item">
-                    <span>Admin Email:</span>
-                    <strong>{{ user.email }}</strong>
-                </div>
-                <div class="meta-item">
-                    <span>System Role:</span>
-                    <strong style="color: #4f46e5;">Administrator</strong>
+                <div>
+                    <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: #16a34a; font-size: 12.5px;">
+                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a;"></span>
+                        System Operational &amp; Secure
+                    </span>
                 </div>
             </div>
-            <div>
-                <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: #16a34a; font-size: 13px;">
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #16a34a;"></span>
-                    Active &amp; Secure
-                </span>
-            </div>
+
         </div>
-
-    </div>
-
-    <footer class="footer">
-        &copy; 2026 Quizopedia &middot; Academic Quiz &amp; Student Evaluation System &middot; Admin Portal
-    </footer>
+    </main>
 
 </body>
 </html>

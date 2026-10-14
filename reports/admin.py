@@ -1,10 +1,11 @@
 from django.contrib import admin
-from .models import Admin, Student, Subject, Question, Option
+from .models import Admin, Student, Subject, Question, Option, StudentOTP, PendingProfileUpdate
 
 from django.core.mail import send_mail
 from django.conf import settings
 
 admin.site.register(Admin)
+
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'email', 'phone', 'approval_status', 'pending_name', 'pending_email')
@@ -83,8 +84,30 @@ class StudentAdmin(admin.ModelAdmin):
         self.message_user(request, f"{count} student profile(s) rejected and notified.")
 
 
-admin.site.register(Question)    
-admin.site.register(Subject)
+@admin.register(Subject)
+class SubjectAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'description')
+
+
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'subject', 'question_text')
+    list_filter = ('subject',)
+
+
 @admin.register(Option)
 class OptionAdmin(admin.ModelAdmin):
     list_display = ('question', 'option_text', 'is_answer')
+    list_filter = ('is_answer',)
+
+
+@admin.register(StudentOTP)
+class StudentOTPAdmin(admin.ModelAdmin):
+    list_display = ('student', 'otp', 'created_at', 'expires_at', 'is_used')
+    list_filter = ('is_used', 'created_at')
+
+
+@admin.register(PendingProfileUpdate)
+class PendingProfileUpdateAdmin(admin.ModelAdmin):
+    list_display = ('student', 'name', 'email', 'phone', 'status', 'submitted_at', 'reviewed_at')
+    list_filter = ('status', 'submitted_at')

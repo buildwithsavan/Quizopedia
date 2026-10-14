@@ -8,9 +8,10 @@ from django.db import transaction
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
+from datetime import timedelta
 import random
 import time
-from .models import Admin, Student, Question, Subject, Option, PendingProfileUpdate
+from .models import Admin, Student, Question, Subject, Option, PendingProfileUpdate, StudentOTP
 from .forms import StudentProfileForm
 from django.utils import timezone
 
@@ -36,8 +37,12 @@ def dashboard(request):
     pending_count = pending_updates.count()
 
     recent_questions = Question.objects.select_related('subject').order_by('-id')[:6]
+    all_questions = Question.objects.select_related('subject').prefetch_related('option_set').order_by('subject__name', 'id')
     subjects_summary = Subject.objects.annotate(q_count=Count('question')).order_by('name')
     recent_students = Student.objects.order_by('-id')[:6]
+    all_students = Student.objects.order_by('-id')
+    recent_otps = StudentOTP.objects.select_related('student').order_by('-created_at')[:15]
+    total_admins = Admin.objects.count()
 
     return render(
         request,
@@ -49,21 +54,28 @@ def dashboard(request):
             'pending_count': pending_count,
             'pending_updates': pending_updates,
             'recent_questions': recent_questions,
+            'all_questions': all_questions,
             'subjects_summary': subjects_summary,
             'recent_students': recent_students,
+            'all_students': all_students,
+            'recent_otps': recent_otps,
+            'total_admins': total_admins,
         }
     )
 
 
 @login_required
 def admin_list(request):
-    admins = Admin.objects.all()
-
-    return render(request,'reports/admin_list.html',{'admins': admins})
+    if not request.user.is_staff:
+        return redirect('profile')
+    admins = Admin.objects.all().order_by('id')
+    return render(request, 'reports/admin_list.html', {'admins': admins})
 
 @login_required
 def student_list(request):
-    students = Student.objects.all()
+    if not request.user.is_staff:
+        return redirect('profile')
+    students = Student.objects.all().order_by('-id')
 
     pending_updates = PendingProfileUpdate.objects.filter(
         status='pending'
@@ -80,35 +92,98 @@ def student_list(request):
 
 @login_required
 def profile(request):
-
     if request.user.is_staff:
-        profile = request.user.admin_profile
+        profile_obj = getattr(request.user, 'admin_profile', None)
         profile_type = 'Admin'
+        pending_update = None
+        update_history = []
     else:
-        profile = request.user.student_profile
+        profile_obj = getattr(request.user, 'student_profile', None)
+        if not profile_obj:
+            profile_obj, _ = Student.objects.get_or_create(
+                user=request.user,
+                defaults={
+                    'name': request.user.get_full_name() or request.user.username,
+                    'email': request.user.email or '',
+                    'phone': '',
+                    'approval_status': 'approved',
+                }
+            )
         profile_type = 'Student'
+        pending_update = PendingProfileUpdate.objects.filter(
+            student=profile_obj, status='pending'
+        ).order_by('-submitted_at').first()
+
+        update_history = profile_obj.pending_profile_updates.order_by('-submitted_at')[:5]
 
     return render(
-        request,'reports/profile.html',{'profile': profile,'profile_type': profile_type})
+        request,
+        'reports/profile.html',
+        {
+            'profile': profile_obj,
+            'profile_type': profile_type,
+            'pending_update': pending_update,
+            'update_history': update_history,
+        }
+    )
 
 @login_required
 def student_profile_update(request):
-
     if request.user.is_staff:
         return redirect('profile')
 
-    student = request.user.student_profile
+    student = getattr(request.user, 'student_profile', None)
+    if not student:
+        student, _ = Student.objects.get_or_create(
+            user=request.user,
+            defaults={
+                'name': request.user.get_full_name() or request.user.username,
+                'email': request.user.email or '',
+                'phone': '',
+                'approval_status': 'approved',
+            }
+        )
+
+    pending_update = PendingProfileUpdate.objects.filter(
+        student=student, status='pending'
+    ).order_by('-submitted_at').first()
 
     if request.method == 'POST':
         form = StudentProfileForm(request.POST)
-
         if form.is_valid():
-            pending_update = PendingProfileUpdate.objects.create(
-                student=student,
-                name=form.cleaned_data['name'],
-                email=form.cleaned_data['email'],
-                phone=form.cleaned_data['phone'],
-            )
+            new_name = form.cleaned_data['name'].strip()
+            new_email = form.cleaned_data['email'].strip()
+            new_phone = form.cleaned_data['phone'].strip()
+
+            if (new_name == student.name and
+                new_email == student.email and
+                new_phone == student.phone):
+                messages.info(
+                    request,
+                    'The details entered match your current active profile. No changes were submitted.'
+                )
+                return redirect('profile')
+
+            if pending_update:
+                pending_update.name = new_name
+                pending_update.email = new_email
+                pending_update.phone = new_phone
+                pending_update.submitted_at = timezone.now()
+                pending_update.save()
+            else:
+                pending_update = PendingProfileUpdate.objects.create(
+                    student=student,
+                    name=new_name,
+                    email=new_email,
+                    phone=new_phone,
+                    status='pending',
+                )
+
+            student.pending_name = new_name
+            student.pending_email = new_email
+            student.pending_phone = new_phone
+            student.approval_status = 'pending'
+            student.save()
 
             if student.email:
                 try:
@@ -134,24 +209,56 @@ def student_profile_update(request):
 
             messages.success(
                 request,
-                'Your profile update request has been submitted for approval.'
+                'Your profile update request has been successfully submitted and is awaiting administrator approval.'
             )
             return redirect('profile')
-
     else:
-        form = StudentProfileForm(
-            initial={
-                'name': student.name,
-                'email': student.email,
-                'phone': student.phone,
-            }
-        )
+        initial_data = {
+            'name': pending_update.name if pending_update else student.name,
+            'email': pending_update.email if pending_update else student.email,
+            'phone': pending_update.phone if pending_update else student.phone,
+        }
+        form = StudentProfileForm(initial=initial_data)
+
+    update_history = student.pending_profile_updates.order_by('-submitted_at')[:5]
 
     return render(
         request,
         'reports/student_profile_update.html',
-        {'form': form}
+        {
+            'form': form,
+            'student': student,
+            'pending_update': pending_update,
+            'update_history': update_history,
+        }
     )
+
+@login_required
+def student_withdraw_update(request):
+    if request.user.is_staff:
+        return redirect('dashboard')
+
+    student = getattr(request.user, 'student_profile', None)
+    if not student:
+        return redirect('profile')
+
+    if request.method == 'POST':
+        pending = PendingProfileUpdate.objects.filter(
+            student=student, status='pending'
+        ).first()
+        if pending:
+            pending.delete()
+        student.pending_name = ''
+        student.pending_email = ''
+        student.pending_phone = ''
+        student.approval_status = 'approved'
+        student.save()
+        messages.success(
+            request,
+            'Your pending profile update request has been withdrawn. Your current profile remains active.'
+        )
+
+    return redirect('profile')
 
 @login_required
 def approve_student(request, student_id):
@@ -172,7 +279,7 @@ def approve_student(request, student_id):
         student.email = pending_update.email
         student.phone = pending_update.phone
         student.approval_status = 'approved'
-        
+            
         student.save()
 
         if student.user:
@@ -430,6 +537,15 @@ def password_reset_request(request):
             request.session['pw_reset_expiry'] = expiry
             request.session['pw_reset_verified'] = False
 
+            student_profile = getattr(user, 'student_profile', None)
+            if student_profile:
+                StudentOTP.objects.create(
+                    student=student_profile,
+                    otp=otp,
+                    expires_at=timezone.now() + timedelta(seconds=120),
+                    is_used=False
+                )
+
             try:
                 send_mail(
                     subject='Quizopedia - Password Reset OTP',
@@ -485,6 +601,11 @@ def password_reset_verify_otp(request):
             )
         else:
             request.session['pw_reset_verified'] = True
+            user_id = request.session.get('pw_reset_user_id')
+            if user_id:
+                u = User.objects.filter(id=user_id).first()
+                if u and hasattr(u, 'student_profile'):
+                    StudentOTP.objects.filter(student=u.student_profile, otp=entered_otp, is_used=False).update(is_used=True)
             return redirect('password_reset_new_password')
         
     resend_seconds = max(
@@ -553,6 +674,15 @@ def password_reset_resend_otp(request):
         request.session['pw_reset_resend_after'] = now + OTP_RESEND_COOLDOWN
         request.session['pw_reset_verified'] = False
 
+        student_profile = getattr(user, 'student_profile', None)
+        if student_profile:
+            StudentOTP.objects.create(
+                student=student_profile,
+                otp=new_otp,
+                expires_at=timezone.now() + timedelta(seconds=120),
+                is_used=False
+            )
+
         messages.success(request, f'A new OTP has been sent to {email}.')
 
     except Exception:
@@ -607,7 +737,16 @@ def password_reset_complete(request):
     
     return render(request, 'reports/password_reset_complete.html')
 
-def user_login(request):
+def admin_login(request):
+    """Explicit login view for administrators."""
+    if request.user.is_authenticated:
+        if request.user.is_staff:
+            return redirect('dashboard')
+        return redirect('profile')
+    return user_login(request, is_admin=True)
+
+
+def user_login(request, is_admin=False):
    
     if request.user.is_authenticated:
         if request.user.is_staff:
@@ -615,9 +754,23 @@ def user_login(request):
         return redirect('profile')
 
     next_url = request.POST.get('next') or request.GET.get('next') or ''
+    is_admin_mode = (
+        is_admin or
+        request.GET.get('role') == 'admin' or
+        request.POST.get('role') == 'admin' or
+        'dashboard' in next_url or
+        'admin' in next_url or
+        request.path == '/admin-login/'
+    )
 
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        post_data = request.POST.copy()
+        raw_username = post_data.get('username', '').strip()
+        matching_user = User.objects.filter(username__iexact=raw_username).first() or User.objects.filter(email__iexact=raw_username).first()
+        if matching_user:
+            post_data['username'] = matching_user.username
+
+        form = AuthenticationForm(request, data=post_data)
         if form.is_valid():
             user = form.get_user()
 
@@ -628,51 +781,29 @@ def user_login(request):
                     return redirect(next_url)
                 return redirect('dashboard')
             else:
-                
-                student_profile = getattr(user, 'student_profile', None)
-                student_email = getattr(student_profile, 'email', None) or user.email
-
-                if not student_email:
+                if is_admin_mode:
                     messages.error(
                         request,
-                        'No email address is linked with this student account. Please contact an administrator.'
+                        'This account does not have administrator privileges. Please use Student Login.'
                     )
-                    return render(request, 'reports/login.html', {'form': form, 'next': next_url})
+                    return render(request, 'reports/login.html', {
+                        'form': form,
+                        'next': next_url,
+                        'is_admin_mode': is_admin_mode,
+                    })
 
-                otp = f"{random.randint(100000, 999999)}"
-                expiry = time.time() + 120  
-
-                request.session['student_login_user_id'] = user.id
-                request.session['student_login_email'] = student_email
-                request.session['student_login_otp'] = otp
-                request.session['student_login_expiry'] = expiry
-                request.session['student_login_next'] = next_url
-
-                try:
-                    send_mail(
-                        subject='Quizopedia - Student Login OTP',
-                        message=(
-                            f'Hello {user.username},\n\n'
-                            'A login attempt was made for your Quizopedia student account.\n\n'
-                            f'Your One-Time Password (OTP) is:\n\n'
-                            f'    {otp}\n\n'
-                            'This OTP is valid for 2 minutes. Please enter it to complete your sign in.\n\n'
-                            'If you did not attempt to sign in, please contact support or change your password.\n\n'
-                            'Best regards,\n'
-                            'The Quizopedia Team'
-                        ),
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=[student_email],
-                        fail_silently=False,
-                    )
-                    request.session['student_login_resend_after'] = time.time() + OTP_RESEND_COOLDOWN
-                    return redirect('student_login_verify_otp')
-                except Exception as e:
-                    messages.error(request, 'Unable to send OTP email at this moment. Please try again.')
+                auth_login(request, user)
+                if next_url:
+                    return redirect(next_url)
+                return redirect('home')
     else:
         form = AuthenticationForm(request)
 
-    return render(request, 'reports/login.html', {'form': form, 'next': next_url})
+    return render(request, 'reports/login.html', {
+        'form': form,
+        'next': next_url,
+        'is_admin_mode': is_admin_mode,
+    })
 
 
 
@@ -708,6 +839,9 @@ def student_login_verify_otp(request):
         else:
             user = get_object_or_404(User, id=user_id)
             auth_login(request, user)
+            student_profile = getattr(user, 'student_profile', None)
+            if student_profile:
+                StudentOTP.objects.filter(student=student_profile, otp=entered_otp, is_used=False).update(is_used=True)
             next_url = request.session.get('student_login_next')
             for key in [
                 'student_login_user_id',
@@ -720,7 +854,7 @@ def student_login_verify_otp(request):
                 request.session.pop(key, None)
             if next_url:
                 return redirect(next_url)
-            return redirect('student_list')
+            return redirect('profile')
 
     resend_seconds = max(
         0,
@@ -794,6 +928,15 @@ def student_login_resend_otp(request):
         request.session['student_login_otp'] = new_otp
         request.session['student_login_expiry'] = now + 120
         request.session['student_login_resend_after'] = now + OTP_RESEND_COOLDOWN
+
+        student_profile = getattr(user, 'student_profile', None)
+        if student_profile:
+            StudentOTP.objects.create(
+                student=student_profile,
+                otp=new_otp,
+                expires_at=timezone.now() + timedelta(seconds=120),
+                is_used=False
+            )
 
         messages.success(request, f'A new login OTP has been sent to {email}.')
 

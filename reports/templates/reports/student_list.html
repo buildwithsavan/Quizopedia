@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quizopedia | Student List</title>
+    <title>Quizopedia | Student Records</title>
 
     <style>
         * {
@@ -13,69 +13,24 @@
         }
 
         body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            background-color: #f8fafc;
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background: #f8fafc;
             color: #1e293b;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
         }
 
-        .navbar {
-            background: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 14px 36px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: #111827;
-        }
-
-        .brand-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #4f46e5, #6366f1);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .brand-name {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: #64748b;
-            font-weight: 600;
-            font-size: 14px;
-            padding: 8px 14px;
-            border-radius: 8px;
-            transition: color 0.15s;
-        }
-
-        .nav-links a:hover {
-            color: #4f46e5;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 36px auto;
-            padding: 0 20px;
+        /* Main Content Layout */
+        .admin-main {
             flex: 1;
-            width: 100%;
+            min-width: 0;
+            padding: 32px 36px 60px;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            max-width: 1180px;
+            margin: 0 auto;
         }
 
         .page-header {
@@ -83,12 +38,20 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .page-header h1 {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 700;
             color: #0f172a;
+        }
+
+        .header-subtext {
+            font-size: 13.5px;
+            color: #64748b;
+            margin-top: 2px;
         }
 
         /* Message Banner */
@@ -98,26 +61,64 @@
             margin-bottom: 20px;
             font-size: 14px;
             font-weight: 500;
+            border: 1px solid #e2e8f0;
         }
 
         .message-box.success {
             background: #f0fdf4;
             color: #166534;
-            border: 1px solid #bbf7d0;
+            border-color: #bbf7d0;
         }
 
-        .message-box.info {
-            background: #f8fafc;
-            color: #475569;
-            border: 1px solid #cbd5e1;
+        .message-box.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fecaca;
         }
 
-        .table-card {
-            background-color: white;
-            box-shadow: none;
+        /* Section Cards */
+        .section-card {
+            background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
+            margin-bottom: 28px;
             overflow: hidden;
+        }
+
+        .section-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .count-pill {
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .count-pill.pill-zero {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
         }
 
         table {
@@ -126,27 +127,30 @@
         }
 
         th {
-            background-color: #4f46e5;
-            color: white;
-            padding: 14px 20px;
+            background-color: #f8fafc;
+            color: #475569;
+            padding: 12px 18px;
             text-align: left;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         td {
-            padding: 14px 20px;
+            padding: 14px 18px;
             border-bottom: 1px solid #f1f5f9;
-            font-size: 14.5px;
+            font-size: 13.5px;
             vertical-align: middle;
-        }
-
-        tr:hover {
-            background-color: #f8fafc;
         }
 
         tr:last-child td {
             border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
         }
 
         /* Status Badges */
@@ -154,8 +158,8 @@
             display: inline-block;
             padding: 4px 10px;
             border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11.5px;
+            font-weight: 700;
         }
 
         .badge-approved {
@@ -169,15 +173,15 @@
         }
 
         .pending-details {
-            font-size: 12px;
+            font-size: 11.5px;
             color: #64748b;
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
         /* Action Buttons */
         .btn-action {
             display: inline-block;
-            padding: 6px 12px;
+            padding: 5px 12px;
             border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
@@ -200,206 +204,176 @@
             opacity: 0.9;
         }
 
-        .back-link {
-            display: inline-block;
-            margin-top: 24px;
-            color: #4f46e5;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .no-records {
+        .empty-box {
             text-align: center;
             color: #64748b;
-            padding: 30px;
+            padding: 32px 20px;
+            font-size: 13.5px;
         }
 
-        .footer {
-            background: #ffffff;
-            border-top: 1px solid #e2e8f0;
-            padding: 20px;
-            text-align: center;
-            font-size: 13px;
-            color: #94a3b8;
-            margin-top: auto;
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .admin-main {
+                padding: 20px 16px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header class="navbar">
-        <a href="{% url 'home' %}" class="brand">
-            <div class="brand-icon">Q</div>
-            <span class="brand-name">Quizopedia <span style="font-size: 13px; font-weight: 500; color: #6366f1; background: #ede9fe; padding: 3px 8px; border-radius: 6px; margin-left: 6px;">Admin Portal</span></span>
-        </a>
-        <nav class="nav-links">
-            <a href="{% url 'dashboard' %}">Dashboard</a>
-            <a href="{% url 'student_list' %}" style="color: #4f46e5; font-weight: 700;">Students</a>
-            <a href="{% url 'create_question' %}">+ Create Question</a>
-            <a href="/admin/" target="_blank">Django Admin &UpperRightArrow;</a>
-            <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'logout' %}" style="color: #ef4444; margin-left: 8px;">Log Out</a>
-        </nav>
-    </header>
+    
+    {% include 'reports/includes/admin_sidebar.html' with active_page='students' %}
 
-    <div class="container">
+    <main class="admin-main">
+        <div class="main-container">
 
-        <div class="page-header">
-            <h1>Student Records</h1>
-        </div>
-
-        {% if messages %}
-            {% for message in messages %}
-                <div class="message-box {{ message.tags }}">
-                    {{ message }}
+            <div class="page-header">
+                <div>
+                    <h1>Student Records &amp; Directory</h1>
+                    <div class="header-subtext">Manage enrolled students, profile information, and review account approval status</div>
                 </div>
-            {% endfor %}
-        {% endif %}
-
-        {% if user.is_staff %}
-            <h2 style="font-size: 20px; margin-bottom: 16px;">
-                Pending Profile Update Requests
-            </h2>
-
-            <div class="table-card" style="margin-bottom: 28px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Student Name</th>
-                            <th>Requested Name</th>
-                            <th>Requested Email</th>
-                            <th>Requested Phone</th>
-                            <th>Submitted</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for update in pending_updates %}
-                        <tr>
-                            <td>#{{ update.student.id }}</td>
-                            <td>{{ update.student.name }}</td>
-                            <td>{{ update.name }}</td>
-                            <td>{{ update.email }}</td>
-                            <td>{{ update.phone }}</td>
-                            <td>{{ update.submitted_at|date:"d M Y, H:i" }}</td>
-                            <td>
-                                <a href="{% url 'approve_profile_update' update.id %}"
-                                class="btn-action btn-approve">
-                                    Approve
-                                </a>
-
-                                <a href="{% url 'reject_profile_update' update.id %}"
-                                class="btn-action btn-reject"
-                                onclick="return confirm('Reject this profile update request?')">
-                                    Reject
-                                </a>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="no-records">
-                                No pending profile update requests.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
-        {% endif %}
 
-        <div class="table-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Status</th>
-                        {% if user.is_staff %}
-                            <th>Actions</th>
-                        {% endif %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for student in students %}
-                    <tr>
-                        <td>#{{ student.id }}</td>
-                        <td>
-                            <strong>{{ student.name }}</strong>
-                            {% if student.approval_status == 'pending' and student.pending_name %}
-                                <div class="pending-details">
-                                    Requested: {{ student.pending_name }}
-                                </div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ student.email }}
-                            {% if student.approval_status == 'pending' and student.pending_email %}
-                                <div class="pending-details">
-                                    Requested: {{ student.pending_email }}
-                                </div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ student.phone }}
-                            {% if student.approval_status == 'pending' and student.pending_phone %}
-                                <div class="pending-details">
-                                    Requested: {{ student.pending_phone }}
-                                </div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if student.approval_status == 'pending' %}
-                                <span class="badge badge-pending">
-                                    Pending Approval
-                                </span>
-                            {% else %}
-                                <span class="badge badge-approved">
-                                    Approved
-                                </span>
-                            {% endif %}
-                        </td>
-                        {% if user.is_staff %}
-                            <td>
-                                {% if student.approval_status == 'pending' %}
-                                    <a href="{% url 'approve_student' student.id %}"
-                                    class="btn-action btn-approve">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message-box {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>Pending Profile Update Requests</span>
+                        <span class="count-pill {% if pending_updates|length == 0 %}pill-zero{% endif %}">
+                            {{ pending_updates|length }} Pending
+                        </span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Current Name</th>
+                                <th>Requested Name</th>
+                                <th>Requested Email</th>
+                                <th>Requested Phone</th>
+                                <th>Submitted Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for update in pending_updates %}
+                            <tr>
+                                <td><strong>#{{ update.student.id }}</strong></td>
+                                <td><strong>{{ update.student.name }}</strong></td>
+                                <td style="color: #4f46e5; font-weight: 600;">{{ update.name }}</td>
+                                <td>{{ update.email }}</td>
+                                <td>{{ update.phone }}</td>
+                                <td style="color: #64748b; font-size: 12.5px;">{{ update.submitted_at|date:"d M Y, H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'approve_profile_update' update.id %}" class="btn-action btn-approve">
                                         Approve
                                     </a>
-                                    <a href="{% url 'reject_student' student.id %}"
-                                    class="btn-action btn-reject"
-                                    onclick="return confirm('Reject this update request?')">
+                                    <a href="{% url 'reject_profile_update' update.id %}" class="btn-action btn-reject" onclick="return confirm('Reject this profile update request?')">
                                         Reject
                                     </a>
-                                {% else %}
-                                    <span style="color: #94a3b8; font-size: 13px;">
-                                        None
-                                    </span>
-                                {% endif %}
-                            </td>
-                        {% endif %}
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="{% if user.is_staff %}6{% else %}5{% endif %}"
-                            class="no-records">
-                            No student records found.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="empty-box">
+                                    No pending student profile update requests right now.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>All Enrolled Students</span>
+                        <span class="count-pill pill-zero">{{ students|length }} Total</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Full Name</th>
+                                <th>Email Address</th>
+                                <th>Phone Number</th>
+                                <th>Approval Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td><strong>#{{ student.id }}</strong></td>
+                                <td>
+                                    <strong>{{ student.name }}</strong>
+                                    {% if student.approval_status == 'pending' and student.pending_name %}
+                                        <div class="pending-details">Requested: {{ student.pending_name }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ student.email }}
+                                    {% if student.approval_status == 'pending' and student.pending_email %}
+                                        <div class="pending-details">Requested: {{ student.pending_email }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ student.phone }}
+                                    {% if student.approval_status == 'pending' and student.pending_phone %}
+                                        <div class="pending-details">Requested: {{ student.pending_phone }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if student.approval_status == 'pending' %}
+                                        <span class="badge badge-pending">Pending Approval</span>
+                                    {% else %}
+                                        <span class="badge badge-approved">Approved</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if student.approval_status == 'pending' %}
+                                        <a href="{% url 'approve_student' student.id %}" class="btn-action btn-approve">
+                                            Approve
+                                        </a>
+                                        <a href="{% url 'reject_student' student.id %}" class="btn-action btn-reject" onclick="return confirm('Reject this update request?')">
+                                            Reject
+                                        </a>
+                                    {% else %}
+                                        <span style="color: #94a3b8; font-size: 13px;">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="empty-box">
+                                    No student records found in database.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
-
-        <a href="{% url 'dashboard' %}" class="back-link">&larr; Back to Dashboard</a>
-    </div>
-
-    <footer class="footer">
-        &copy; 2026 Quizopedia &middot; Report Card Generation
-    </footer>
+    </main>
 
 </body>
 </html>

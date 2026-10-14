@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Update Student Profile</title>
-
+    <title>Quizopedia | Edit Student Profile</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,163 +13,819 @@
 
         body {
             min-height: 100vh;
-            font-family: "Segoe UI", Arial, sans-serif;
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             background: #f8fafc;
             color: #1e293b;
-
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* Top Navbar */
+        .navbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 36px;
+            display: flex;
             align-items: center;
-
-            padding: 20px;
+            justify-content: space-between;
         }
 
-        .form-card {
-            width: 100%;
-            max-width: 500px;
-
-            background: white;
-            padding: 40px;
-
-            border-radius: 18px;
-
-            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.10);
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #111827;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            font-weight: 700;
         }
 
-        .header h1 {
-            font-size: 26px;
-            margin-bottom: 8px;
+        .brand-name {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
         }
 
-        .header p {
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-link {
+            text-decoration: none;
             color: #64748b;
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
             font-weight: 600;
+            font-size: 14px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: color 0.15s, background 0.15s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #4f46e5;
+            background: #f1f5f9;
+        }
+
+        .nav-btn-logout {
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13.5px;
+            background: #ef4444;
+            color: white;
+            transition: background 0.15s;
+        }
+
+        .nav-btn-logout:hover {
+            background: #dc2626;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumb-bar {
+            background: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+            padding: 12px 36px;
+            font-size: 13px;
             color: #64748b;
+        }
+
+        .breadcrumb-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumb-link {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .breadcrumb-link:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+
+        .breadcrumb-separator {
+            color: #cbd5e1;
+        }
+
+        .breadcrumb-current {
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        /* Page Layout */
+        .page-content {
+            flex: 1;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 24px 60px;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-badge {
+            display: inline-block;
+            background: #ede9fe;
+            color: #4f46e5;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
             margin-bottom: 6px;
         }
 
-        input {
-            width: 100%;
-            padding: 12px 14px;
+        .page-subtitle {
+            font-size: 14.5px;
+            color: #64748b;
+        }
 
+        /* Alerts */
+        .alert {
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 22px;
+            font-size: 14px;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .alert-info {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            color: #0369a1;
+        }
+
+        .alert-warning {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+        }
+
+        /* Two-Column Grid */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+        /* Flat Card Border (Zero Drop-Shadow) */
+        .card {
+            background: #ffffff;
+            border-radius: 14px;
             border: 1px solid #e2e8f0;
-            border-radius: 8px;
-
-            font-size: 15px;
-            outline: none;
+            box-shadow: none;
+            padding: 28px;
         }
 
-        input:focus {
-            border-color: #4f46e5;
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .errorlist {
-            list-style: none;
-            color: #dc2626;
-            font-size: 13px;
-            margin-bottom: 5px;
+        .card-description {
+            font-size: 13.5px;
+            color: #64748b;
+            margin-bottom: 22px;
+            line-height: 1.5;
         }
 
-        .submit-button {
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .form-input {
             width: 100%;
-            margin-top: 10px;
+            height: 46px;
+            padding: 0 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 14.5px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
 
-            padding: 12px;
+        .form-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.10);
+        }
 
+        .form-help {
+            display: block;
+            margin-top: 6px;
+            font-size: 12.5px;
+            color: #64748b;
+        }
+
+        .field-error {
+            margin-top: 6px;
+            font-size: 12.5px;
+            color: #dc2626;
+            font-weight: 500;
+        }
+
+        /* Verification Info Box */
+        .policy-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .policy-box strong {
+            color: #1e293b;
+        }
+
+        /* Action Buttons */
+        .actions-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn-submit {
+            flex: 1;
+            height: 46px;
             border: none;
-            border-radius: 9px;
-
+            border-radius: 8px;
             background: #4f46e5;
             color: white;
-
+            font-size: 14.5px;
             font-weight: 600;
-            font-size: 15px;
-
             cursor: pointer;
+            transition: background 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .submit-button:hover {
+        .btn-submit:hover {
             background: #4338ca;
         }
 
-        .back-button {
-            display: block;
-            margin-top: 12px;
-
-            padding: 12px;
-
-            text-align: center;
+        .btn-cancel {
+            padding: 0 20px;
+            height: 46px;
+            line-height: 46px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
             text-decoration: none;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: background 0.15s;
+        }
 
-            border-radius: 9px;
-
+        .btn-cancel:hover {
             background: #e2e8f0;
             color: #1e293b;
+        }
 
+        /* Pending Request Banner */
+        .pending-card {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 24px;
+        }
+
+        .pending-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .pending-badge {
+            background: #fef3c7;
+            color: #b45309;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .pending-diff {
+            background: #ffffff;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 12.5px;
+            color: #92400e;
+            display: grid;
+            gap: 6px;
+        }
+
+        .withdraw-form {
+            margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-withdraw {
+            background: transparent;
+            border: 1px solid #f59e0b;
+            color: #b45309;
+            font-size: 12.5px;
             font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-withdraw:hover {
+            background: #fef3c7;
+            color: #78350f;
+        }
+
+        /* Sidebar Cards */
+        .sidebar-card {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: none;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .info-row {
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        /* Workflow Steps */
+        .step-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ede9fe;
+            color: #4f46e5;
+            font-weight: 700;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .step-item strong {
+            color: #1e293b;
+        }
+
+        /* History Table in Sidebar */
+        .history-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 12.5px;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .status-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        .status-pill.status-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-pill.status-approved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-pill.status-rejected {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        /* Proper Bottom Footer */
+        .footer {
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            padding: 20px 36px;
+            font-size: 13.5px;
+            color: #64748b;
+            margin-top: auto;
+        }
+
+        .footer-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .footer-left-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .footer-admin-link {
+            text-decoration: none;
+            color: #64748b;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: color 0.15s;
+        }
+
+        .footer-admin-link:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+
+        .footer-dot {
+            color: #cbd5e1;
+        }
+
+        .footer-copy {
+            color: #64748b;
+        }
+
+        @media (max-width: 860px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+            .navbar {
+                padding: 14px 20px;
+            }
+            .breadcrumb-bar {
+                padding: 12px 20px;
+            }
+            .page-content {
+                padding: 24px 16px 40px;
+            }
         }
     </style>
 </head>
-
 <body>
 
-    <div class="form-card">
-
-        <div class="header">
-            <h1>Update Profile</h1>
-            <p>Update your student information</p>
-        </div>
-
-        <form method="POST">
-
-            {% csrf_token %}
-
-            {{ form.non_field_errors }}
-
-            <div class="form-group">
-                {{ form.name.errors }}
-                <label for="{{ form.name.id_for_label }}">Name</label>
-                {{ form.name }}
-            </div>
-
-            <div class="form-group">
-                {{ form.email.errors }}
-                <label for="{{ form.email.id_for_label }}">Email</label>
-                {{ form.email }}
-            </div>
-
-            <div class="form-group">
-                {{ form.phone.errors }}
-                <label for="{{ form.phone.id_for_label }}">Phone</label>
-                {{ form.phone }}
-            </div>
-
-            <button type="submit" class="submit-button">
-                Submit for Approval
-            </button>
-
-        </form>
-
-        <a href="{% url 'profile' %}" class="back-button">
-            Cancel
+    <header class="navbar">
+        <a href="{% url 'home' %}" class="brand">
+            <div class="brand-icon">Q</div>
+            <span class="brand-name">Quizopedia</span>
         </a>
 
-    </div>
+        <nav class="nav-links">
+            <a href="{% url 'home' %}" class="nav-link">Home</a>
+            <a href="{% url 'home' %}#subjects" class="nav-link">Subjects</a>
+            <a href="{% url 'profile' %}" class="nav-link active">My Profile ({{ user.username }})</a>
+            <a href="{% url 'logout' %}" class="nav-btn-logout">Log Out</a>
+        </nav>
+    </header>
+
+    <nav class="breadcrumb-bar" aria-label="Breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="{% url 'home' %}" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">/</span>
+            <a href="{% url 'profile' %}" class="breadcrumb-link">My Profile</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current">Edit Profile</span>
+        </div>
+    </nav>
+
+    <main class="page-content">
+
+        <div class="page-header">
+            <span class="page-badge">Student Portal</span>
+            <h1 class="page-title">Edit Profile &amp; Submit Updates</h1>
+            <p class="page-subtitle">Update your official student account information and submit changes for administrative verification.</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% elif message.tags == 'info' %}alert-info{% else %}alert-error{% endif %}">
+                    <span>
+                        {% if message.tags == 'success' %}✓{% elif message.tags == 'warning' %}⚠️{% elif message.tags == 'info' %}ℹ️{% else %}❌{% endif %}
+                    </span>
+                    <div>{{ message }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="grid-layout">
+
+            <div class="card">
+                <h2 class="card-title">
+                    <span>✏️</span> Edit Account Information
+                </h2>
+                <p class="card-description">
+                    Review and modify your student details below. Changes will be forwarded to your institution administrator for approval.
+                </p>
+
+                {% if pending_update %}
+                    <div class="pending-card">
+                        <div class="pending-header">
+                            <strong style="color: #92400e; font-size: 13.5px;">Pending Update Request on Record</strong>
+                            <span class="pending-badge">Under Review</span>
+                        </div>
+                        <p style="font-size: 13px; color: #78350f; line-height: 1.4;">
+                            You submitted a profile update on <strong>{{ pending_update.submitted_at|date:"M d, Y \a\t H:i" }}</strong>.
+                            Submitting this form again will update your existing pending request.
+                        </p>
+                        <div class="pending-diff">
+                            <div><strong>Requested Name:</strong> {{ pending_update.name }}</div>
+                            <div><strong>Requested Email:</strong> {{ pending_update.email }}</div>
+                            <div><strong>Requested Phone:</strong> {{ pending_update.phone }}</div>
+                        </div>
+
+                        <form method="post" action="{% url 'student_withdraw_update' %}" class="withdraw-form" onsubmit="return confirm('Are you sure you want to withdraw your pending update request?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-withdraw">✕ Withdraw This Request</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                <div class="policy-box">
+                    <strong>📋 Verification Policy:</strong>
+                    Because Quizopedia issues verified academic quiz results and report cards, profile edits require administrative confirmation before replacing your active credentials. Your current profile remains fully active in the meantime.
+                </div>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-error">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    
+                    <div class="form-group">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Full Legal Name</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="field-error">{{ form.name.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-help">Displayed on your academic certificates and official report cards.</small>
+                    </div>
+
+                    
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}" class="form-label">Email Address</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="field-error">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-help">Used for verification, account security, and password recovery.</small>
+                    </div>
+
+                    
+                    <div class="form-group">
+                        <label for="{{ form.phone.id_for_label }}" class="form-label">Phone Number</label>
+                        {{ form.phone }}
+                        {% if form.phone.errors %}
+                            <div class="field-error">{{ form.phone.errors.0 }}</div>
+                        {% endif %}
+                        <small class="form-help">Direct contact number for student identity confirmation.</small>
+                    </div>
+
+                    
+                    <div class="actions-row">
+                        <button type="submit" class="btn-submit">
+                            <span>🚀</span>
+                            {% if pending_update %}Update Pending Request{% else %}Submit Update for Approval{% endif %}
+                        </button>
+                        <a href="{% url 'profile' %}" class="btn-cancel">Cancel</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="sidebar-wrapper">
+
+                <div class="sidebar-card">
+                    <h3 class="card-title" style="font-size: 16px;">
+                        <span>👤</span> Current Active Details
+                    </h3>
+                    <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+                        These verified details are currently active across your account:
+                    </p>
+
+                    <div class="info-row">
+                        <span class="info-label">Student Name</span>
+                        <span class="info-value">{{ student.name|default:"Not specified" }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Active Email</span>
+                        <span class="info-value">{{ student.email|default:"Not specified" }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Phone Number</span>
+                        <span class="info-value">{{ student.phone|default:"Not specified" }}</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Account Status</span>
+                        <span style="display: inline-block; background: #dcfce7; color: #15803d; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 10px; width: fit-content; margin-top: 3px;">
+                            Active &amp; Verified ✓
+                        </span>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3 class="card-title" style="font-size: 16px;">
+                        <span>ℹ️</span> How Approval Works
+                    </h3>
+
+                    <ul class="step-list">
+                        <li class="step-item">
+                            <div class="step-number">1</div>
+                            <div>
+                                <strong>Submit Updates:</strong>
+                                Enter your updated information in the form and click submit.
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2</div>
+                            <div>
+                                <strong>Admin Review:</strong>
+                                The administrative office reviews the request on the Admin Dashboard.
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3</div>
+                            <div>
+                                <strong>Email Confirmation:</strong>
+                                An automated email is dispatched to your registered address upon decision.
+                            </div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">4</div>
+                            <div>
+                                <strong>Live Activation:</strong>
+                                Your new credentials take effect immediately upon approval.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                {% if update_history %}
+                    <div class="sidebar-card">
+                        <h3 class="card-title" style="font-size: 16px;">
+                            <span>📜</span> Recent Update History
+                        </h3>
+                        <div style="margin-top: 12px;">
+                            {% for update in update_history %}
+                                <div class="history-item">
+                                    <div class="history-meta">
+                                        <span style="color: #64748b; font-size: 11.5px;">{{ update.submitted_at|date:"M d, Y" }}</span>
+                                        <span class="status-pill status-{{ update.status }}">{{ update.get_status_display }}</span>
+                                    </div>
+                                    <div style="color: #1e293b; font-weight: 500;">
+                                        {{ update.name }} &middot; {{ update.email }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-left-content">
+                <a href="{% url 'admin_login' %}" class="footer-admin-link">Admin Login</a>
+                <span class="footer-dot">&middot;</span>
+                <span class="footer-copy">&copy; 2026 Quizopedia &middot; Academic Quiz &amp; Student Report System</span>
+            </div>
+        </div>
+    </footer>
 
 </body>
 </html>
