@@ -10,8 +10,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 import random
 import time
-from .models import Admin, Student, Question, Subject, Option
+from .models import Admin, Student, Question, Subject, Option, PendingProfileUpdate
 from .forms import StudentProfileForm
+from django.utils import timezone
 
 OTP_RESEND_COOLDOWN = 30
 
@@ -22,14 +23,37 @@ def home(request):
 
 @login_required
 def dashboard(request):
+    if not request.user.is_staff:
+        return redirect('profile')
 
-    if request.user.is_staff:
-        total_students = Student.objects.count()
-        total_questions = Question.objects.count()
+    total_students = Student.objects.count()
+    total_questions = Question.objects.count()
+    total_subjects = Subject.objects.count()
 
-        return render(request, 'reports/dashboard.html', {'total_students': total_students, 'total_questions': total_questions})
-    
-    return redirect('student_list')
+    pending_updates = PendingProfileUpdate.objects.filter(
+        status='pending'
+    ).select_related('student').order_by('-submitted_at')
+    pending_count = pending_updates.count()
+
+    recent_questions = Question.objects.select_related('subject').order_by('-id')[:6]
+    subjects_summary = Subject.objects.annotate(q_count=Count('question')).order_by('name')
+    recent_students = Student.objects.order_by('-id')[:6]
+
+    return render(
+        request,
+        'reports/dashboard.html',
+        {
+            'total_students': total_students,
+            'total_questions': total_questions,
+            'total_subjects': total_subjects,
+            'pending_count': pending_count,
+            'pending_updates': pending_updates,
+            'recent_questions': recent_questions,
+            'subjects_summary': subjects_summary,
+            'recent_students': recent_students,
+        }
+    )
+
 
 @login_required
 def admin_list(request):
@@ -41,7 +65,18 @@ def admin_list(request):
 def student_list(request):
     students = Student.objects.all()
 
-    return render(request,'reports/student_list.html',{'students': students})
+    pending_updates = PendingProfileUpdate.objects.filter(
+        status='pending'
+    ).select_related('student').order_by('-submitted_at')
+
+    return render(
+        request,
+        'reports/student_list.html',
+        {
+            'students': students,
+            'pending_updates': pending_updates,
+        }
+    )
 
 @login_required
 def profile(request):
@@ -68,12 +103,12 @@ def student_profile_update(request):
         form = StudentProfileForm(request.POST)
 
         if form.is_valid():
-            student.pending_name = form.cleaned_data['name']
-            student.pending_email = form.cleaned_data['email']
-            student.pending_phone = form.cleaned_data['phone']
-
-            student.approval_status = 'pending'
-            student.save()
+            pending_update = PendingProfileUpdate.objects.create(
+                student=student,
+                name=form.cleaned_data['name'],
+                email=form.cleaned_data['email'],
+                phone=form.cleaned_data['phone'],
+            )
 
             if student.email:
                 try:
@@ -82,9 +117,9 @@ def student_profile_update(request):
                         message=(
                             f'Hello {student.name},\n\n'
                             'We have received your profile update request on Quizopedia:\n'
-                            f'- Requested Name: {student.pending_name}\n'
-                            f'- Requested Email: {student.pending_email}\n'
-                            f'- Requested Phone: {student.pending_phone}\n\n'
+                            f'- Requested Name: {pending_update.name}\n'
+                            f'- Requested Email: {pending_update.email}\n'
+                            f'- Requested Phone: {pending_update.phone}\n\n'
                             'Your changes are pending approval by an administrator. '
                             'You will receive another email notification once your request has been reviewed.\n\n'
                             'Best regards,\n'
@@ -97,6 +132,10 @@ def student_profile_update(request):
                 except Exception:
                     pass
 
+            messages.success(
+                request,
+                'Your profile update request has been submitted for approval.'
+            )
             return redirect('profile')
 
     else:
@@ -108,8 +147,11 @@ def student_profile_update(request):
             }
         )
 
-    return render(request, 'reports/student_profile_update.html', {'form': form})
-
+    return render(
+        request,
+        'reports/student_profile_update.html',
+        {'form': form}
+    )
 
 @login_required
 def approve_student(request, student_id):
@@ -117,21 +159,29 @@ def approve_student(request, student_id):
         return redirect('home')
 
     student = get_object_or_404(Student, id=student_id)
-    if student.approval_status == 'pending':
-        target_email = student.pending_email or student.email
 
-        student.name = student.pending_name or student.name
-        student.email = student.pending_email or student.email
-        student.phone = student.pending_phone or student.phone
+    pending_update = PendingProfileUpdate.objects.filter(
+        student=student,
+        status='pending'
+    ).order_by('-submitted_at').first()
+
+    if pending_update:
+        target_email = pending_update.email or student.email
+
+        student.name = pending_update.name
+        student.email = pending_update.email
+        student.phone = pending_update.phone
         student.approval_status = 'approved'
-        student.pending_name = ''
-        student.pending_email = ''
-        student.pending_phone = ''
+        
         student.save()
 
         if student.user:
             student.user.email = student.email
             student.user.save()
+
+        pending_update.status = 'approved'
+        pending_update.reviewed_at = timezone.now()
+        pending_update.save()
 
         if target_email:
             try:
@@ -144,7 +194,7 @@ def approve_student(request, student_id):
                         f'- Name: {student.name}\n'
                         f'- Email: {student.email}\n'
                         f'- Phone: {student.phone}\n\n'
-                        'You can now sign in and see your updated profile.\n\n'
+
                         'Best regards,\n'
                         'The Quizopedia Team'
                     ),
@@ -155,9 +205,13 @@ def approve_student(request, student_id):
             except Exception:
                 pass
 
-        messages.success(request, f'Profile update for {student.name} approved successfully.')
+        messages.success(
+            request,
+            f'Profile update for {student.name} approved successfully.'
+        )
 
-    return redirect('student_list')
+    redirect_to = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or 'student_list'
+    return redirect(redirect_to)
 
 
 @login_required
@@ -166,12 +220,20 @@ def reject_student(request, student_id):
         return redirect('home')
 
     student = get_object_or_404(Student, id=student_id)
-    if student.approval_status == 'pending':
-        target_email = student.pending_email or student.email
+
+    pending_update = PendingProfileUpdate.objects.filter(
+        student=student,
+        status='pending'
+    ).order_by('-submitted_at').first()
+
+    if pending_update:
+        target_email = pending_update.email or student.email
+
+        pending_update.status = 'rejected'
+        pending_update.reviewed_at = timezone.now()
+        pending_update.save()
         student.approval_status = 'approved'
-        student.pending_name = ''
-        student.pending_email = ''
-        student.pending_phone = ''
+
         student.save()
 
         if target_email:
@@ -193,9 +255,98 @@ def reject_student(request, student_id):
             except Exception:
                 pass
 
-        messages.info(request, f'Profile update for {student.name} was rejected.')
+        messages.success(
+            request,
+            f'Profile update request for {student.name} rejected.'
+        )
 
-    return redirect('student_list')
+    redirect_to = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or 'student_list'
+    return redirect(redirect_to)
+
+
+@login_required
+def approve_profile_update(request, update_id):
+    if not request.user.is_staff:
+        return redirect('home')
+
+    pending_update = get_object_or_404(
+        PendingProfileUpdate,
+        id=update_id,
+        status='pending'
+    )
+    student = pending_update.student
+
+    target_email = pending_update.email or student.email
+
+    student.name = pending_update.name
+    student.email = pending_update.email
+    student.phone = pending_update.phone
+    student.approval_status = 'approved'
+    student.save()
+
+    if student.user:
+        student.user.email = student.email
+        student.user.save()
+
+    pending_update.status = 'approved'
+    pending_update.reviewed_at = timezone.now()
+    pending_update.save()
+
+    if target_email:
+        send_mail(
+            subject='Quizopedia - Profile Update Approved!',
+            message=(
+                f'Hello {student.name},\n\n'
+                'Your profile update request has been approved.\n\n'
+                f'Name: {student.name}\n'
+                f'Email: {student.email}\n'
+                f'Phone: {student.phone}\n\n'
+                'Best regards,\nThe Quizopedia Team'
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[target_email],
+            fail_silently=True,
+        )
+
+    messages.success(request, 'Profile update approved successfully.')
+    redirect_to = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or 'student_list'
+    return redirect(redirect_to)
+
+
+@login_required
+def reject_profile_update(request, update_id):
+    if not request.user.is_staff:
+        return redirect('home')
+
+    pending_update = get_object_or_404(
+        PendingProfileUpdate,
+        id=update_id,
+        status='pending'
+    )
+    student = pending_update.student
+    target_email = pending_update.email or student.email
+
+    pending_update.status = 'rejected'
+    pending_update.reviewed_at = timezone.now()
+    pending_update.save()
+
+    if target_email:
+        send_mail(
+            subject='Quizopedia - Profile Update Request Declined',
+            message=(
+                f'Hello {student.name},\n\n'
+                'Your profile update request has been declined. '
+                'Your existing profile information remains unchanged.\n\n'
+                'Best regards,\nThe Quizopedia Team'
+            ),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[target_email],
+            fail_silently=True,
+        )
+
+    messages.success(request, 'Profile update request rejected.')
+    redirect_to = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or 'student_list'
+    return redirect(redirect_to)
 
 
 
@@ -604,7 +755,7 @@ def student_login_resend_otp(request):
         return redirect('login')
 
     user = User.objects.filter(
-        id=usrer_id,
+        id=user_id,
         email__iexact=email
     ).first()
     if not user:

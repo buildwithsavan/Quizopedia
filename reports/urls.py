@@ -22,4 +22,6 @@ urlpatterns = [
     path('password-reset/resend-otp/', views.password_reset_resend_otp, name='password_reset_resend_otp'),
     path('password-reset/new-password/', views.password_reset_new_password, name='password_reset_new_password'),
     path('password-reset/complete/', views.password_reset_complete, name='password_reset_complete'),
+    path('profile-update/<int:update_id>/approve/', views.approve_profile_update, name='approve_profile_update'),
+    path('profile-update/<int:update_id>/reject/', views.reject_profile_update, name='reject_profile_update'),
 ]

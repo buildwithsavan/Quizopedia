@@ -140,9 +140,23 @@
             </div>
         </div>
 
-        <a href="{% url 'dashboard' %}" class="back-button">
-            Back to Dashboard
-        </a>
+        <div style="display: flex; gap: 10px; margin-top: 25px; flex-wrap: wrap;">
+            {% if user.is_staff %}
+                <a href="{% url 'dashboard' %}" class="back-button" style="flex: 1; margin-top: 0;">
+                    ⚡ Admin Dashboard
+                </a>
+            {% else %}
+                <a href="{% url 'student_profile_update' %}" class="back-button" style="flex: 1; margin-top: 0;">
+                    ✏️ Edit Profile
+                </a>
+                <a href="{% url 'home' %}" class="back-button" style="flex: 1; margin-top: 0; background: #64748b;">
+                    Home
+                </a>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="back-button" style="background: #ef4444; margin-top: 0; padding: 12px 18px;">
+                Log Out
+            </a>
+        </div>
 
     </div>
 

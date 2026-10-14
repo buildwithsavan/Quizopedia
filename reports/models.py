@@ -53,6 +53,35 @@ class Student(models.Model):
     def __str__(self):
         return self.name
 
+class PendingProfileUpdate(models.Model):
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        related_name='pending_profile_updates'
+    )
+
+    name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=50)
+    phone = models.CharField(max_length=15)
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+
+    submitted_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Profile update for {self.student.name} ({self.status})"
+
 class Subject(models.Model):
     name = models.CharField(max_length=100)
 

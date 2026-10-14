@@ -207,19 +207,7 @@
             background: #dc2626;
         }
 
-        .btn-danger {
-            background: #ffffff;
-            color: #dc2626;
-            border: 1.5px solid #fecaca;
-            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.08);
-        }
-
-        .btn-danger:hover {
-            background: #fef2f2;
-            border-color: #dc2626;
-            transform: translateY(-2px);
-        }
-
+        
         /* Subjects Section */
         .subjects-section {
             max-width: 1100px;
@@ -254,20 +242,18 @@
 
         .subject-card {
             background: #ffffff;
-            border-radius: 14px;
-            padding: 26px;
+            border-radius: 12px;
+            padding: 24px;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+            box-shadow: none;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            transition: border-color 0.15s;
         }
 
         .subject-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
-            border-color: #c7d2fe;
+            border-color: #cbd5e1;
         }
 
         .subject-top {
@@ -341,11 +327,46 @@
         .footer {
             background: #ffffff;
             border-top: 1px solid #e2e8f0;
-            padding: 24px;
-            text-align: center;
-            font-size: 13px;
-            color: #94a3b8;
+            padding: 22px 36px;
+            font-size: 13.5px;
+            color: #64748b;
             margin-top: auto;
+        }
+
+        .footer-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .footer-admin-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            transition: all 0.15s;
+        }
+
+        .footer-admin-link:hover {
+            color: #4f46e5;
+            border-color: #818cf8;
+            background: #eef2ff;
+            transform: translateY(-1px);
+        }
+
+        .admin-lock-icon {
+            font-size: 12px;
         }
 
         @media (max-width: 600px) {
@@ -387,13 +408,17 @@
         <nav class="nav-links">
             <a href="#subjects" class="nav-link">Subjects</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'profile' %}" class="nav-link">Profile ({{ user.username }})</a>
+
                 {% if user.is_staff %}
-                    <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                    <a href="{% url 'dashboard' %}" class="nav-link" style="color: #4f46e5; font-weight: 700;">Admin Dashboard</a>
+                    <a href="{% url 'student_list' %}" class="nav-link">Students</a>
+                    <a href="{% url 'create_question' %}" class="nav-link">+ Question</a>
+                {% else %}
+                    <a href="{% url 'profile' %}" class="nav-link">My Profile ({{ user.username }})</a>
                 {% endif %}
                 <a href="{% url 'logout' %}" class="nav-btn nav-btn-logout">Log Out</a>
             {% else %}
-                <a href="{% url 'login' %}" class="nav-btn">Sign In</a>
+                <a href="{% url 'login' %}" class="nav-btn">Student Login</a>
             {% endif %}
         </nav>
     </header>
@@ -408,16 +433,21 @@
             </p>
 
             <div class="actions-group">
-                <a href="#subjects" class="btn btn-primary">Take a Quiz</a>
+
                 {% if user.is_authenticated %}
                     {% if user.is_staff %}
-                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Go to Dashboard</a>
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary">⚡ Admin Dashboard</a>
+                        <a href="{% url 'student_list' %}" class="btn btn-secondary">👥 Manage Students</a>
+                        <a href="{% url 'create_question' %}" class="btn btn-secondary">+ Create Question</a>
+                    {% else %}
+                        <a href="#subjects" class="btn btn-primary">Take a Quiz</a>
+                        <a href="{% url 'profile' %}" class="btn btn-outline">My Profile</a>
                     {% endif %}
-                    <a href="{% url 'profile' %}" class="btn btn-outline">My Profile</a>
-                    <a href="{% url 'logout' %}" class="btn btn-danger">Log Out</a>
+
+                    
                 {% else %}
-                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Go to Dashboard</a>
-                    <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
+                    <a href="{% url 'login' %}" class="btn btn-primary">🎓 Student Login</a>
+                    <a href="#subjects" class="btn btn-secondary">Explore Subjects</a>
                 {% endif %}
             </div>
         </div>
@@ -459,7 +489,22 @@
     </main>
 
     <footer class="footer">
-        &copy; 2026 Quizopedia &middot; Report Card Generation System
+        <div class="footer-container">
+            <div>
+                &copy; 2026 Quizopedia &middot; Academic Quiz &amp; Student Report System
+            </div>
+            <div>
+                {% if user.is_authenticated and user.is_staff %}
+                    <a href="{% url 'dashboard' %}" class="footer-admin-link">
+                        <span class="admin-lock-icon">⚡</span> Admin Dashboard
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}?next={% url 'dashboard' %}" class="footer-admin-link">
+                        <span class="admin-lock-icon">🔒</span> Admin Login
+                    </a>
+                {% endif %}
+            </div>
+        </div>
     </footer>
 
     <script>

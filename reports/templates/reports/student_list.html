@@ -114,9 +114,9 @@
 
         .table-card {
             background-color: white;
-            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+            box-shadow: none;
             border: 1px solid #e2e8f0;
-            border-radius: 14px;
+            border-radius: 12px;
             overflow: hidden;
         }
 
@@ -231,11 +231,15 @@
     <header class="navbar">
         <a href="{% url 'home' %}" class="brand">
             <div class="brand-icon">Q</div>
-            <span class="brand-name">Quizopedia</span>
+            <span class="brand-name">Quizopedia <span style="font-size: 13px; font-weight: 500; color: #6366f1; background: #ede9fe; padding: 3px 8px; border-radius: 6px; margin-left: 6px;">Admin Portal</span></span>
         </a>
         <nav class="nav-links">
             <a href="{% url 'dashboard' %}">Dashboard</a>
-            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'student_list' %}" style="color: #4f46e5; font-weight: 700;">Students</a>
+            <a href="{% url 'create_question' %}">+ Create Question</a>
+            <a href="/admin/" target="_blank">Django Admin &UpperRightArrow;</a>
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'logout' %}" style="color: #ef4444; margin-left: 8px;">Log Out</a>
         </nav>
     </header>
 
@@ -251,6 +255,58 @@
                     {{ message }}
                 </div>
             {% endfor %}
+        {% endif %}
+
+        {% if user.is_staff %}
+            <h2 style="font-size: 20px; margin-bottom: 16px;">
+                Pending Profile Update Requests
+            </h2>
+
+            <div class="table-card" style="margin-bottom: 28px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Student Name</th>
+                            <th>Requested Name</th>
+                            <th>Requested Email</th>
+                            <th>Requested Phone</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for update in pending_updates %}
+                        <tr>
+                            <td>#{{ update.student.id }}</td>
+                            <td>{{ update.student.name }}</td>
+                            <td>{{ update.name }}</td>
+                            <td>{{ update.email }}</td>
+                            <td>{{ update.phone }}</td>
+                            <td>{{ update.submitted_at|date:"d M Y, H:i" }}</td>
+                            <td>
+                                <a href="{% url 'approve_profile_update' update.id %}"
+                                class="btn-action btn-approve">
+                                    Approve
+                                </a>
+
+                                <a href="{% url 'reject_profile_update' update.id %}"
+                                class="btn-action btn-reject"
+                                onclick="return confirm('Reject this profile update request?')">
+                                    Reject
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="no-records">
+                                No pending profile update requests.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endif %}
 
         <div class="table-card">
@@ -274,42 +330,62 @@
                         <td>
                             <strong>{{ student.name }}</strong>
                             {% if student.approval_status == 'pending' and student.pending_name %}
-                                <div class="pending-details">Requested: {{ student.pending_name }}</div>
+                                <div class="pending-details">
+                                    Requested: {{ student.pending_name }}
+                                </div>
                             {% endif %}
                         </td>
                         <td>
                             {{ student.email }}
                             {% if student.approval_status == 'pending' and student.pending_email %}
-                                <div class="pending-details">Requested: {{ student.pending_email }}</div>
+                                <div class="pending-details">
+                                    Requested: {{ student.pending_email }}
+                                </div>
                             {% endif %}
                         </td>
                         <td>
                             {{ student.phone }}
                             {% if student.approval_status == 'pending' and student.pending_phone %}
-                                <div class="pending-details">Requested: {{ student.pending_phone }}</div>
+                                <div class="pending-details">
+                                    Requested: {{ student.pending_phone }}
+                                </div>
                             {% endif %}
                         </td>
                         <td>
                             {% if student.approval_status == 'pending' %}
-                                <span class="badge badge-pending">Pending Approval</span>
+                                <span class="badge badge-pending">
+                                    Pending Approval
+                                </span>
                             {% else %}
-                                <span class="badge badge-approved">Approved</span>
+                                <span class="badge badge-approved">
+                                    Approved
+                                </span>
                             {% endif %}
                         </td>
                         {% if user.is_staff %}
                             <td>
                                 {% if student.approval_status == 'pending' %}
-                                    <a href="{% url 'approve_student' student.id %}" class="btn-action btn-approve">Approve</a>
-                                    <a href="{% url 'reject_student' student.id %}" class="btn-action btn-reject" onclick="return confirm('Reject this update request?')">Reject</a>
+                                    <a href="{% url 'approve_student' student.id %}"
+                                    class="btn-action btn-approve">
+                                        Approve
+                                    </a>
+                                    <a href="{% url 'reject_student' student.id %}"
+                                    class="btn-action btn-reject"
+                                    onclick="return confirm('Reject this update request?')">
+                                        Reject
+                                    </a>
                                 {% else %}
-                                    <span style="color: #94a3b8; font-size: 13px;">None</span>
+                                    <span style="color: #94a3b8; font-size: 13px;">
+                                        None
+                                    </span>
                                 {% endif %}
                             </td>
                         {% endif %}
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="{% if user.is_staff %}6{% else %}5{% endif %}" class="no-records">
+                        <td colspan="{% if user.is_staff %}6{% else %}5{% endif %}"
+                            class="no-records">
                             No student records found.
                         </td>
                     </tr>

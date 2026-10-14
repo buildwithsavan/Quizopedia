@@ -502,7 +502,6 @@
 </head>
 <body>
 
-    <!-- Header Navigation -->
     <header class="navbar">
         <a href="{% url 'home' %}" class="brand">
             <div class="brand-icon">Q</div>
@@ -511,14 +510,18 @@
 
         <nav class="nav-links">
             <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-            <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+            <a href="{% url 'student_list' %}" class="nav-link">Students</a>
+            <a href="{% url 'create_question' %}" class="nav-link" style="color: #4f46e5; font-weight: 700;">+ Create Question</a>
+            <a href="/admin/" target="_blank" class="nav-link">Django Admin &UpperRightArrow;</a>
+            <a href="{% url 'home' %}" class="nav-link">Home</a>
+            <a href="{% url 'logout' %}" class="nav-link" style="color: #ef4444; margin-left: 6px;">Log Out</a>
         </nav>
     </header>
 
-    <!-- Main Content Container -->
+     
     <main class="page-container">
 
-        <!-- Breadcrumb -->
+
         <div class="breadcrumb">
             <a href="{% url 'home' %}">Home</a>
             <span class="breadcrumb-separator">/</span>
@@ -528,14 +531,14 @@
         </div>
 
         <div class="card">
-            <!-- Card Header -->
+            
             <div class="card-header">
                 <span class="badge">Question Management</span>
                 <h1>Create a Question</h1>
                 <p>Select a subject and build a multiple-choice question with four answer choices.</p>
             </div>
 
-            <!-- Messages (Success/Error) -->
+            
             {% if messages %}
                 <div class="messages-container">
                     {% for message in messages %}
@@ -547,7 +550,7 @@
                 </div>
             {% endif %}
 
-            <!-- Step 1: Subject Selection Form -->
+            
             <form method="get" id="subject-form">
                 <div class="form-group">
                     <label class="form-label" for="subject">
@@ -571,7 +574,7 @@
                 </div>
             </form>
 
-            <!-- Prompt shown when no subject is selected -->
+            
             {% if not selected_subject_id %}
                 <div class="subject-prompt" id="subject-prompt-box">
                     <div class="subject-prompt-icon">📚</div>
@@ -579,8 +582,7 @@
                     <p>Once you select an academic subject above, the question and option fields will appear.</p>
                 </div>
             {% endif %}
-
-            <!-- Step 2: Question and Options Form -->
+           
             <form method="post" id="question-form">
                 {% csrf_token %}
 
@@ -593,7 +595,7 @@
 
                 <div id="form-fields" class="form-fields {% if selected_subject_id %}visible{% endif %}">
 
-                    <!-- Question Input -->
+
                     <div class="form-group">
                         <label class="form-label" for="question-text">
                             <span>Question Text</span>
@@ -608,7 +610,7 @@
                         >
                     </div>
 
-                    <!-- Answer Options -->
+
                     <div class="form-group">
                         <label class="form-label">
                             <span>Multiple-Choice Options</span>
@@ -650,14 +652,14 @@
                         </div>
                     </div>
 
-                    <!-- Submit Button -->
+
                     <button type="submit" class="btn-submit">
                         Save Question & Options
                     </button>
                 </div>
             </form>
 
-            <!-- Card Actions -->
+
             <div class="card-actions">
                 <a href="{% url 'dashboard' %}" class="back-link">
                     &larr; Back to Dashboard
@@ -667,12 +669,12 @@
 
     </main>
 
-    <!-- Footer -->
+
     <footer class="footer">
         &copy; 2026 Quizopedia &middot; Report Card Generation System
     </footer>
 
-    <!-- Form Interactivity Script -->
+
     <script>
         const subjectSelect = document.getElementById('subject');
         const subjectForm = document.getElementById('subject-form');
