@@ -7,11 +7,7 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),
     path('login/verify-otp/', views.student_login_verify_otp, name='student_login_verify_otp'),
     path('login/resend-otp/', views.student_login_resend_otp, name='student_login_resend_otp'),
-    path(
-        'logout/',
-        auth_views.LogoutView.as_view(),
-        name='logout'
-    ),
+    path('logout/', views.user_logout, name='logout'),
     path('admins/', views.admin_list, name='admin_list'),
     path('students/', views.student_list, name='student_list'),
     path('dashboard/', views.dashboard,name='dashboard'),

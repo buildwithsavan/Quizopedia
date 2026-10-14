@@ -278,11 +278,21 @@
                 </button>
             </form>
 
-            <div class="resend-box" id="resend-box" style="display: {% if is_expired %}block{% else %}none{% endif %};">
+            <div class="resend-box" id="resend-box">
                 <p>Didn't receive the OTP or did it expire?</p>
-                <a href="{% url 'student_login_resend_otp' %}" class="btn-resend">
-                    ↺ Resend OTP
-                </a>
+
+                <p id="resend-countdown" style="margin-top: 8px;">
+                    You can resend OTP in
+                    <strong id="resend-timer">30</strong> seconds.
+                </p>
+
+                <form method="post" action="{% url 'student_login_resend_otp' %}"
+                    id="resend-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-resend" id="btn-resend" disabled>
+                        Resend OTP
+                    </button>
+                </form>
             </div>
 
             <a href="{% url 'login' %}" class="back-link">&larr; Back to Sign In</a>
@@ -293,33 +303,52 @@
         </div>
     </div>
 
+    
     <script>
-        let remainingSeconds = {{ remaining_seconds }};
+        let remainingSeconds = Number({{ remaining_seconds|default:0 }});
+        let resendSeconds = Number({{ resend_seconds|default:0 }});
+
         const timerBox = document.getElementById('timer-box');
         const timerDisplay = document.getElementById('timer-display');
         const expiredNotice = document.getElementById('expired-notice');
-        const resendBox = document.getElementById('resend-box');
+        const resendTimer = document.getElementById('resend-timer');
+        const resendCountdown = document.getElementById('resend-countdown');
+        const resendButton = document.getElementById('btn-resend');
 
         function formatTime(totalSeconds) {
             const minutes = Math.floor(totalSeconds / 60);
             const seconds = totalSeconds % 60;
-            return (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            return String(minutes).padStart(2, '0') + ':' +
+                String(seconds).padStart(2, '0');
         }
 
-        function tick() {
+        function updateTimers() {
             if (remainingSeconds <= 0) {
-                if (timerBox) timerBox.style.display = 'none';
-                if (expiredNotice) expiredNotice.style.display = 'block';
-                if (resendBox) resendBox.style.display = 'block';
-                return;
+                timerBox.style.display = 'none';
+                expiredNotice.style.display = 'block';
+            } else {
+                timerDisplay.textContent = formatTime(remainingSeconds);
+                remainingSeconds--;
             }
 
-            timerDisplay.textContent = formatTime(remainingSeconds);
-            remainingSeconds--;
-            setTimeout(tick, 1000);
+            if (resendSeconds <= 0) {
+                resendButton.disabled = false;
+                resendButton.textContent = 'Resend OTP';
+                resendCountdown.textContent = 'You can request a new OTP now.';
+            } else {
+                resendButton.disabled = true;
+                resendButton.textContent = 'Resend OTP (' + resendSeconds + 's)';
+                resendTimer.textContent = resendSeconds;
+                resendSeconds--;
+            }
+
+            resendButton.style.opacity = resendButton.disabled ? '0.6' : '1';
+            resendButton.style.cursor = resendButton.disabled ? 'not-allowed' : 'pointer';
         }
 
-        tick();
+        updateTimers();
+        setInterval(updateTimers, 1000);
     </script>
+
 </body>
 </html>

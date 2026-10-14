@@ -199,6 +199,27 @@
             transform: translateY(-2px);
         }
 
+        .nav-btn-logout {
+            background: #ef4444;
+        }
+
+        .nav-btn-logout:hover {
+            background: #dc2626;
+        }
+
+        .btn-danger {
+            background: #ffffff;
+            color: #dc2626;
+            border: 1.5px solid #fecaca;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.08);
+        }
+
+        .btn-danger:hover {
+            background: #fef2f2;
+            border-color: #dc2626;
+            transform: translateY(-2px);
+        }
+
         /* Subjects Section */
         .subjects-section {
             max-width: 1100px;
@@ -366,8 +387,11 @@
         <nav class="nav-links">
             <a href="#subjects" class="nav-link">Subjects</a>
             {% if user.is_authenticated %}
-                <a href="{% url 'profile' %}" class="nav-link">Profile</a>
-                <a href="{% url 'dashboard' %}" class="nav-btn">Dashboard</a>
+                <a href="{% url 'profile' %}" class="nav-link">Profile ({{ user.username }})</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                {% endif %}
+                <a href="{% url 'logout' %}" class="nav-btn nav-btn-logout">Log Out</a>
             {% else %}
                 <a href="{% url 'login' %}" class="nav-btn">Sign In</a>
             {% endif %}
@@ -385,10 +409,14 @@
 
             <div class="actions-group">
                 <a href="#subjects" class="btn btn-primary">Take a Quiz</a>
-                <a href="{% url 'dashboard' %}" class="btn btn-secondary">Go to Dashboard</a>
                 {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Go to Dashboard</a>
+                    {% endif %}
                     <a href="{% url 'profile' %}" class="btn btn-outline">My Profile</a>
+                    <a href="{% url 'logout' %}" class="btn btn-danger">Log Out</a>
                 {% else %}
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Go to Dashboard</a>
                     <a href="{% url 'login' %}" class="btn btn-outline">Sign In</a>
                 {% endif %}
             </div>

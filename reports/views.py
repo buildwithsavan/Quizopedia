@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.db.models import Count
 from django.db import transaction
@@ -12,6 +12,8 @@ import random
 import time
 from .models import Admin, Student, Question, Subject, Option
 from .forms import StudentProfileForm
+
+OTP_RESEND_COOLDOWN = 30
 
 def home(request):
     subjects = Subject.objects.annotate(question_count=Count('question'))
@@ -262,7 +264,7 @@ def create_question(request):
 
 
 def password_reset_request(request):
-    """Step 1: User enters email address to receive an OTP."""
+    
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
         user = User.objects.filter(email__iexact=email).first()
@@ -294,6 +296,7 @@ def password_reset_request(request):
                     recipient_list=[user.email],
                     fail_silently=False,
                 )
+                request.session['pw_reset_resend_after'] = time.time() + OTP_RESEND_COOLDOWN
                 return redirect('password_reset_verify_otp')
             except Exception as e:
                 messages.error(request, 'Unable to send email at this moment. Please try again.')
@@ -303,64 +306,86 @@ def password_reset_request(request):
     return render(request, 'reports/password_reset.html')
 
 
+
 def password_reset_verify_otp(request):
-    """Step 2: User enters the OTP before the countdown timer expires."""
     email = request.session.get('pw_reset_email')
     otp = request.session.get('pw_reset_otp')
     expiry = request.session.get('pw_reset_expiry', 0)
 
     if not email or not otp:
         return redirect('password_reset')
-
     now = time.time()
     remaining_seconds = max(0, int(expiry - now))
     is_expired = remaining_seconds <= 0
 
     if request.method == 'POST':
         entered_otp = request.POST.get('otp', '').strip()
-
         if now > expiry:
             is_expired = True
             remaining_seconds = 0
-            messages.error(request, 'Your OTP has expired! Please click "Resend OTP" below to receive a new code.')
+            messages.error(
+                request,
+                'Your OTP has expired! Please click "Resend OTP" below to receive a new code.'
+            )
         elif entered_otp != str(otp):
-            messages.error(request, 'Invalid OTP code. Please check your email and try again.')
+            messages.error(
+                request,
+                'Invalid OTP code. Please check your email and try again.'
+            )
         else:
             request.session['pw_reset_verified'] = True
             return redirect('password_reset_new_password')
-
-    return render(request, 'reports/password_reset_verify_otp.html', {
-        'email': email,
-        'remaining_seconds': remaining_seconds,
-        'is_expired': is_expired,
-    })
-
+        
+    resend_seconds = max(
+        0,
+        int(
+            request.session.get('pw_reset_resend_after', 0)
+            - time.time()
+        )
+    )
+    return render(
+        request,
+        'reports/password_reset_verify_otp.html',
+        {
+            'email': email,
+            'remaining_seconds': remaining_seconds,
+            'is_expired': is_expired,
+            'resend_seconds': resend_seconds,
+        }
+    )
 
 def password_reset_resend_otp(request):
-    """Step 2b: Generate a new OTP and resend it to the same email address."""
+    
+    if request.method != 'POST':
+        return redirect('password_reset_verify_otp')
+
     email = request.session.get('pw_reset_email')
     user_id = request.session.get('pw_reset_user_id')
-
+    
     if not email or not user_id:
         return redirect('password_reset')
 
-    user = User.objects.filter(id=user_id).first()
+    user = User.objects.filter(id=user_id, email__iexact=email).first()
     if not user:
         return redirect('password_reset')
+    now = time.time()
+    resend_after = request.session.get('pw_reset_resend_after', 0)
+    remaining = int(resend_after - now)
+    if remaining > 0:
+        messages.warning(
+            request,
+            f'Please wait {remaining} seconds before requesting another OTP.'
+        )
+        return redirect('password_reset_verify_otp')
 
     new_otp = f"{random.randint(100000, 999999)}"
-    expiry = time.time() + 120 
-
-    request.session['pw_reset_otp'] = new_otp
-    request.session['pw_reset_expiry'] = expiry
-    request.session['pw_reset_verified'] = False
 
     try:
         send_mail(
             subject='Quizopedia - New Password Reset OTP',
             message=(
                 f'Hello {user.username},\n\n'
-                'Here is your new One-Time Password (OTP) for resetting your Quizopedia password:\n\n'
+                'Here is your new OTP for resetting your Quizopedia password:\n\n'
                 f'    {new_otp}\n\n'
                 'This OTP is valid for 2 minutes.\n\n'
                 'Best regards,\n'
@@ -370,15 +395,26 @@ def password_reset_resend_otp(request):
             recipient_list=[user.email],
             fail_silently=False,
         )
+
+        now = time.time()
+        request.session['pw_reset_otp'] = new_otp
+        request.session['pw_reset_expiry'] = now + 120
+        request.session['pw_reset_resend_after'] = now + OTP_RESEND_COOLDOWN
+        request.session['pw_reset_verified'] = False
+
         messages.success(request, f'A new OTP has been sent to {email}.')
+
     except Exception:
-        messages.error(request, 'Failed to send new OTP. Please check your connection and try again.')
+        messages.error(
+            request,
+            'Failed to send new OTP. Please try again later.'
+        )
 
     return redirect('password_reset_verify_otp')
 
 
 def password_reset_new_password(request):
-    """Step 3: User sets their new password after successful OTP verification."""
+    
     user_id = request.session.get('pw_reset_user_id')
     verified = request.session.get('pw_reset_verified')
 
@@ -401,7 +437,14 @@ def password_reset_new_password(request):
             user.set_password(p1)
             user.save()
 
-            for key in ['pw_reset_user_id', 'pw_reset_email', 'pw_reset_otp', 'pw_reset_expiry', 'pw_reset_verified']:
+            for key in [
+                'pw_reset_user_id',
+                'pw_reset_email',
+                'pw_reset_otp',
+                'pw_reset_expiry',
+                'pw_reset_verified',
+                'pw_reset_resend_after',
+            ]:
                 request.session.pop(key, None)
 
             return redirect('password_reset_complete')
@@ -410,15 +453,11 @@ def password_reset_new_password(request):
 
 
 def password_reset_complete(request):
-    """Step 4: Password update confirmation page."""
+    
     return render(request, 'reports/password_reset_complete.html')
 
 def user_login(request):
-    """
-    Handles user login.
-    Staff/Admin accounts log in directly.
-    Student accounts require a 6-digit OTP sent to their email.
-    """
+   
     if request.user.is_authenticated:
         if request.user.is_staff:
             return redirect('dashboard')
@@ -475,6 +514,7 @@ def user_login(request):
                         recipient_list=[student_email],
                         fail_silently=False,
                     )
+                    request.session['student_login_resend_after'] = time.time() + OTP_RESEND_COOLDOWN
                     return redirect('student_login_verify_otp')
                 except Exception as e:
                     messages.error(request, 'Unable to send OTP email at this moment. Please try again.')
@@ -484,11 +524,9 @@ def user_login(request):
     return render(request, 'reports/login.html', {'form': form, 'next': next_url})
 
 
+
 def student_login_verify_otp(request):
-    """
-    Verifies student OTP within the expiration window (2 minutes).
-    Completes login on success.
-    """
+
     user_id = request.session.get('student_login_user_id')
     email = request.session.get('student_login_email')
     otp = request.session.get('student_login_otp')
@@ -507,55 +545,90 @@ def student_login_verify_otp(request):
         if now > expiry:
             is_expired = True
             remaining_seconds = 0
-            messages.error(request, 'Your OTP has expired! Please click "Resend OTP" below to receive a new code.')
+            messages.error(
+                request,
+                'Your OTP has expired! Please click "Resend OTP" below to receive a new code.'
+            )
         elif entered_otp != str(otp):
-            messages.error(request, 'Invalid OTP code. Please check your email and try again.')
+            messages.error(
+                request,
+                'Invalid OTP code. Please check your email and try again.'
+            )
         else:
             user = get_object_or_404(User, id=user_id)
             auth_login(request, user)
-
             next_url = request.session.get('student_login_next')
-
-            for key in ['student_login_user_id', 'student_login_email', 'student_login_otp', 'student_login_expiry', 'student_login_next']:
+            for key in [
+                'student_login_user_id',
+                'student_login_email',
+                'student_login_otp',
+                'student_login_expiry',
+                'student_login_next',
+                'student_login_resend_after',
+            ]:
                 request.session.pop(key, None)
-
             if next_url:
                 return redirect(next_url)
             return redirect('student_list')
 
-    return render(request, 'reports/student_login_verify_otp.html', {
-        'email': email,
-        'remaining_seconds': remaining_seconds,
-        'is_expired': is_expired,
-    })
+    resend_seconds = max(
+        0,
+        int(
+            request.session.get('student_login_resend_after', 0)
+            - time.time()
+        )
+    )
+
+    return render(
+        request,
+        'reports/student_login_verify_otp.html',
+        {
+            'email': email,
+            'remaining_seconds': remaining_seconds,
+            'is_expired': is_expired,
+            'resend_seconds': resend_seconds,
+        }
+    )
+
 
 
 def student_login_resend_otp(request):
-    """
-    Generates and emails a new OTP for the pending student login attempt.
-    """
+    
+    if request.method != 'POST':
+        return redirect('student_login_verify_otp')
+
     user_id = request.session.get('student_login_user_id')
     email = request.session.get('student_login_email')
 
     if not user_id or not email:
         return redirect('login')
 
-    user = User.objects.filter(id=user_id).first()
+    user = User.objects.filter(
+        id=usrer_id,
+        email__iexact=email
+    ).first()
     if not user:
         return redirect('login')
 
-    new_otp = f"{random.randint(100000, 999999)}"
-    expiry = time.time() + 120
+    now = time.time()
+    resend_after = request.session.get('student_login_resend_after', 0)
+    remaining = int(resend_after - now)
 
-    request.session['student_login_otp'] = new_otp
-    request.session['student_login_expiry'] = expiry
+    if remaining > 0:
+        messages.warning(
+            request,
+            f'Please wait {remaining} seconds before requesting another OTP.'
+        )
+        return redirect('student_login_verify_otp')
+
+    new_otp = f"{random.randint(100000, 999999)}"
 
     try:
         send_mail(
             subject='Quizopedia - New Student Login OTP',
             message=(
                 f'Hello {user.username},\n\n'
-                'Here is your new One-Time Password (OTP) for signing into Quizopedia:\n\n'
+                'Here is your new OTP for signing into Quizopedia:\n\n'
                 f'    {new_otp}\n\n'
                 'This OTP is valid for 2 minutes.\n\n'
                 'Best regards,\n'
@@ -565,9 +638,27 @@ def student_login_resend_otp(request):
             recipient_list=[email],
             fail_silently=False,
         )
+
+        now = time.time()
+        request.session['student_login_otp'] = new_otp
+        request.session['student_login_expiry'] = now + 120
+        request.session['student_login_resend_after'] = now + OTP_RESEND_COOLDOWN
+
         messages.success(request, f'A new login OTP has been sent to {email}.')
+
     except Exception:
-        messages.error(request, 'Failed to send new OTP. Please check your connection and try again.')
+        messages.error(
+            request,
+            'Failed to send new OTP. Please try again later.'
+        )
 
     return redirect('student_login_verify_otp')
+
+
+
+def user_logout(request):
+    
+    auth_logout(request)
+    return redirect('home')
+
 
