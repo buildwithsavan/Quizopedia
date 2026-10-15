@@ -108,13 +108,8 @@
             font-weight: 700;
             padding: 2px 8px;
             border-radius: 10px;
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        .count-pill.pill-zero {
-            background: #f1f5f9;
-            color: #64748b;
+            background: #ede9fe;
+            color: #4f46e5;
         }
 
         .table-responsive {
@@ -129,7 +124,7 @@
         th {
             background-color: #f8fafc;
             color: #475569;
-            padding: 12px 18px;
+            padding: 13px 18px;
             text-align: left;
             font-size: 12px;
             font-weight: 700;
@@ -172,42 +167,10 @@
             color: #b45309;
         }
 
-        .pending-details {
-            font-size: 11.5px;
-            color: #64748b;
-            margin-top: 3px;
-        }
-
-        /* Action Buttons */
-        .btn-action {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            margin-right: 6px;
-            transition: opacity 0.15s;
-        }
-
-        .btn-approve {
-            background: #16a34a;
-            color: white;
-        }
-
-        .btn-reject {
-            background: #dc2626;
-            color: white;
-        }
-
-        .btn-action:hover {
-            opacity: 0.9;
-        }
-
         .empty-box {
             text-align: center;
             color: #64748b;
-            padding: 32px 20px;
+            padding: 36px 20px;
             font-size: 13.5px;
         }
 
@@ -223,7 +186,6 @@
 </head>
 <body>
 
-    
     {% include 'reports/includes/admin_sidebar.html' with active_page='students' %}
 
     <main class="admin-main">
@@ -232,7 +194,7 @@
             <div class="page-header">
                 <div>
                     <h1>Student Records &amp; Directory</h1>
-                    <div class="header-subtext">Manage enrolled students, profile information, and review account approval status</div>
+                    <div class="header-subtext">Manage enrolled students, profile information, and account details</div>
                 </div>
             </div>
 
@@ -247,62 +209,8 @@
             <div class="section-card">
                 <div class="section-header">
                     <div class="section-title">
-                        <span>Pending Profile Update Requests</span>
-                        <span class="count-pill {% if pending_updates|length == 0 %}pill-zero{% endif %}">
-                            {{ pending_updates|length }} Pending
-                        </span>
-                    </div>
-                </div>
-
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Student ID</th>
-                                <th>Current Name</th>
-                                <th>Requested Name</th>
-                                <th>Requested Email</th>
-                                <th>Requested Phone</th>
-                                <th>Submitted Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for update in pending_updates %}
-                            <tr>
-                                <td><strong>#{{ update.student.id }}</strong></td>
-                                <td><strong>{{ update.student.name }}</strong></td>
-                                <td style="color: #4f46e5; font-weight: 600;">{{ update.name }}</td>
-                                <td>{{ update.email }}</td>
-                                <td>{{ update.phone }}</td>
-                                <td style="color: #64748b; font-size: 12.5px;">{{ update.submitted_at|date:"d M Y, H:i" }}</td>
-                                <td>
-                                    <a href="{% url 'approve_profile_update' update.id %}" class="btn-action btn-approve">
-                                        Approve
-                                    </a>
-                                    <a href="{% url 'reject_profile_update' update.id %}" class="btn-action btn-reject" onclick="return confirm('Reject this profile update request?')">
-                                        Reject
-                                    </a>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="7" class="empty-box">
-                                    No pending student profile update requests right now.
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            
-            <div class="section-card">
-                <div class="section-header">
-                    <div class="section-title">
                         <span>All Enrolled Students</span>
-                        <span class="count-pill pill-zero">{{ students|length }} Total</span>
+                        <span class="count-pill">{{ students|length }} Total</span>
                     </div>
                 </div>
 
@@ -310,36 +218,20 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th style="width: 70px;">ID</th>
                                 <th>Full Name</th>
                                 <th>Email Address</th>
                                 <th>Phone Number</th>
-                                <th>Approval Status</th>
-                                <th>Actions</th>
+                                <th>Account Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for student in students %}
                             <tr>
                                 <td><strong>#{{ student.id }}</strong></td>
-                                <td>
-                                    <strong>{{ student.name }}</strong>
-                                    {% if student.approval_status == 'pending' and student.pending_name %}
-                                        <div class="pending-details">Requested: {{ student.pending_name }}</div>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {{ student.email }}
-                                    {% if student.approval_status == 'pending' and student.pending_email %}
-                                        <div class="pending-details">Requested: {{ student.pending_email }}</div>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {{ student.phone }}
-                                    {% if student.approval_status == 'pending' and student.pending_phone %}
-                                        <div class="pending-details">Requested: {{ student.pending_phone }}</div>
-                                    {% endif %}
-                                </td>
+                                <td><strong>{{ student.name }}</strong></td>
+                                <td>{{ student.email }}</td>
+                                <td>{{ student.phone|default:"—" }}</td>
                                 <td>
                                     {% if student.approval_status == 'pending' %}
                                         <span class="badge badge-pending">Pending Approval</span>
@@ -347,22 +239,10 @@
                                         <span class="badge badge-approved">Approved</span>
                                     {% endif %}
                                 </td>
-                                <td>
-                                    {% if student.approval_status == 'pending' %}
-                                        <a href="{% url 'approve_student' student.id %}" class="btn-action btn-approve">
-                                            Approve
-                                        </a>
-                                        <a href="{% url 'reject_student' student.id %}" class="btn-action btn-reject" onclick="return confirm('Reject this update request?')">
-                                            Reject
-                                        </a>
-                                    {% else %}
-                                        <span style="color: #94a3b8; font-size: 13px;">—</span>
-                                    {% endif %}
-                                </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="6" class="empty-box">
+                                <td colspan="5" class="empty-box">
                                     No student records found in database.
                                 </td>
                             </tr>

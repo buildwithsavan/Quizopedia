@@ -11,11 +11,13 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('admins/', views.admin_list, name='admin_list'),
     path('students/', views.student_list, name='student_list'),
+    path('pending-approvals/', views.pending_approvals, name='pending_approvals'),
     path('dashboard/', views.dashboard,name='dashboard'),
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.student_profile_update, name='student_profile_update'),
     path('profile/withdraw/', views.student_withdraw_update, name='student_withdraw_update'),
     path('question/create/', views.create_question, name='create_question'),
+    path('questions/', views.question_bank, name='question_bank'),
     path('students/<int:student_id>/approve/', views.approve_student, name='approve_student'),
     path('students/<int:student_id>/reject/', views.reject_student, name='reject_student'),
 

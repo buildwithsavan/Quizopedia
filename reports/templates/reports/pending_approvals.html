@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizopedia | Pending Approvals</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Main Content Layout */
+        .admin-main {
+            flex: 1;
+            min-width: 0;
+            padding: 32px 36px 60px;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .header-subtext {
+            font-size: 13.5px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        /* Message Banner */
+        .message-box {
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+        }
+
+        .message-box.success {
+            background: #f0fdf4;
+            color: #166534;
+            border-color: #bbf7d0;
+        }
+
+        .message-box.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .count-pill {
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .count-pill.pill-zero {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #475569;
+            padding: 13px 18px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13.5px;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Action Buttons Frame */
+        .actions-col {
+            width: 210px;
+            white-space: nowrap;
+        }
+
+        .actions-frame {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-approve {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            background: #16a34a;
+            color: #ffffff;
+            border: 1px solid #15803d;
+            transition: all 0.15s;
+        }
+
+        .btn-approve:hover {
+            background: #15803d;
+        }
+
+        .btn-reject {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            background: #ffffff;
+            color: #dc2626;
+            border: 1.5px solid #fca5a5;
+            transition: all 0.15s;
+        }
+
+        .btn-reject:hover {
+            background: #fef2f2;
+            border-color: #dc2626;
+            color: #b91c1c;
+        }
+
+        .empty-box {
+            text-align: center;
+            color: #64748b;
+            padding: 48px 20px;
+            font-size: 13.5px;
+        }
+
+        .empty-box h3 {
+            font-size: 16px;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .admin-main {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'reports/includes/admin_sidebar.html' with active_page='pending_approvals' %}
+
+    <main class="admin-main">
+        <div class="main-container">
+
+            <div class="page-header">
+                <div>
+                    <h1>Pending Profile Approvals</h1>
+                    <div class="header-subtext">Review and take action on student profile update requests</div>
+                </div>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message-box {{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span>Pending Profile Update Requests</span>
+                        <span class="count-pill {% if pending_updates|length == 0 %}pill-zero{% endif %}">
+                            {{ pending_updates|length }} Pending
+                        </span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Student ID</th>
+                                <th>Current Name</th>
+                                <th>Requested Name</th>
+                                <th>Requested Email</th>
+                                <th>Requested Phone</th>
+                                <th>Submitted Date</th>
+                                <th class="actions-col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for update in pending_updates %}
+                            <tr>
+                                <td><strong>#{{ update.student.id }}</strong></td>
+                                <td>{{ update.student.name }}</td>
+                                <td><strong style="color: #4f46e5;">{{ update.name }}</strong></td>
+                                <td>{{ update.email }}</td>
+                                <td>{{ update.phone }}</td>
+                                <td style="color: #64748b; font-size: 12.5px;">{{ update.submitted_at|date:"d M Y, H:i" }}</td>
+                                <td class="actions-col">
+                                    <div class="actions-frame">
+                                        <a href="{% url 'approve_profile_update' update.id %}" class="btn-approve" title="Approve update request">
+                                            Approve
+                                        </a>
+                                        <a href="{% url 'reject_profile_update' update.id %}" class="btn-reject" onclick="return confirm('Reject this profile update request?')" title="Reject update request">
+                                            Reject
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="empty-box">
+                                    <h3>All caught up!</h3>
+                                    <p>There are currently no pending student profile update requests to review.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

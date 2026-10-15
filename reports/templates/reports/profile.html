@@ -138,7 +138,7 @@
             padding: 32px 24px 60px;
         }
 
-        /* Alerts */
+        /* Flash Alerts */
         .alert {
             padding: 14px 16px;
             border-radius: 10px;
@@ -172,122 +172,6 @@
             background: #fef2f2;
             border: 1px solid #fecaca;
             color: #b91c1c;
-        }
-
-        /* Pending Alert Banner */
-        .pending-banner {
-            background: #fffbeb;
-            border: 1px solid #fde68a;
-            border-radius: 14px;
-            padding: 22px;
-            margin-bottom: 26px;
-        }
-
-        .pending-banner-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .pending-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #92400e;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .pending-badge {
-            background: #fef3c7;
-            color: #b45309;
-            font-size: 11.5px;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 12px;
-            text-transform: uppercase;
-        }
-
-        .pending-banner p {
-            font-size: 13.5px;
-            color: #78350f;
-            line-height: 1.5;
-            margin-bottom: 14px;
-        }
-
-        .pending-comparison-grid {
-            background: #ffffff;
-            border: 1px solid #fde68a;
-            border-radius: 10px;
-            padding: 14px 16px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 14px;
-            margin-bottom: 14px;
-        }
-
-        .comparison-item {
-            font-size: 13px;
-        }
-
-        .comparison-label {
-            font-size: 11.5px;
-            font-weight: 600;
-            color: #64748b;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .comparison-current {
-            color: #64748b;
-            text-decoration: line-through;
-            margin-right: 6px;
-        }
-
-        .comparison-requested {
-            color: #b45309;
-            font-weight: 700;
-        }
-
-        .pending-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .btn-edit-pending {
-            background: #f59e0b;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            transition: background 0.15s;
-        }
-
-        .btn-edit-pending:hover {
-            background: #d97706;
-        }
-
-        .btn-withdraw-small {
-            background: transparent;
-            border: 1px solid #f59e0b;
-            color: #b45309;
-            padding: 7px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .btn-withdraw-small:hover {
-            background: #fef3c7;
         }
 
         /* Two-Column Grid */
@@ -449,37 +333,267 @@
             text-align: right;
         }
 
-        /* Update History */
-        .history-card {
-            margin-top: 24px;
+        /* 2 Buttons Above Academic Account Details on Right Corner */
+        .above-details-header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 12px;
         }
 
-        .history-table {
+        .above-details-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-top-corner {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-top-corner:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+            color: #0f172a;
+        }
+
+        .btn-top-corner.is-pending {
+            background: #fffbeb;
+            border-color: #fcd34d;
+            color: #b45309;
+            font-weight: 700;
+        }
+
+        .btn-top-corner.is-pending:hover {
+            background: #fef3c7;
+        }
+
+        .corner-count-badge {
+            background: #f59e0b;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 1px 6px;
+            border-radius: 10px;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(3px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-dialog {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            max-width: 580px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 28px;
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            color: #0f172a;
+            background: #f1f5f9;
+        }
+
+        /* Modal Content Styles */
+        .pending-modal-diff {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .diff-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .diff-row {
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #fde68a;
+            font-size: 13px;
+        }
+
+        .diff-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #92400e;
+            margin-bottom: 3px;
+        }
+
+        .diff-current {
+            color: #64748b;
+            text-decoration: line-through;
+            margin-right: 6px;
+        }
+
+        .diff-requested {
+            color: #b45309;
+            font-weight: 700;
+        }
+
+        .modal-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-modal-edit {
+            background: #4f46e5;
+            color: white;
+            padding: 9px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: background 0.15s;
+        }
+
+        .btn-modal-edit:hover {
+            background: #4338ca;
+        }
+
+        .btn-modal-withdraw {
+            background: transparent;
+            border: 1px solid #f59e0b;
+            color: #b45309;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-modal-withdraw:hover {
+            background: #fef3c7;
+        }
+
+        /* Modal History Table */
+        .modal-history-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13.5px;
-            margin-top: 12px;
+            font-size: 13px;
+            margin-top: 10px;
         }
 
-        .history-table th {
+        .modal-history-table th {
             text-align: left;
             padding: 10px 12px;
             background: #f8fafc;
             color: #64748b;
-            font-size: 12px;
+            font-size: 11.5px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 1px solid #e2e8f0;
         }
 
-        .history-table td {
+        .modal-history-table td {
             padding: 12px;
             border-bottom: 1px solid #f1f5f9;
-            color: #334155;
+            vertical-align: middle;
         }
 
-        .history-table tr:last-child td {
+        .modal-history-table tr:last-child td {
             border-bottom: none;
+        }
+
+        .history-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        .history-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .history-approved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .history-rejected {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .modal-empty {
+            text-align: center;
+            padding: 30px 10px;
+            color: #64748b;
+            font-size: 13.5px;
         }
 
         /* Footer */
@@ -562,7 +676,7 @@
                 <a href="{% url 'create_question' %}" class="nav-link">+ Question</a>
                 <a href="{% url 'profile' %}" class="nav-link active">Admin Profile</a>
             {% else %}
-                <a href="{% url 'profile' %}" class="nav-link active">My Profile ({{ user.username }})</a>
+                <a href="{% url 'profile' %}" class="nav-link active">My Profile</a>
             {% endif %}
 
             <a href="{% url 'logout' %}" class="nav-btn-logout">Log Out</a>
@@ -579,75 +693,14 @@
 
     <main class="page-content">
 
-        
         {% if messages %}
             {% for message in messages %}
                 <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% elif message.tags == 'info' %}alert-info{% else %}alert-error{% endif %}">
-                    <span>
-                        {% if message.tags == 'success' %}✓{% elif message.tags == 'warning' %}⚠️{% elif message.tags == 'info' %}ℹ️{% else %}❌{% endif %}
-                    </span>
                     <div>{{ message }}</div>
                 </div>
             {% endfor %}
         {% endif %}
 
-        {% if pending_update %}
-            <div class="pending-banner">
-                <div class="pending-banner-header">
-                    <div class="pending-title">
-                        <span>⏳</span> Profile Update Request Pending Administrative Approval
-                    </div>
-                    <span class="pending-badge">Pending Review</span>
-                </div>
-
-                <p>
-                    You submitted a request to update your profile details on
-                    <strong>{{ pending_update.submitted_at|date:"F d, Y \a\t H:i" }}</strong>.
-                    An administrator is reviewing your changes. In the meantime, your current profile remains active.
-                </p>
-
-                <div class="pending-comparison-grid">
-                    <div class="comparison-item">
-                        <div class="comparison-label">Full Name</div>
-                        <div>
-                            <span class="comparison-current">{{ profile.name }}</span>
-                            &rarr;
-                            <span class="comparison-requested">{{ pending_update.name }}</span>
-                        </div>
-                    </div>
-                    <div class="comparison-item">
-                        <div class="comparison-label">Email Address</div>
-                        <div>
-                            <span class="comparison-current">{{ profile.email }}</span>
-                            &rarr;
-                            <span class="comparison-requested">{{ pending_update.email }}</span>
-                        </div>
-                    </div>
-                    <div class="comparison-item">
-                        <div class="comparison-label">Contact Phone</div>
-                        <div>
-                            <span class="comparison-current">{{ profile.phone|default:"None" }}</span>
-                            &rarr;
-                            <span class="comparison-requested">{{ pending_update.phone }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pending-actions">
-                    <a href="{% url 'student_profile_update' %}" class="btn-edit-pending">
-                        ✏️ Modify Pending Request
-                    </a>
-                    <form method="post" action="{% url 'student_withdraw_update' %}" onsubmit="return confirm('Are you sure you want to withdraw this update request?');" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-withdraw-small">
-                            ✕ Withdraw Request
-                        </button>
-                    </form>
-                </div>
-            </div>
-        {% endif %}
-
-        
         <div class="grid-layout">
 
             <div class="card" style="text-align: center;">
@@ -660,38 +713,52 @@
 
                 {% if profile_type == 'Student' %}
                     {% if pending_update %}
-                        <div class="status-pill status-pending">Update Pending Review ⏳</div>
+                        <div class="status-pill status-pending">Update Pending Review</div>
                     {% else %}
-                        <div class="status-pill status-approved">Verified Student Account ✓</div>
+                        <div class="status-pill status-approved">Verified Student Account</div>
                     {% endif %}
                 {% else %}
-                    <div class="status-pill status-approved">System Administrator ⚡</div>
+                    <div class="status-pill status-approved">System Administrator</div>
                 {% endif %}
 
                 <div class="profile-actions">
                     {% if profile_type == 'Student' %}
                         <a href="{% url 'student_profile_update' %}" class="btn-primary-action">
-                            <span>✏️</span> Edit Profile &amp; Updates
+                            Edit Profile
                         </a>
                         <a href="{% url 'home' %}#subjects" class="btn-secondary-action">
-                            <span>📚</span> Explore Quizzes
+                            Explore Quizzes
                         </a>
                     {% else %}
                         <a href="{% url 'dashboard' %}" class="btn-primary-action">
-                            <span>⚡</span> Admin Dashboard
+                            Admin Dashboard
                         </a>
                         <a href="{% url 'student_list' %}" class="btn-secondary-action">
-                            <span>👥</span> Manage Students
+                            Manage Students
                         </a>
                     {% endif %}
 
                     <a href="{% url 'logout' %}" class="btn-secondary-action" style="color: #ef4444; border-color: #fee2e2;">
-                        <span>🚪</span> Sign Out
+                        Log Out
                     </a>
                 </div>
             </div>
 
-            <div>
+            <div class="account-details-wrapper">
+
+                {% if profile_type == 'Student' %}
+                    <div class="above-details-header">
+                        <div class="above-details-buttons">
+                            <button type="button" class="btn-top-corner {% if pending_update %}is-pending{% endif %}" onclick="openModal('pendingModal')" title="View pending profile update details">
+                                Profile Update Pending {% if pending_update %}<span class="corner-count-badge">1</span>{% endif %}
+                            </button>
+                            <button type="button" class="btn-top-corner" onclick="openModal('historyModal')" title="View past profile update requests">
+                                Profile Update History
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+
                 <div class="card">
                     <div class="card-header-bar">
                         <h2>Academic Account Details</h2>
@@ -735,53 +802,130 @@
                     </div>
                 </div>
 
-                {% if profile_type == 'Student' and update_history %}
-                    <div class="card history-card">
-                        <div class="card-header-bar">
-                            <h2>Profile Update Request History</h2>
-                            <span style="font-size: 12.5px; color: #64748b;">Latest submissions</span>
-                        </div>
-
-                        <table class="history-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Requested Details</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for update in update_history %}
-                                    <tr>
-                                        <td style="white-space: nowrap; font-size: 13px; color: #64748b;">
-                                            {{ update.submitted_at|date:"M d, Y" }}
-                                            <div style="font-size: 11.5px;">{{ update.submitted_at|date:"H:i" }}</div>
-                                        </td>
-                                        <td>
-                                            <div style="font-weight: 600; color: #1e293b;">{{ update.name }}</div>
-                                            <div style="font-size: 12.5px; color: #64748b;">{{ update.email }} &middot; {{ update.phone }}</div>
-                                        </td>
-                                        <td>
-                                            {% if update.status == 'pending' %}
-                                                <span style="background: #fef3c7; color: #b45309; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px;">Pending</span>
-                                            {% elif update.status == 'approved' %}
-                                                <span style="background: #dcfce7; color: #15803d; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px;">Approved ✓</span>
-                                            {% else %}
-                                                <span style="background: #fee2e2; color: #b91c1c; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 10px;">Declined</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% endif %}
-
             </div>
 
         </div>
 
     </main>
+
+    <div class="modal-overlay" id="pendingModal" onclick="closeModalOnBackdrop(event, 'pendingModal')">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3\>
+                    Profile Update Pending Approval
+                </h3>
+                <button type="button" class="modal-close" onclick="closeModal('pendingModal')">&times;</button>
+            </div>
+
+            {% if pending_update %}
+                <p style="font-size: 13.5px; color: #64748b; line-height: 1.5;">
+                    You submitted a request to update your profile details on
+                    <strong>{{ pending_update.submitted_at|date:"F d, Y \a\t H:i" }}</strong>.
+                    An administrator is reviewing your changes. In the meantime, your current profile remains active.
+                </p>
+
+                <div class="pending-modal-diff">
+                    <strong style="color: #92400e; font-size: 13px;">Requested Changes:</strong>
+                    <div class="diff-grid">
+                        <div class="diff-row">
+                            <div class="diff-label">Full Legal Name</div>
+                            <div>
+                                <span class="diff-current">{{ profile.name }}</span>
+                                &rarr;
+                                <span class="diff-requested">{{ pending_update.name }}</span>
+                            </div>
+                        </div>
+
+                        <div class="diff-row">
+                            <div class="diff-label">Email Address</div>
+                            <div>
+                                <span class="diff-current">{{ profile.email }}</span>
+                                &rarr;
+                                <span class="diff-requested">{{ pending_update.email }}</span>
+                            </div>
+                        </div>
+
+                        <div class="diff-row">
+                            <div class="diff-label">Contact Phone</div>
+                            <div>
+                                <span class="diff-current">{{ profile.phone|default:"None" }}</span>
+                                &rarr;
+                                <span class="diff-requested">{{ pending_update.phone }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <a href="{% url 'student_profile_update' %}" class="btn-modal-edit">
+                        Modify Pending Request
+                    </a>
+                    <form method="post" action="{% url 'student_withdraw_update' %}" onsubmit="return confirm('Are you sure you want to withdraw this update request?');" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-modal-withdraw">
+                            Withdraw Request
+                        </button>
+                    </form>
+                </div>
+            {% else %}
+                <div class="modal-empty">
+                    <p style="font-size: 14px; color: #1e293b; font-weight: 600; margin-bottom: 4px;">No Pending Update</p>
+                    <p>You do not currently have any profile update requests pending review.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="historyModal" onclick="closeModalOnBackdrop(event, 'historyModal')">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h4>
+                    Profile Update History
+                </h4>
+                <button type="button" class="modal-close" onclick="closeModal('historyModal')">&times;</button>
+            </div>
+
+            {% if update_history %}
+                <table class="modal-history-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Requested Details</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for update in update_history %}
+                            <tr>
+                                <td style="white-space: nowrap; color: #64748b;">
+                                    {{ update.submitted_at|date:"M d, Y" }}
+                                    <div style="font-size: 11px;">{{ update.submitted_at|date:"H:i" }}</div>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 600; color: #1e293b;">{{ update.name }}</div>
+                                    <div style="font-size: 12px; color: #64748b;">{{ update.email }} &middot; {{ update.phone }}</div>
+                                </td>
+                                <td>
+                                    {% if update.status == 'pending' %}
+                                        <span class="history-badge history-pending">Pending</span>
+                                    {% elif update.status == 'approved' %}
+                                        <span class="history-badge history-approved">Approved</span>
+                                    {% else %}
+                                        <span class="history-badge history-rejected">Declined</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="modal-empty">
+                    <p style="font-size: 14px; color: #1e293b; font-weight: 600; margin-bottom: 4px;">No History Found</p>
+                    <p>There are no recorded past profile update submissions for your account.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="footer-container">
@@ -792,6 +936,34 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function closeModalOnBackdrop(event, id) {
+            if (event.target.id === id) {
+                closeModal(id);
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+            }
+        });
+    </script>
 
 </body>
 </html>

@@ -20,209 +20,6 @@
             display: flex;
         }
 
-        /* Scrollable Left Sidebar */
-        .admin-sidebar {
-            width: 270px;
-            min-width: 270px;
-            height: 100vh;
-            position: sticky;
-            top: 0;
-            background: #ffffff;
-            border-right: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 transparent;
-            z-index: 100;
-        }
-
-        .admin-sidebar::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .admin-sidebar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-
-        .sidebar-brand-wrapper {
-            padding: 22px 20px 18px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: #111827;
-        }
-
-        .brand-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #4f46e5, #6366f1);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 19px;
-            font-weight: 700;
-        }
-
-        .brand-text {
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: -0.3px;
-        }
-
-        .brand-pill {
-            font-size: 11px;
-            font-weight: 700;
-            color: #4f46e5;
-            background: #ede9fe;
-            padding: 2px 7px;
-            border-radius: 6px;
-            display: inline-block;
-            margin-top: 2px;
-        }
-
-        /* Sidebar Nav */
-        .sidebar-nav {
-            padding: 16px 14px;
-            flex: 1;
-        }
-
-        .sidebar-heading {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: #94a3b8;
-            padding: 12px 10px 6px;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            margin-bottom: 8px;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 9px 12px;
-            border-radius: 8px;
-            color: #475569;
-            text-decoration: none;
-            font-size: 13.5px;
-            font-weight: 600;
-            transition: all 0.15s;
-            margin-bottom: 2px;
-        }
-
-        .sidebar-link:hover {
-            background: #f1f5f9;
-            color: #0f172a;
-        }
-
-        .sidebar-link.active {
-            background: #eef2ff;
-            color: #4f46e5;
-            font-weight: 700;
-        }
-
-        .sidebar-badge {
-            font-size: 11.5px;
-            font-weight: 700;
-            padding: 2px 7px;
-            border-radius: 10px;
-            background: #f1f5f9;
-            color: #64748b;
-        }
-
-        .sidebar-badge.badge-amber {
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        .sidebar-badge.badge-indigo {
-            background: #ede9fe;
-            color: #4f46e5;
-        }
-
-        /* Sidebar Footer */
-        .sidebar-footer {
-            padding: 16px;
-            border-top: 1px solid #f1f5f9;
-            background: #ffffff;
-        }
-
-        .admin-user-card {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #eef2ff;
-            color: #4f46e5;
-            font-weight: 700;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #c7d2fe;
-        }
-
-        .user-info {
-            overflow: hidden;
-        }
-
-        .user-name {
-            font-size: 13px;
-            font-weight: 700;
-            color: #1e293b;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .user-email {
-            font-size: 11.5px;
-            color: #64748b;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .btn-sidebar-logout {
-            display: block;
-            width: 100%;
-            text-align: center;
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid #fee2e2;
-            background: #ffffff;
-            color: #dc2626;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.15s;
-        }
-
-        .btn-sidebar-logout:hover {
-            background: #fef2f2;
-            border-color: #fca5a5;
-        }
-
         /* Main Content Area */
         .admin-main {
             flex: 1;
@@ -257,13 +54,7 @@
             border: 1px solid #fecaca;
         }
 
-        .message-alert.info {
-            background: #f8fafc;
-            color: #334155;
-            border: 1px solid #e2e8f0;
-        }
-
-        /* Dashboard Top Banner */
+        /* Dashboard Top Header */
         .dash-header {
             display: flex;
             justify-content: space-between;
@@ -329,7 +120,7 @@
             border-color: #94a3b8;
         }
 
-        /* Stats Grid (Flat simple border, no icons) */
+        /* 4 Stats Cards (Flat simple border, no icons) */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -388,7 +179,7 @@
             text-decoration: underline;
         }
 
-        /* Section Cards */
+        /* Enrolled Student Roster Card */
         .section-card {
             background: white;
             border: 1px solid #e2e8f0;
@@ -420,16 +211,11 @@
             font-weight: 700;
             padding: 2px 8px;
             border-radius: 10px;
-            background: #fef3c7;
-            color: #b45309;
+            background: #ede9fe;
+            color: #4f46e5;
         }
 
-        .count-pill.pill-zero {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-
-        /* Tables */
+        /* Table */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -442,13 +228,13 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            padding: 12px 18px;
+            padding: 13px 18px;
             text-align: left;
             border-bottom: 1px solid #e2e8f0;
         }
 
         td {
-            padding: 13px 18px;
+            padding: 14px 18px;
             border-bottom: 1px solid #f1f5f9;
             font-size: 13.5px;
             vertical-align: middle;
@@ -462,7 +248,11 @@
             background: #fcfcfd;
         }
 
-        /* Badges */
+        .student-id {
+            font-weight: 700;
+            color: #475569;
+        }
+
         .badge {
             display: inline-block;
             padding: 3px 9px;
@@ -481,132 +271,15 @@
             color: #b45309;
         }
 
-        .badge-subject {
-            background: #ede9fe;
-            color: #4f46e5;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-        }
-
-        .badge-used {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-
-        .badge-active {
-            background: #dcfce7;
-            color: #15803d;
-        }
-
-        .btn-action {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 5px 11px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            text-decoration: none;
-            margin-right: 5px;
-        }
-
-        .btn-approve {
-            background: #16a34a;
-            color: white;
-        }
-
-        .btn-reject {
-            background: #dc2626;
-            color: white;
-        }
-
         .empty-box {
             text-align: center;
-            padding: 34px 20px;
+            padding: 40px 20px;
             color: #64748b;
-        }
-
-        /* Question Card Item */
-        .q-card-item {
-            padding: 18px 22px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .q-card-item:last-child {
-            border-bottom: none;
-        }
-
-        .q-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .q-text {
-            font-size: 14.5px;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 12px;
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-
-        .opt-item {
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            border: 1px solid #e2e8f0;
-            background: #f8fafc;
-            color: #475569;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .opt-item.is-correct {
-            background: #f0fdf4;
-            border-color: #86efac;
-            color: #166534;
-            font-weight: 600;
-        }
-
-        .correct-tag {
-            font-size: 11px;
-            font-weight: 700;
-            background: #16a34a;
-            color: white;
-            padding: 1px 6px;
-            border-radius: 4px;
-        }
-
-        /* Admin Info Bar */
-        .admin-info-bar {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            font-size: 13px;
-            color: #475569;
         }
 
         @media (max-width: 1024px) {
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
-            }
-            .options-grid {
-                grid-template-columns: 1fr;
             }
         }
 
@@ -614,17 +287,15 @@
             body {
                 flex-direction: column;
             }
-            .admin-sidebar {
-                width: 100%;
-                min-width: 100%;
-                height: auto;
-                position: relative;
-            }
             .admin-main {
                 padding: 20px 16px;
             }
             .stats-grid {
                 grid-template-columns: 1fr;
+            }
+            table {
+                display: block;
+                overflow-x: auto;
             }
         }
     </style>
@@ -644,6 +315,7 @@
                 {% endfor %}
             {% endif %}
 
+            
             <div class="dash-header">
                 <div class="dash-title-group">
                     <h1>Admin Dashboard</h1>
@@ -681,7 +353,7 @@
                     <div class="stat-value">{{ total_questions }}</div>
                     <div class="stat-subtext">
                         <span>Across all subjects</span>
-                        <a href="{% url 'create_question' %}" class="stat-link">+ Add new &rarr;</a>
+                        <a href="{% url 'question_bank' %}" class="stat-link">Question Bank &rarr;</a>
                     </div>
                 </div>
 
@@ -692,7 +364,7 @@
                     <div class="stat-value">{{ total_subjects }}</div>
                     <div class="stat-subtext">
                         <span>Categories available</span>
-                        <a href="#subjects-section" class="stat-link">Explore &rarr;</a>
+                        <a href="{% url 'question_bank' %}" class="stat-link">Explore &rarr;</a>
                     </div>
                 </div>
 
@@ -704,200 +376,27 @@
                     <div class="stat-subtext">
                         <span>Profile update requests</span>
                         {% if pending_count > 0 %}
-                            <a href="#pending-approvals" class="stat-link" style="color: #b45309; font-weight: 700;">Review &rarr;</a>
+                            <a href="{% url 'pending_approvals' %}" class="stat-link" style="color: #b45309; font-weight: 700;">Review &rarr;</a>
                         {% else %}
-                            <span style="color: #10b981; font-weight: 600;">All Clear ✓</span>
+                            <span style="color: #10b981; font-weight: 600;">All Clear</span>
                         {% endif %}
                     </div>
                 </div>
-            </div>
-
-            <div class="section-card" id="pending-approvals">
-                <div class="section-header">
-                    <div class="section-title">
-                        <span>Pending Profile Update Requests</span>
-                        <span class="count-pill {% if pending_count == 0 %}pill-zero{% endif %}">
-                            {{ pending_count }} Pending
-                        </span>
-                    </div>
-                    <a href="{% url 'student_list' %}" class="stat-link">Open Student Management &rarr;</a>
-                </div>
-
-                {% if pending_updates %}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Student ID</th>
-                                <th>Current Name</th>
-                                <th>Requested Name</th>
-                                <th>Requested Email</th>
-                                <th>Requested Phone</th>
-                                <th>Submitted At</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for update in pending_updates %}
-                                <tr>
-                                    <td><strong>#{{ update.student.id }}</strong></td>
-                                    <td>{{ update.student.name }}</td>
-                                    <td><span style="color: #4f46e5; font-weight: 600;">{{ update.name }}</span></td>
-                                    <td>{{ update.email }}</td>
-                                    <td>{{ update.phone }}</td>
-                                    <td>{{ update.submitted_at|date:"d M Y, H:i" }}</td>
-                                    <td>
-                                        <a href="{% url 'approve_profile_update' update.id %}?next={% url 'dashboard' %}"
-                                           class="btn-action btn-approve"
-                                           title="Approve and notify student by email">
-                                            ✓ Approve
-                                        </a>
-                                        <a href="{% url 'reject_profile_update' update.id %}?next={% url 'dashboard' %}"
-                                           class="btn-action btn-reject"
-                                           onclick="return confirm('Decline this profile update request?');"
-                                           title="Decline request">
-                                            ✕ Reject
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <div class="empty-box">
-                        <h3 style="font-size: 15px; color: #1e293b; margin-bottom: 4px;">All caught up!</h3>
-                        <p style="font-size: 13px; color: #64748b;">There are currently no pending student profile update requests to review.</p>
-                    </div>
-                {% endif %}
-            </div>
-
-            <div class="section-card" id="question-bank">
-                <div class="section-header">
-                    <div class="section-title">
-                        <span>Question Bank &amp; Answer Keys</span>
-                        <span class="count-pill pill-zero">{{ total_questions }} Questions</span>
-                    </div>
-                    <a href="{% url 'create_question' %}" class="stat-link">+ Create New Question</a>
-                </div>
-
-                <div>
-                    {% for q in all_questions %}
-                        <div class="q-card-item">
-                            <div class="q-top">
-                                <span class="badge-subject">{{ q.subject.name }}</span>
-                                <span style="font-size: 12px; color: #94a3b8;">Question #{{ q.id }}</span>
-                            </div>
-                            <div class="q-text">{{ q.question_text }}</div>
-                            <div class="options-grid">
-                                {% for opt in q.option_set.all %}
-                                    <div class="opt-item {% if opt.is_answer %}is-correct{% endif %}">
-                                        <span>{{ opt.option_text }}</span>
-                                        {% if opt.is_answer %}
-                                            <span class="correct-tag">✓ Correct Answer</span>
-                                        {% endif %}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="empty-box">
-                            <p>No questions created yet.</p>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="section-card" id="otp-logs">
-                <div class="section-header">
-                    <div class="section-title">
-                        <span>Student OTP Authentication Logs</span>
-                        <span class="count-pill pill-zero">Recent Security Logs</span>
-                    </div>
-                    <span style="font-size: 12.5px; color: #64748b;">Expiry: 2 Minutes</span>
-                </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Student</th>
-                            <th>OTP Code</th>
-                            <th>Generated At</th>
-                            <th>Expires At</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for otp_record in recent_otps %}
-                            <tr>
-                                <td><strong>{{ otp_record.student.name }}</strong> (ID #{{ otp_record.student.id }})</td>
-                                <td><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-weight: 700; color: #4f46e5;">{{ otp_record.otp }}</code></td>
-                                <td>{{ otp_record.created_at|date:"d M Y, H:i:s" }}</td>
-                                <td>{{ otp_record.expires_at|date:"d M Y, H:i:s" }}</td>
-                                <td>
-                                    {% if otp_record.is_used %}
-                                        <span class="badge badge-used">Verified &amp; Used</span>
-                                    {% elif otp_record.is_expired %}
-                                        <span class="badge badge-pending">Expired</span>
-                                    {% else %}
-                                        <span class="badge badge-active">Active</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="5" class="empty-box">No student OTP logs recorded yet.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="section-card" id="subjects-section">
-                <div class="section-header">
-                    <div class="section-title">
-                        <span>Curriculum Subjects &amp; Descriptions</span>
-                        <span class="count-pill pill-zero">{{ total_subjects }} Subjects</span>
-                    </div>
-                    <a href="/admin/reports/subject/" target="_blank" class="stat-link">Manage in Django Admin &UpperRightArrow;</a>
-                </div>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Subject Name</th>
-                            <th>Description</th>
-                            <th>Question Bank</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for s in subjects_summary %}
-                            <tr>
-                                <td><strong>#{{ s.id }}</strong></td>
-                                <td><strong style="color: #4f46e5;">{{ s.name }}</strong></td>
-                                <td style="color: #64748b; font-size: 13px;">{{ s.description|default:"No description provided." }}</td>
-                                <td><span class="sidebar-badge">{{ s.q_count }} Question{{ s.q_count|pluralize }}</span></td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="4" class="empty-box">No subjects found.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
 
             <div class="section-card">
                 <div class="section-header">
                     <div class="section-title">
                         <span>Enrolled Student Roster</span>
+                        <span class="count-pill">{{ total_students }} Students</span>
                     </div>
-                    <a href="{% url 'student_list' %}" class="stat-link">View Full Student Management &rarr;</a>
+                    <a href="{% url 'student_list' %}" class="stat-link">Manage Student Records &rarr;</a>
                 </div>
 
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th style="width: 70px;">ID</th>
                             <th>Student Name</th>
                             <th>Email Address</th>
                             <th>Phone</th>
@@ -905,9 +404,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for student in recent_students %}
+                        {% for student in enrolled_students %}
                             <tr>
-                                <td><strong>#{{ student.id }}</strong></td>
+                                <td class="student-id"><strong>#{{ student.id }}</strong></td>
                                 <td><strong>{{ student.name }}</strong></td>
                                 <td>{{ student.email }}</td>
                                 <td>{{ student.phone }}</td>
@@ -926,19 +425,6 @@
                         {% endfor %}
                     </tbody>
                 </table>
-            </div>
-
-            <div class="admin-info-bar">
-                <div>
-                    <span>Super Administrator: <strong>{{ user.username }}</strong></span> &middot;
-                    <span>Email: <strong>{{ user.email }}</strong></span>
-                </div>
-                <div>
-                    <span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: #16a34a; font-size: 12.5px;">
-                        <span style="width: 7px; height: 7px; border-radius: 50%; background: #16a34a;"></span>
-                        System Operational &amp; Secure
-                    </span>
-                </div>
             </div>
 
         </div>

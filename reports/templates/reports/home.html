@@ -438,8 +438,8 @@
 
                 {% if user.is_authenticated %}
                     {% if user.is_staff %}
-                        <a href="{% url 'dashboard' %}" class="btn btn-primary">⚡ Admin Dashboard</a>
-                        <a href="{% url 'student_list' %}" class="btn btn-secondary">👥 Manage Students</a>
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary">Admin Dashboard</a>
+                        <a href="{% url 'student_list' %}" class="btn btn-secondary">Manage Students</a>
                         <a href="{% url 'create_question' %}" class="btn btn-secondary">+ Create Question</a>
                     {% else %}
                         <a href="#subjects" class="btn btn-primary">Take a Quiz</a>

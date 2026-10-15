@@ -239,7 +239,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'dashboard' %}#question-bank" class="sidebar-link">
+                    <a href="{% url 'question_bank' %}" class="sidebar-link {% if active_page == 'question_bank' %}active{% endif %}">
                         <span>Question Bank</span>
                         {% if total_questions is not None %}<span class="sidebar-badge">{{ total_questions }}</span>{% endif %}
                     </a>
@@ -260,7 +260,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'dashboard' %}#pending-approvals" class="sidebar-link">
+                    <a href="{% url 'pending_approvals' %}" class="sidebar-link {% if active_page == 'pending_approvals' %}active{% endif %}">
                         <span>Pending Approvals</span>
                         {% if pending_count %}
                         <span class="sidebar-badge badge-amber">{{ pending_count }}</span>
@@ -269,24 +269,7 @@
                         {% endif %}
                     </a>
                 </li>
-                <li>
-                    <a href="{% url 'dashboard' %}#otp-logs" class="sidebar-link">
-                        <span>Student OTP Logs</span>
-                        {% if recent_otps_count is not None %}
-                        <span class="sidebar-badge badge-indigo">{{ recent_otps_count }}</span>
-                        {% endif %}
-                    </a>
-                </li>
-            </ul>
-
-            <div class="sidebar-heading">Curriculum</div>
-            <ul class="sidebar-menu">
-                <li>
-                    <a href="{% url 'dashboard' %}#subjects-section" class="sidebar-link">
-                        <span>Subjects &amp; Categories</span>
-                        {% if total_subjects is not None %}<span class="sidebar-badge">{{ total_subjects }}</span>{% endif %}
-                    </a>
-                </li>
+                
             </ul>
 
             <div class="sidebar-heading">System &amp; Access</div>

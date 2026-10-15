@@ -1,4 +1,4 @@
-from .models import Student, Question, Subject, Admin, PendingProfileUpdate, StudentOTP
+from .models import Student, Question, Subject, Admin, PendingProfileUpdate
 
 def admin_sidebar_context(request):
 
@@ -11,7 +11,6 @@ def admin_sidebar_context(request):
         total_subjects = Subject.objects.count()
         total_admins = Admin.objects.count()
         pending_count = PendingProfileUpdate.objects.filter(status='pending').count()
-        recent_otps_count = StudentOTP.objects.count()
 
         return {
             'total_students': total_students,
@@ -19,7 +18,6 @@ def admin_sidebar_context(request):
             'total_subjects': total_subjects,
             'total_admins': total_admins,
             'pending_count': pending_count,
-            'recent_otps_count': recent_otps_count,
         }
     except Exception:
         return {}

@@ -624,9 +624,6 @@
         {% if messages %}
             {% for message in messages %}
                 <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% elif message.tags == 'info' %}alert-info{% else %}alert-error{% endif %}">
-                    <span>
-                        {% if message.tags == 'success' %}✓{% elif message.tags == 'warning' %}⚠️{% elif message.tags == 'info' %}ℹ️{% else %}❌{% endif %}
-                    </span>
                     <div>{{ message }}</div>
                 </div>
             {% endfor %}
@@ -636,7 +633,7 @@
 
             <div class="card">
                 <h2 class="card-title">
-                    <span>✏️</span> Edit Account Information
+                    Edit Account Information
                 </h2>
                 <p class="card-description">
                     Review and modify your student details below. Changes will be forwarded to your institution administrator for approval.
@@ -660,13 +657,13 @@
 
                         <form method="post" action="{% url 'student_withdraw_update' %}" class="withdraw-form" onsubmit="return confirm('Are you sure you want to withdraw your pending update request?');">
                             {% csrf_token %}
-                            <button type="submit" class="btn-withdraw">✕ Withdraw This Request</button>
+                            <button type="submit" class="btn-withdraw">Withdraw This Request</button>
                         </form>
                     </div>
                 {% endif %}
 
                 <div class="policy-box">
-                    <strong>📋 Verification Policy:</strong>
+                    <strong>Verification Policy:</strong>
                     Because Quizopedia issues verified academic quiz results and report cards, profile edits require administrative confirmation before replacing your active credentials. Your current profile remains fully active in the meantime.
                 </div>
 
@@ -712,7 +709,6 @@
                     
                     <div class="actions-row">
                         <button type="submit" class="btn-submit">
-                            <span>🚀</span>
                             {% if pending_update %}Update Pending Request{% else %}Submit Update for Approval{% endif %}
                         </button>
                         <a href="{% url 'profile' %}" class="btn-cancel">Cancel</a>
@@ -724,7 +720,7 @@
 
                 <div class="sidebar-card">
                     <h3 class="card-title" style="font-size: 16px;">
-                        <span>👤</span> Current Active Details
+                        Current Active Details
                     </h3>
                     <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
                         These verified details are currently active across your account:
@@ -748,14 +744,14 @@
                     <div class="info-row">
                         <span class="info-label">Account Status</span>
                         <span style="display: inline-block; background: #dcfce7; color: #15803d; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 10px; width: fit-content; margin-top: 3px;">
-                            Active &amp; Verified ✓
+                            Active &amp; Verified
                         </span>
                     </div>
                 </div>
 
                 <div class="sidebar-card">
                     <h3 class="card-title" style="font-size: 16px;">
-                        <span>ℹ️</span> How Approval Works
+                        How Approval Works
                     </h3>
 
                     <ul class="step-list">
@@ -793,7 +789,7 @@
                 {% if update_history %}
                     <div class="sidebar-card">
                         <h3 class="card-title" style="font-size: 16px;">
-                            <span>📜</span> Recent Update History
+                            Recent Update History
                         </h3>
                         <div style="margin-top: 12px;">
                             {% for update in update_history %}

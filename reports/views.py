@@ -30,19 +30,9 @@ def dashboard(request):
     total_students = Student.objects.count()
     total_questions = Question.objects.count()
     total_subjects = Subject.objects.count()
+    pending_count = PendingProfileUpdate.objects.filter(status='pending').count()
 
-    pending_updates = PendingProfileUpdate.objects.filter(
-        status='pending'
-    ).select_related('student').order_by('-submitted_at')
-    pending_count = pending_updates.count()
-
-    recent_questions = Question.objects.select_related('subject').order_by('-id')[:6]
-    all_questions = Question.objects.select_related('subject').prefetch_related('option_set').order_by('subject__name', 'id')
-    subjects_summary = Subject.objects.annotate(q_count=Count('question')).order_by('name')
-    recent_students = Student.objects.order_by('-id')[:6]
-    all_students = Student.objects.order_by('-id')
-    recent_otps = StudentOTP.objects.select_related('student').order_by('-created_at')[:15]
-    total_admins = Admin.objects.count()
+    enrolled_students = Student.objects.all().order_by('id')
 
     return render(
         request,
@@ -52,16 +42,37 @@ def dashboard(request):
             'total_questions': total_questions,
             'total_subjects': total_subjects,
             'pending_count': pending_count,
-            'pending_updates': pending_updates,
-            'recent_questions': recent_questions,
-            'all_questions': all_questions,
-            'subjects_summary': subjects_summary,
-            'recent_students': recent_students,
-            'all_students': all_students,
-            'recent_otps': recent_otps,
-            'total_admins': total_admins,
+            'enrolled_students': enrolled_students,
         }
     )
+
+
+@login_required
+def question_bank(request):
+    if not request.user.is_staff:
+        return redirect('profile')
+
+    subjects = Subject.objects.all().order_by('name')
+    selected_subject_id = request.GET.get('subject', '').strip()
+
+    questions = Question.objects.select_related('subject').prefetch_related('option_set').all()
+
+    if selected_subject_id:
+        questions = questions.filter(subject_id=selected_subject_id)
+
+    questions = questions.order_by('subject__name', 'id')
+
+    return render(
+        request,
+        'reports/question_bank.html',
+        {
+            'subjects': subjects,
+            'selected_subject_id': selected_subject_id,
+            'questions': questions,
+            'total_questions_count': questions.count(),
+        }
+    )
+
 
 
 @login_required
@@ -75,7 +86,21 @@ def admin_list(request):
 def student_list(request):
     if not request.user.is_staff:
         return redirect('profile')
-    students = Student.objects.all().order_by('-id')
+    students = Student.objects.all().order_by('id')
+
+    return render(
+        request,
+        'reports/student_list.html',
+        {
+            'students': students,
+        }
+    )
+
+
+@login_required
+def pending_approvals(request):
+    if not request.user.is_staff:
+        return redirect('profile')
 
     pending_updates = PendingProfileUpdate.objects.filter(
         status='pending'
@@ -83,9 +108,8 @@ def student_list(request):
 
     return render(
         request,
-        'reports/student_list.html',
+        'reports/pending_approvals.html',
         {
-            'students': students,
             'pending_updates': pending_updates,
         }
     )
@@ -416,7 +440,7 @@ def approve_profile_update(request, update_id):
         )
 
     messages.success(request, 'Profile update approved successfully.')
-    redirect_to = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or 'student_list'
+    redirect_to = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or 'pending_approvals'
     return redirect(redirect_to)
 
 
@@ -452,7 +476,7 @@ def reject_profile_update(request, update_id):
         )
 
     messages.success(request, 'Profile update request rejected.')
-    redirect_to = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or 'student_list'
+    redirect_to = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or 'pending_approvals'
     return redirect(redirect_to)
 
 

@@ -423,7 +423,6 @@
                     <div class="messages-container">
                         {% for message in messages %}
                             <div class="message {% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
-                                <span>{% if message.tags == 'success' %}✓{% else %}!{% endif %}</span>
                                 <span>{{ message }}</span>
                             </div>
                         {% endfor %}
@@ -455,7 +454,6 @@
 
                 {% if not selected_subject_id %}
                     <div class="subject-prompt" id="subject-prompt-box">
-                        <div class="subject-prompt-icon">📚</div>
                         <h4>Choose a subject above to begin</h4>
                         <p>Once you select an academic subject, the question and four option fields will appear.</p>
                     </div>
