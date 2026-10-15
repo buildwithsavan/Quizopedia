@@ -76,8 +76,22 @@ class PendingProfileUpdate(models.Model):
         default='pending'
     )
 
+    rejection_reason = models.TextField(blank=True, default='')
     submitted_at = models.DateTimeField(auto_now_add=True)
     reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def requested_changes_display(self):
+        changes = []
+        if self.email and self.email.strip().lower() != (self.student.email or '').strip().lower():
+            changes.append('Email address')
+        if self.name and self.name.strip() != (self.student.name or '').strip():
+            changes.append('Name')
+        if self.phone and self.phone.strip() != (self.student.phone or '').strip():
+            changes.append('Phone number')
+        if not changes:
+            return 'Email address'
+        return ', '.join(changes)
 
     def __str__(self):
         return f"Profile update for {self.student.name} ({self.status})"

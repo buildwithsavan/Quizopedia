@@ -218,6 +218,203 @@
             margin-bottom: 6px;
         }
 
+        /* Reject Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-dialog {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            width: 100%;
+            max-width: 540px;
+            padding: 28px 30px;
+            animation: modalPop 0.2s ease-out;
+        }
+
+        @keyframes modalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.96) translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .modal-header-bar h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: #94a3b8;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0 4px;
+            transition: color 0.15s;
+        }
+
+        .modal-close-btn:hover {
+            color: #0f172a;
+        }
+
+        .modal-summary {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .modal-summary-row {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            font-size: 13.5px;
+        }
+
+        .modal-summary-label {
+            font-weight: 600;
+            color: #64748b;
+            width: 130px;
+            flex-shrink: 0;
+        }
+
+        .modal-summary-val {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .change-pill-badge {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .rejection-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-family: inherit;
+            color: #1e293b;
+            background: #ffffff;
+            outline: none;
+            resize: vertical;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .rejection-textarea:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+        }
+
+        .btn-use-example-pill {
+            background: #ede9fe;
+            color: #4f46e5;
+            border: 1px solid #ddd6fe;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-use-example-pill:hover {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .modal-actions-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .btn-confirm-reject-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 18px;
+            border-radius: 8px;
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 13.5px;
+            font-weight: 600;
+            border: 1px solid #b91c1c;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-confirm-reject-btn:hover {
+            background: #b91c1c;
+        }
+
+        .btn-cancel-modal-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9px 16px;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #475569;
+            font-size: 13.5px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-cancel-modal-btn:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
@@ -287,7 +484,7 @@
                                         <a href="{% url 'approve_profile_update' update.id %}" class="btn-approve" title="Approve update request">
                                             Approve
                                         </a>
-                                        <a href="{% url 'reject_profile_update' update.id %}" class="btn-reject" onclick="return confirm('Reject this profile update request?')" title="Reject update request">
+                                        <a href="{% url 'reject_profile_update' update.id %}" class="btn-reject" onclick="openRejectModal(event, '{% url 'reject_profile_update' update.id %}', '{{ update.student.name|escapejs }}', '{{ update.requested_changes_display|escapejs }}')" title="Reject update request">
                                             Reject
                                         </a>
                                     </div>
@@ -308,6 +505,114 @@
 
         </div>
     </main>
+
+    <div class="modal-overlay" id="rejectModal" onclick="closeRejectModalOnBackdrop(event)">
+        <div class="modal-dialog">
+            <div class="modal-header-bar">
+                <h2>Reject Profile Update</h2>
+                <button type="button" class="modal-close-btn" onclick="closeRejectModal()">&times;</button>
+            </div>
+
+            <div class="modal-summary">
+                <div class="modal-summary-row">
+                    <span class="modal-summary-label">Student:</span>
+                    <span class="modal-summary-val" id="modalStudentName">Pending Student</span>
+                </div>
+                <div class="modal-summary-row">
+                    <span class="modal-summary-label">Requested change:</span>
+                    <span class="modal-summary-val">
+                        <span class="change-pill-badge" id="modalRequestedChange">Email address</span>
+                    </span>
+                </div>
+            </div>
+
+            <form method="post" id="modalRejectForm" action="">
+                {% csrf_token %}
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label for="modalRejectionReason" style="font-size: 13.5px; font-weight: 700; color: #334155;">
+                            Reason for rejection <span style="color: #dc2626;">*</span>
+                        </label>
+                        <button type="button" class="btn-use-example-pill" onclick="fillExampleReason()">
+                            Use this example
+                        </button>
+                    </div>
+
+                    <textarea
+                        name="rejection_reason"
+                        id="modalRejectionReason"
+                        class="rejection-textarea"
+                        required
+                        placeholder="The provided email address could not be verified."
+                    >The provided email address could not be verified.</textarea>
+
+                    <div style="font-size: 12px; color: #64748b; margin-top: 6px;">
+                        Example: The provided email address could not be verified.
+                    </div>
+                </div>
+
+                <div class="modal-actions-row">
+                    <button type="submit" class="btn-confirm-reject-btn">
+                        Reject Profile Update
+                    </button>
+                    <button type="button" class="btn-cancel-modal-btn" onclick="closeRejectModal()">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openRejectModal(event, actionUrl, studentName, requestedChange) {
+            if (event) event.preventDefault();
+            const modal = document.getElementById('rejectModal');
+            const form = document.getElementById('modalRejectForm');
+            const studentSpan = document.getElementById('modalStudentName');
+            const changeSpan = document.getElementById('modalRequestedChange');
+            const textarea = document.getElementById('modalRejectionReason');
+
+            if (form) form.action = actionUrl;
+            if (studentSpan) studentSpan.textContent = studentName || 'Pending Student';
+            if (changeSpan) changeSpan.textContent = requestedChange || 'Email address';
+            if (textarea && !textarea.value.trim()) {
+                textarea.value = "The provided email address could not be verified.";
+            }
+
+            if (modal) {
+                modal.classList.add('active');
+                if (textarea) textarea.focus();
+            }
+        }
+
+        function closeRejectModal() {
+            const modal = document.getElementById('rejectModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        function closeRejectModalOnBackdrop(event) {
+            if (event.target && event.target.id === 'rejectModal') {
+                closeRejectModal();
+            }
+        }
+
+        function fillExampleReason() {
+            const textarea = document.getElementById('modalRejectionReason');
+            if (textarea) {
+                textarea.value = "The provided email address could not be verified.";
+                textarea.focus();
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeRejectModal();
+            }
+        });
+    </script>
 
 </body>
 </html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizopedia | Reject Profile Update</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Main Content Layout */
+        .admin-main {
+            flex: 1;
+            min-width: 0;
+            padding: 32px 36px 60px;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* Breadcrumb Bar */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb a {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+
+        .breadcrumb-separator {
+            color: #cbd5e1;
+        }
+
+        .breadcrumb-current {
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        /* Form Card */
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 32px 34px;
+            border: 1px solid #e2e8f0;
+            box-shadow: none;
+        }
+
+        .card-header {
+            margin-bottom: 22px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .card-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            color: #64748b;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+
+        /* Details Summary Box */
+        .summary-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .summary-row {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: #475569;
+            width: 140px;
+            flex-shrink: 0;
+        }
+
+        .summary-value {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .change-pill {
+            display: inline-block;
+            background: #fef3c7;
+            color: #92400e;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12.5px;
+            font-weight: 700;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .required-star {
+            color: #dc2626;
+        }
+
+        .btn-use-example {
+            background: #ede9fe;
+            color: #4f46e5;
+            border: 1px solid #ddd6fe;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-use-example:hover {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        textarea.form-control {
+            width: 100%;
+            min-height: 110px;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #1e293b;
+            background: #ffffff;
+            outline: none;
+            resize: vertical;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        textarea.form-control:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+        }
+
+        .help-text {
+            font-size: 12.5px;
+            color: #64748b;
+            margin-top: 6px;
+        }
+
+        /* Action Buttons */
+        .actions-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 26px;
+            padding-top: 18px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .btn-confirm-reject {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 22px;
+            border-radius: 8px;
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid #b91c1c;
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+
+        .btn-confirm-reject:hover {
+            background: #b91c1c;
+        }
+
+        .btn-cancel {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+            text-decoration: none;
+            transition: background-color 0.15s;
+        }
+
+        .btn-cancel:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .admin-main {
+                padding: 20px 16px;
+            }
+            .card {
+                padding: 24px 18px;
+            }
+            .summary-row {
+                flex-direction: column;
+                gap: 2px;
+            }
+            .summary-label {
+                width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'reports/includes/admin_sidebar.html' with active_page='pending_approvals' %}
+
+    <main class="admin-main">
+        <div class="main-container">
+
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <span class="breadcrumb-separator">/</span>
+                <a href="{% url 'pending_approvals' %}">Pending Approvals</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">Reject Profile Update</span>
+            </nav>
+
+            <div class="card">
+                <div class="card-header">
+                    <h1>Reject Profile Update</h1>
+                    <p>Provide an explanation for rejecting this profile update request. This reason will be emailed directly to the student.</p>
+                </div>
+
+                
+                <div class="summary-box">
+                    <div class="summary-row">
+                        <span class="summary-label">Student:</span>
+                        <span class="summary-value">{{ student.name }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Requested change:</span>
+                        <span class="summary-value">
+                            <span class="change-pill">{{ requested_change }}</span>
+                        </span>
+                    </div>
+                </div>
+
+                <form method="post" id="reject-form">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <div class="form-label-row">
+                            <label for="rejection_reason" class="form-label">
+                                Reason for rejection <span class="required-star">*</span>
+                            </label>
+                            <button type="button" class="btn-use-example" onclick="useExampleReason()" title="Auto-fill example reason">
+                                Use this example
+                            </button>
+                        </div>
+
+                        <textarea
+                            name="rejection_reason"
+                            id="rejection_reason"
+                            class="form-control"
+                            required
+                            placeholder="The provided email address could not be verified."
+                        >{{ default_example_reason }}</textarea>
+
+                        <div class="help-text">
+                            Example: The provided email address could not be verified.
+                        </div>
+                    </div>
+
+                    <div class="actions-row">
+                        <button type="submit" class="btn-confirm-reject">
+                            Reject Profile Update
+                        </button>
+                        <a href="{% url 'pending_approvals' %}" class="btn-cancel">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function useExampleReason() {
+            const textarea = document.getElementById('rejection_reason');
+            if (textarea) {
+                textarea.value = "The provided email address could not be verified.";
+                textarea.focus();
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -358,39 +358,11 @@ def reject_student(request, student_id):
     ).order_by('-submitted_at').first()
 
     if pending_update:
-        target_email = pending_update.email or student.email
+        return redirect('reject_profile_update', update_id=pending_update.id)
 
-        pending_update.status = 'rejected'
-        pending_update.reviewed_at = timezone.now()
-        pending_update.save()
-        student.approval_status = 'approved'
-
-        student.save()
-
-        if target_email:
-            try:
-                send_mail(
-                    subject='Quizopedia - Profile Update Request Declined',
-                    message=(
-                        f'Hello {student.name},\n\n'
-                        'Your recent profile update request was reviewed and declined by an administrator. '
-                        'Your existing profile information remains unchanged.\n\n'
-                        'If you believe this is in error, please contact your administrator.\n\n'
-                        'Best regards,\n'
-                        'The Quizopedia Team'
-                    ),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[target_email],
-                    fail_silently=True,
-                )
-            except Exception:
-                pass
-
-        messages.success(
-            request,
-            f'Profile update request for {student.name} rejected.'
-        )
-
+    student.approval_status = 'approved'
+    student.save()
+    messages.success(request, f'Student {student.name} record updated.')
     redirect_to = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or 'student_list'
     return redirect(redirect_to)
 
@@ -455,29 +427,53 @@ def reject_profile_update(request, update_id):
         status='pending'
     )
     student = pending_update.student
-    target_email = pending_update.email or student.email
+    requested_change = pending_update.requested_changes_display
 
-    pending_update.status = 'rejected'
-    pending_update.reviewed_at = timezone.now()
-    pending_update.save()
+    if request.method == 'POST':
+        rejection_reason = request.POST.get('rejection_reason', '').strip()
+        if not rejection_reason:
+            messages.error(request, 'Please provide a reason for rejection.')
+            return redirect('reject_profile_update', update_id=update_id)
 
-    if target_email:
-        send_mail(
-            subject='Quizopedia - Profile Update Request Declined',
-            message=(
-                f'Hello {student.name},\n\n'
-                'Your profile update request has been declined. '
-                'Your existing profile information remains unchanged.\n\n'
-                'Best regards,\nThe Quizopedia Team'
-            ),
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[target_email],
-            fail_silently=True,
-        )
+        pending_update.status = 'rejected'
+        pending_update.rejection_reason = rejection_reason
+        pending_update.reviewed_at = timezone.now()
+        pending_update.save()
 
-    messages.success(request, 'Profile update request rejected.')
-    redirect_to = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or 'pending_approvals'
-    return redirect(redirect_to)
+        student.approval_status = 'approved'
+        student.save()
+
+        recipients = list(set(filter(None, [student.email, pending_update.email])))
+
+        if recipients:
+            email_body = (
+                f"Hello {student.name},\n\n"
+                "Your profile update request has been reviewed and rejected.\n"
+                f"Reason: {rejection_reason}\n\n"
+                "Your existing profile information remains unchanged.\n\n"
+                "Best regards,\n"
+                "The Quizopedia Team"
+            )
+            try:
+                send_mail(
+                    subject="Quizopedia — Profile Update Request Rejected",
+                    message=email_body,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=recipients,
+                    fail_silently=False,
+                )
+            except Exception:
+                pass
+
+        messages.success(request, f'Profile update request for {student.name} was rejected.')
+        return redirect('pending_approvals')
+
+    return render(request, 'reports/reject_profile_update.html', {
+        'pending_update': pending_update,
+        'student': student,
+        'requested_change': requested_change,
+        'default_example_reason': 'The provided email address could not be verified.',
+    })
 
 
 
