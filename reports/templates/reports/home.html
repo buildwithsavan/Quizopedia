@@ -69,18 +69,17 @@
 
         .nav-link {
             text-decoration: none;
-            background: linear-gradient(135deg, #4f46e5, #6366f1);
-            color: white;
+            color: #475569;
             font-weight: 600;
             font-size: 14px;
-            padding: 8px 14px;
-            border-radius: 8px;
-            transition: color 0.2s, background 0.2s;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: color 0.15s, background-color 0.15s;
         }
 
         .nav-link:hover {
-            color: white;
-            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: #4f46e5;
+            background-color: #f1f5f9;
         }
 
         .nav-btn {
@@ -408,19 +407,13 @@
         </a>
 
         <nav class="nav-links">
-            <a href="#subjects" class="nav-link">Subjects</a>
             {% if user.is_authenticated %}
-
-                {% if user.is_staff %}
-                    <a href="{% url 'dashboard' %}" class="nav-link" style="color: #4f46e5; font-weight: 700;">Admin Dashboard</a>
-                    <a href="{% url 'student_list' %}" class="nav-link">Students</a>
-                    <a href="{% url 'create_question' %}" class="nav-link">+ Question</a>
-                {% else %}
+                {% if not user.is_staff %}
                     <a href="{% url 'profile' %}" class="nav-link">My Profile</a>
                 {% endif %}
                 <a href="{% url 'logout' %}" class="nav-btn nav-btn-logout">Log Out</a>
             {% else %}
-                <a href="{% url 'login' %}" class="nav-link">Login</a>
+                <a href="{% url 'login' %}" class="nav-btn">Login</a>
             {% endif %}
         </nav>
     </header>
@@ -435,18 +428,8 @@
             </p>
 
             <div class="actions-group">
-
-                {% if user.is_authenticated %}
-                    {% if user.is_staff %}
-                        <a href="{% url 'dashboard' %}" class="btn btn-primary">Admin Dashboard</a>
-                        <a href="{% url 'student_list' %}" class="btn btn-secondary">Manage Students</a>
-                        <a href="{% url 'create_question' %}" class="btn btn-secondary">+ Create Question</a>
-                    {% else %}
-                        <a href="#subjects" class="btn btn-primary">Take a Quiz</a>
-                        
-                    {% endif %}
-
-                    
+                {% if user.is_authenticated and not user.is_staff %}
+                    <a href="#subjects" class="btn btn-primary">Take a Quiz</a>
                 {% else %}
                     <a href="#subjects" class="btn btn-primary">Explore Subjects</a>
                 {% endif %}

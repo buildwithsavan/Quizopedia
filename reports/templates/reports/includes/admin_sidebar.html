@@ -239,9 +239,13 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{% url 'subject_list' %}" class="sidebar-link {% if active_page == 'subjects' %}active{% endif %}">
+                        <span>Subjects</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{% url 'question_bank' %}" class="sidebar-link {% if active_page == 'question_bank' %}active{% endif %}">
                         <span>Question Bank</span>
-                        {% if total_questions is not None %}<span class="sidebar-badge">{{ total_questions }}</span>{% endif %}
                     </a>
                 </li>
                 <li>
@@ -256,17 +260,11 @@
                 <li>
                     <a href="{% url 'student_list' %}" class="sidebar-link {% if active_page == 'students' %}active{% endif %}">
                         <span>Student Records</span>
-                        {% if total_students is not None %}<span class="sidebar-badge">{{ total_students }}</span>{% endif %}
                     </a>
                 </li>
                 <li>
                     <a href="{% url 'pending_approvals' %}" class="sidebar-link {% if active_page == 'pending_approvals' %}active{% endif %}">
                         <span>Pending Approvals</span>
-                        {% if pending_count %}
-                        <span class="sidebar-badge badge-amber">{{ pending_count }}</span>
-                        {% elif pending_count == 0 %}
-                        <span class="sidebar-badge">0</span>
-                        {% endif %}
                     </a>
                 </li>
                 
@@ -277,7 +275,6 @@
                 <li>
                     <a href="{% url 'admin_list' %}" class="sidebar-link {% if active_page == 'admins' %}active{% endif %}">
                         <span>Administrator Accounts</span>
-                        {% if total_admins is not None %}<span class="sidebar-badge">{{ total_admins }}</span>{% endif %}
                     </a>
                 </li>
                 <li>

@@ -596,6 +596,109 @@
             font-size: 13.5px;
         }
 
+        /* Admin Detail Card Edit Button & Form Controls */
+        .btn-card-edit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.15s;
+        }
+
+        .btn-card-edit:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 42px;
+            padding: 0 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #1e293b;
+            background: #ffffff;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .form-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+
+        .form-input:disabled, .form-input[readonly] {
+            background: #f8fafc;
+            color: #64748b;
+            cursor: not-allowed;
+            border-color: #e2e8f0;
+        }
+
+        .modal-form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .btn-modal-cancel {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-modal-cancel:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .btn-modal-save {
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-modal-save:hover {
+            background: #4338ca;
+        }
+
         /* Footer */
         .footer {
             background: #ffffff;
@@ -667,14 +770,8 @@
         </a>
 
         <nav class="nav-links">
-            <a href="{% url 'home' %}" class="nav-link">Home</a>
-            <a href="{% url 'home' %}#subjects" class="nav-link">Subjects</a>
-
             {% if user.is_staff %}
                 <a href="{% url 'dashboard' %}" class="nav-link">Admin Dashboard</a>
-                <a href="{% url 'student_list' %}" class="nav-link">Students</a>
-                <a href="{% url 'create_question' %}" class="nav-link">+ Question</a>
-                <a href="{% url 'profile' %}" class="nav-link active">Admin Profile</a>
             {% else %}
                 <a href="{% url 'profile' %}" class="nav-link active">My Profile</a>
             {% endif %}
@@ -721,27 +818,19 @@
                     <div class="status-pill status-approved">System Administrator</div>
                 {% endif %}
 
-                <div class="profile-actions">
-                    {% if profile_type == 'Student' %}
+                {% if profile_type == 'Student' %}
+                    <div class="profile-actions">
                         <a href="{% url 'student_profile_update' %}" class="btn-primary-action">
                             Edit Profile
                         </a>
                         <a href="{% url 'home' %}#subjects" class="btn-secondary-action">
                             Explore Quizzes
                         </a>
-                    {% else %}
-                        <a href="{% url 'dashboard' %}" class="btn-primary-action">
-                            Admin Dashboard
+                        <a href="{% url 'logout' %}" class="btn-secondary-action" style="color: #ef4444; border-color: #fee2e2;">
+                            Log Out
                         </a>
-                        <a href="{% url 'student_list' %}" class="btn-secondary-action">
-                            Manage Students
-                        </a>
-                    {% endif %}
-
-                    <a href="{% url 'logout' %}" class="btn-secondary-action" style="color: #ef4444; border-color: #fee2e2;">
-                        Log Out
-                    </a>
-                </div>
+                    </div>
+                {% endif %}
             </div>
 
             <div class="account-details-wrapper">
@@ -762,7 +851,14 @@
                 <div class="card">
                     <div class="card-header-bar">
                         <h2>Academic Account Details</h2>
-                        <span style="font-size: 13px; color: #64748b;">Member since {{ user.date_joined|date:"M Y" }}</span>
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <span style="font-size: 13px; color: #64748b;">Member since {{ user.date_joined|date:"M Y" }}</span>
+                            {% if profile_type != 'Student' %}
+                                <button type="button" class="btn-card-edit" onclick="openModal('editAdminModal')" title="Edit admin profile">
+                                    Edit Profile
+                                </button>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <div class="detail-row">
@@ -932,10 +1028,58 @@
         </div>
     </div>
 
+    {% if profile_type != 'Student' %}
+    <div class="modal-overlay" id="editAdminModal" onclick="closeModalOnBackdrop(event, 'editAdminModal')">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3>Edit Admin Profile</h3>
+                <button type="button" class="modal-close" onclick="closeModal('editAdminModal')">&times;</button>
+            </div>
+            <p style="font-size: 13.5px; color: #64748b; margin-bottom: 20px; line-height: 1.5;">
+                Update your administrative account credentials and contact details below.
+            </p>
+
+            <form method="post" action="{% url 'admin_profile_update' %}">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="adminUsername" class="form-label">Username</label>
+                    <input type="text" id="adminUsername" class="form-input" value="{{ user.username }}" readonly disabled>
+                    <span style="font-size: 11.5px; color: #94a3b8; margin-top: 4px; display: block;">Username cannot be changed.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="adminFullName" class="form-label">Full Legal Name *</label>
+                    <input type="text" id="adminFullName" name="name" class="form-input" value="{{ profile.name|default:user.username }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="adminEmail" class="form-label">Email Address *</label>
+                    <input type="email" id="adminEmail" name="email" class="form-input" value="{{ profile.email|default:user.email }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="adminPhone" class="form-label">Contact Phone</label>
+                    <input type="text" id="adminPhone" name="phone" class="form-input" value="{{ profile.phone|default:'' }}" placeholder="e.g. 1234567890">
+                </div>
+
+                <div class="modal-form-actions">
+                    <button type="button" class="btn-modal-cancel" onclick="closeModal('editAdminModal')">Cancel</button>
+                    <button type="submit" class="btn-modal-save">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-left-content">
-                <a href="{% url 'admin_login' %}" class="footer-admin-link">Admin Login</a>
+                {% if user.is_authenticated and user.is_staff %}
+                    <a href="{% url 'dashboard' %}" class="footer-admin-link">Admin Dashboard</a>
+                {% else %}
+                    <a href="{% url 'admin_login' %}" class="footer-admin-link">Admin Login</a>
+                {% endif %}
                 <span class="footer-dot">&middot;</span>
                 <span class="footer-copy">&copy; 2026 Quizopedia &middot; Academic Quiz &amp; Student Report System</span>
             </div>

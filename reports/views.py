@@ -18,7 +18,7 @@ from django.utils import timezone
 OTP_RESEND_COOLDOWN = 30
 
 def home(request):
-    subjects = Subject.objects.annotate(question_count=Count('question'))
+    subjects = Subject.objects.annotate(question_count=Count('question')).order_by('name')
     return render(request, 'reports/home.html', {'subjects': subjects})
 
 
@@ -118,6 +118,15 @@ def pending_approvals(request):
 def profile(request):
     if request.user.is_staff:
         profile_obj = getattr(request.user, 'admin_profile', None)
+        if not profile_obj:
+            profile_obj, _ = Admin.objects.get_or_create(
+                user=request.user,
+                defaults={
+                    'name': request.user.get_full_name() or request.user.username,
+                    'email': request.user.email or '',
+                    'phone': '',
+                }
+            )
         profile_type = 'Admin'
         pending_update = None
         update_history = []
@@ -130,7 +139,6 @@ def profile(request):
                     'name': request.user.get_full_name() or request.user.username,
                     'email': request.user.email or '',
                     'phone': '',
-                    'approval_status': 'approved',
                 }
             )
         profile_type = 'Student'
@@ -150,6 +158,52 @@ def profile(request):
             'update_history': update_history,
         }
     )
+
+@login_required
+def admin_profile_update(request):
+    if not request.user.is_staff:
+        messages.error(request, "Only administrators can update admin profiles.")
+        return redirect('profile')
+
+    admin_obj = getattr(request.user, 'admin_profile', None)
+    if not admin_obj:
+        admin_obj, _ = Admin.objects.get_or_create(
+            user=request.user,
+            defaults={
+                'name': request.user.get_full_name() or request.user.username,
+                'email': request.user.email or '',
+                'phone': '',
+            }
+        )
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+
+        if not name:
+            messages.error(request, 'Full legal name is required.')
+            return redirect('profile')
+
+        if not email:
+            messages.error(request, 'Email address is required.')
+            return redirect('profile')
+
+        admin_obj.name = name
+        admin_obj.email = email
+        admin_obj.phone = phone
+        admin_obj.save()
+
+        request.user.email = email
+        name_parts = name.split(None, 1)
+        request.user.first_name = name_parts[0]
+        request.user.last_name = name_parts[1] if len(name_parts) > 1 else ''
+        request.user.save()
+
+        messages.success(request, 'Admin profile updated successfully!')
+        return redirect('profile')
+
+    return redirect('profile')
 
 @login_required
 def student_profile_update(request):
@@ -539,6 +593,98 @@ def create_question(request):
         'subjects': subjects,
         'selected_subject_id': str(selected_subject_id),
     })
+
+@login_required
+def subject_list(request):
+    if not request.user.is_staff:
+        messages.error(request, "Only administrators can manage subjects.")
+        return redirect('home')
+
+    subjects = Subject.objects.all().order_by('name')
+    return render(request, 'reports/subject_list.html', {
+        'subjects': subjects,
+    })
+
+
+@login_required
+def subject_create(request):
+    if not request.user.is_staff:
+        messages.error(request, "Only administrators can manage subjects.")
+        return redirect('home')
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()
+
+        if not name:
+            messages.error(request, "Subject name is required.")
+            return redirect('subject_list')
+        elif Subject.objects.filter(name__iexact=name).exists():
+            messages.error(request, "This subject already exists.")
+            return redirect('subject_list')
+        else:
+            Subject.objects.create(
+                name=name,
+                description=description,
+            )
+            messages.success(request, "Subject created successfully.")
+            return redirect('subject_list')
+
+    return render(request, 'reports/subject_form.html', {
+        'page_title': 'Add Subject',
+    })
+
+
+@login_required
+def subject_update(request, subject_id):
+    if not request.user.is_staff:
+        messages.error(request, "Only administrators can manage subjects.")
+        return redirect('home')
+
+    subject = get_object_or_404(Subject, pk=subject_id)
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        description = request.POST.get('description', '').strip()
+
+        if not name:
+            messages.error(request, "Subject name is required.")
+            return redirect('subject_list')
+        elif Subject.objects.filter(
+            name__iexact=name
+        ).exclude(pk=subject.pk).exists():
+            messages.error(request, "Another subject already uses this name.")
+            return redirect('subject_list')
+        else:
+            subject.name = name
+            subject.description = description
+            subject.save()
+            messages.success(request, "Subject updated successfully.")
+            return redirect('subject_list')
+
+    return render(request, 'reports/subject_form.html', {
+        'subject': subject,
+        'page_title': 'Update Subject',
+    })
+
+
+@login_required
+def subject_delete(request, subject_id):
+    if not request.user.is_staff:
+        messages.error(request, "Only administrators can manage subjects.")
+        return redirect('home')
+
+    subject = get_object_or_404(Subject, pk=subject_id)
+
+    if request.method == 'POST':
+        subject.delete()
+        messages.success(request, "Subject deleted successfully.")
+        return redirect('subject_list')
+
+    return render(request, 'reports/subject_confirm_delete.html', {
+        'subject': subject,
+    })
+
 
 
 def password_reset_request(request):

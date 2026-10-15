@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Subject | Quizopedia</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .admin-main {
+            flex: 1;
+            min-width: 0;
+            padding: 32px 36px 60px;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            max-width: 580px;
+            margin: 0 auto;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb a {
+            color: #64748b;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        .panel {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 32px 34px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        p {
+            font-size: 14.5px;
+            color: #1e293b;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .warning {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 24px;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: background 0.15s;
+        }
+
+        .danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .danger:hover {
+            background: #b91c1c;
+        }
+
+        .back {
+            background: #e5eaf0;
+            color: #263248;
+        }
+
+        .back:hover {
+            background: #cbd5e1;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .admin-main {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'reports/includes/admin_sidebar.html' with active_page='subjects' %}
+
+    <main class="admin-main">
+        <div class="main-container">
+
+            <div class="breadcrumb">
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <span>/</span>
+                <a href="{% url 'subject_list' %}">Subjects</a>
+                <span>/</span>
+                <span>Delete</span>
+            </div>
+
+            <div class="panel">
+                <h1>Delete Subject</h1>
+
+                <p>Are you sure you want to delete <strong>{{ subject.name }}</strong>?</p>
+
+                <div class="warning">
+                    <strong>Warning:</strong> Deleting this subject will also delete all questions associated with it. This action cannot be undone.
+                </div>
+
+                <div class="actions">
+                    <form method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn danger">Yes, Delete Subject</button>
+                    </form>
+                    <a href="{% url 'subject_list' %}" class="btn back">Cancel</a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
