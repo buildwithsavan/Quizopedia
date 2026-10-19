@@ -449,6 +449,48 @@
                 align-items: flex-start;
             }
         }
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-form input {
+            flex: 1;
+            min-width: 200px;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 22px;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 9px 13px;
+            border-radius: 6px;
+            text-decoration: none;
+            background: #e5eaf0;
+            color: #263248;
+        }
+
+        .pagination .current {
+            background: #3157d5;
+            color: white;
+        }
+
+        .pagination .disabled {
+            opacity: 0.45;
+        }
     </style>
 </head>
 <body>
@@ -478,6 +520,28 @@
                 </div>
             {% endif %}
 
+            
+<form method="get" class="search-form">
+    <input
+        type="text"
+        name="search"
+        placeholder="Search subjects by name..."
+        value="{{ search_query }}"
+        aria-label="Search subjects by name"
+    >
+
+    <button type="submit" class="btn-add-subject">
+        Search
+    </button>
+
+    {% if search_query %}
+        <a href="{% url 'subject_list' %}" class="btn-action-edit">
+            Clear
+        </a>
+    {% endif %}
+</form>
+
+
             <div class="table-panel">
                 <div class="table-responsive">
                     {% if subjects %}
@@ -493,7 +557,7 @@
                             <tbody>
                                 {% for subject in subjects %}
                                 <tr>
-                                    <td class="col-num">{{ forloop.counter }}</td>
+                                    <td class="col-num">{{ page_obj.start_index|add:forloop.counter0 }}</td>
                                     <td class="col-name">{{ subject.name }}</td>
                                     <td class="col-desc">
                                         {{ subject.description|default:"No description" }}
@@ -524,13 +588,36 @@
                         </table>
                     {% else %}
                         <div class="empty-state">
-                            <h3>No subjects yet</h3>
-                            <p>Add your first subject to get started.</p>
+                            {% if search_query %}
+                                <h3>No matching subjects found</h3>
+                                <p>Try a different subject name or clear your search.</p>
+                            {% else %}
+                                <h3>No subjects yet</h3>
+                                <p>Add your first subject to get started.</p>
+                            {% endif %}
                         </div>
                     {% endif %}
                 </div>
             </div>
+            {% if page_obj.paginator.num_pages > 1 %}
+                <div class="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?search={{ search_query|urlencode }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                    {% else %}
+                        <span class="disabled">Previous</span>
+                    {% endif %}
 
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?search={{ search_query|urlencode }}&page={{ page_obj.next_page_number }}">Next</a>
+                    {% else %}
+                        <span class="disabled">Next</span>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </main>
 

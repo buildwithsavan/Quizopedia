@@ -14,6 +14,7 @@ import time
 from .models import Admin, Student, Question, Subject, Option, PendingProfileUpdate, StudentOTP
 from .forms import StudentProfileForm
 from django.utils import timezone
+from django.core.paginator import Paginator
 
 OTP_RESEND_COOLDOWN = 30
 
@@ -594,15 +595,28 @@ def create_question(request):
         'selected_subject_id': str(selected_subject_id),
     })
 
+
 @login_required
 def subject_list(request):
     if not request.user.is_staff:
         messages.error(request, "Only administrators can manage subjects.")
         return redirect('home')
 
+    search_query = request.GET.get('search', '').strip()
+
     subjects = Subject.objects.all().order_by('name')
+
+    if search_query:
+        subjects = subjects.filter(name__icontains=search_query)
+
+    paginator = Paginator(subjects, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'reports/subject_list.html', {
-        'subjects': subjects,
+        'subjects': page_obj,
+        'page_obj': page_obj,
+        'search_query': search_query,
     })
 
 
