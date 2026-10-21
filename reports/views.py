@@ -597,6 +597,94 @@ def create_question(request):
 
 
 @login_required
+def edit_question(request, question_id):
+    if not request.user.is_staff:
+        return redirect('home')
+
+    question = get_object_or_404(Question, pk=question_id)
+    subjects = Subject.objects.all().order_by('name')
+    options = list(question.option_set.order_by('id'))
+
+    if request.method == 'POST':
+        subject_id = request.POST.get('subject', '').strip()
+        question_text = request.POST.get('question_text', '').strip()
+        option_texts = [
+            request.POST.get(f'option_{i}', '').strip()
+            for i in range(1, 5)
+        ]
+        correct_option = request.POST.get('correct_option', '')
+
+        errors = []
+
+        try:
+            subject = Subject.objects.get(pk=subject_id)
+        except (Subject.DoesNotExist, ValueError, TypeError):
+            subject = None
+            errors.append('Please select a valid subject.')
+
+        if not question_text:
+            errors.append('Please enter the question.')
+
+        if any(not text for text in option_texts):
+            errors.append('Please fill in all four options.')
+
+        if correct_option not in {'1', '2', '3', '4'}:
+            errors.append('Please select exactly one correct option.')
+
+        if not errors:
+            with transaction.atomic():
+                question.subject = subject
+                question.question_text = question_text
+                question.save()
+
+                for index, option_text in enumerate(option_texts, start=1):
+                    if index <= len(options):
+                        option = options[index - 1]
+                        option.option_text = option_text
+                        option.is_answer = (str(index) == correct_option)
+                        option.save()
+                    else:
+                        Option.objects.create(
+                            question=question,
+                            option_text=option_text,
+                            is_answer=(str(index) == correct_option)
+                        )
+
+                for extra_option in options[4:]:
+                    extra_option.delete()
+
+            messages.success(request, 'Question updated successfully!')
+            return redirect('question_bank')
+
+        for error in errors:
+            messages.error(request, error)
+
+    return render(request, 'reports/edit_question.html', {
+        'question': question,
+        'subjects': subjects,
+        'options': options,
+        'option_values': [
+            request.POST.get(f'option_{i}', options[i - 1].option_text)
+            if i <= len(options) else ''
+            for i in range(1, 5)
+        ],
+        'correct_option': (
+            request.POST.get('correct_option')
+            or next(
+                (
+                    str(i)
+                    for i, option in enumerate(options, start=1)
+                    if option.is_answer
+                ),
+                ''
+            )
+        ),
+    })
+
+
+
+
+@login_required
 def subject_list(request):
     if not request.user.is_staff:
         messages.error(request, "Only administrators can manage subjects.")
@@ -1135,4 +1223,19 @@ def user_logout(request):
     auth_logout(request)
     return redirect('home')
 
+@login_required
+def delete_question(request, question_id):
+    if not request.user.is_staff:
+        return redirect('home')
 
+    if request.method != 'POST':
+        return redirect('question_bank')
+
+    question = get_object_or_404(Question, pk=question_id)
+    question.delete()
+
+    messages.success(
+        request,
+        'Question and its options deleted successfully!'
+    )
+    return redirect('question_bank')

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Question | Quizopedia</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #263248;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 28px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 24px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd3df;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .option input[type="text"] {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .option label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            background: #fff0f0;
+            color: #a12626;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 7px;
+            font-size: 15px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .save-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #e8edf5;
+            color: #263248;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 16px;
+            }
+
+            .option {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Edit Question #{{ question.id }}</h2>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="field">
+            <label for="subject">Subject</label>
+            <select name="subject" id="subject" required>
+                <option value="">Select Subject</option>
+
+                {% for subject in subjects %}
+                    <option value="{{ subject.id }}"
+                        {% if request.POST.subject %}
+                            {% if request.POST.subject == subject.id|stringformat:"s" %}selected{% endif %}
+                        {% else %}
+                            {% if subject.id == question.subject_id %}selected{% endif %}
+                        {% endif %}>
+                        {{ subject.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="question_text">Question</label>
+            <input
+                type="text"
+                id="question_text"
+                name="question_text"
+                value="{{ request.POST.question_text|default:question.question_text }}"
+                required
+            >
+        </div>
+
+        {% for option_value in option_values %}
+            <div class="field">
+                <label for="option_{{ forloop.counter }}">
+                    Option {{ forloop.counter }}
+                </label>
+
+                <div class="option">
+                    <input
+                        type="text"
+                        id="option_{{ forloop.counter }}"
+                        name="option_{{ forloop.counter }}"
+                        value="{{ option_value }}"
+                        required
+                    >
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="correct_option"
+                            value="{{ forloop.counter }}"
+                            {% if correct_option == forloop.counter|stringformat:"s" %}checked{% endif %}
+                            required
+                        >
+                        Correct
+                    </label>
+                </div>
+            </div>
+
+        {% endfor %}
+        <div class="actions">
+            <button type="submit" class="btn save-btn">Save Changes</button>
+            <a href="{% url 'question_bank' %}" class="btn cancel-btn">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
