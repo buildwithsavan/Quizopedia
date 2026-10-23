@@ -33,6 +33,31 @@
             margin: 0 auto;
         }
 
+        /* Message Alerts */
+        .messages-container {
+            margin-bottom: 20px;
+        }
+
+        .message-alert {
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .message-alert.success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .message-alert.error {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
         /* Question Bank Header */
         .bank-header {
             display: flex;
@@ -274,28 +299,23 @@
             margin-bottom: 6px;
         }
 
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-            .admin-main {
-                padding: 20px 16px;
-            }
-            table {
-                display: block;
-                overflow-x: auto;
-            }
-        }
+
         .action-btn {
             display: inline-block;
-            padding: 7px 11px;
+            padding: 7px 14px;
             margin: 3px 2px;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             font-size: 13px;
             text-decoration: none;
             cursor: pointer;
             font-weight: 600;
+            transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .action-btn:hover {
+            opacity: 0.85;
+            transform: translateY(-1px);
         }
 
         .edit-btn {
@@ -308,8 +328,263 @@
             color: #b91c1c;
         }
 
-        .action-btn:hover {
-            opacity: 0.8;
+        /* Modals Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        /* Edit Question Modal Dialog - Matches edit_question.html exact format and style */
+        .edit-question-modal-dialog {
+            max-width: 750px;
+            width: 100%;
+            margin: auto;
+            padding: 28px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalFadeIn 0.18s ease-out;
+        }
+
+        .edit-question-modal-dialog h2 {
+            margin-top: 0;
+            margin-bottom: 24px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #263248;
+        }
+
+        .edit-question-modal-dialog .field {
+            margin-bottom: 20px;
+        }
+
+        .edit-question-modal-dialog label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #263248;
+            font-size: 15px;
+        }
+
+        .edit-question-modal-dialog input[type="text"],
+        .edit-question-modal-dialog select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd3df;
+            border-radius: 7px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #263248;
+            background: #ffffff;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .edit-question-modal-dialog input[type="text"]:focus,
+        .edit-question-modal-dialog select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .edit-question-modal-dialog .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .edit-question-modal-dialog .option input[type="text"] {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .edit-question-modal-dialog .option label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 0;
+            white-space: nowrap;
+            font-weight: 600;
+            cursor: pointer;
+            color: #263248;
+        }
+
+        .edit-question-modal-dialog .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .edit-question-modal-dialog .btn {
+            display: inline-block;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.15s, opacity 0.15s;
+        }
+
+        .edit-question-modal-dialog .save-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .edit-question-modal-dialog .save-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .edit-question-modal-dialog .cancel-btn {
+            background: #e8edf5;
+            color: #263248;
+        }
+
+        .edit-question-modal-dialog .cancel-btn:hover {
+            background: #d8e2f0;
+        }
+
+        /* Delete Question Modal Dialog */
+        .delete-question-modal-dialog {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+            width: 100%;
+            max-width: 480px;
+            margin: auto;
+            padding: 26px 28px;
+            animation: modalFadeIn 0.18s ease-out;
+            position: relative;
+        }
+
+        .delete-question-modal-dialog h2 {
+            margin: 0 0 12px 0;
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .delete-preview-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin: 14px 0 24px;
+        }
+
+        .delete-subject-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #4f46e5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .delete-text-preview {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            line-height: 1.45;
+        }
+
+        .btn-delete-yes {
+            background: #dc2626;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 7px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-delete-yes:hover {
+            background: #b91c1c;
+        }
+
+        .btn-delete-no {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 10px 24px;
+            border-radius: 7px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .btn-delete-no:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: #94a3b8;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0 4px;
+            transition: color 0.15s;
+        }
+
+        .modal-close-btn:hover {
+            color: #475569;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.97) translateY(-6px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .admin-main {
+                padding: 20px 16px;
+            }
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            .edit-question-modal-dialog {
+                padding: 20px 16px;
+            }
+            .edit-question-modal-dialog .option {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
@@ -319,6 +594,16 @@
 
     <main class="admin-main">
         <div class="main-container">
+
+            {% if messages %}
+                <div class="messages-container">
+                    {% for message in messages %}
+                        <div class="message-alert {% if message.tags %}{{ message.tags }}{% else %}success{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
             <div class="bank-header">
                 <div class="bank-title-group">
@@ -397,20 +682,19 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <a href="{% url 'edit_question' q.id %}"
-                                    class="action-btn edit-btn">
+                                    <button type="button"
+                                        class="action-btn edit-btn"
+                                        onclick="openEditQuestionModal('{{ q.id }}')"
+                                        title="Edit question">
                                         Edit
-                                    </a>
+                                    </button>
 
-                                    <form method="POST"
-                                        action="{% url 'delete_question' q.id %}"
-                                        onsubmit="return confirm('Are you sure you want to delete this question?');"
-                                        style="display: inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="action-btn delete-btn">
-                                            Delete
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                        class="action-btn delete-btn"
+                                        onclick="openDeleteQuestionModal('{{ q.id }}')"
+                                        title="Delete question">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         {% empty %}
@@ -426,6 +710,186 @@
 
         </div>
     </main>
+
+    <div class="modal-overlay" id="editQuestionModal" onclick="closeModalOnBackdrop(event, 'editQuestionModal')">
+        <div class="edit-question-modal-dialog" onclick="event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <h2 id="editQuestionHeading" style="margin-top: 0; margin-bottom: 24px;">Edit Question</h2>
+                <button type="button" class="modal-close-btn" onclick="closeModal('editQuestionModal')" title="Close">&times;</button>
+            </div>
+
+            <form method="POST" id="editQuestionForm" action="">
+                {% csrf_token %}
+
+                <div class="field">
+                    <label for="edit_subject">Subject</label>
+                    <select name="subject" id="edit_subject" required>
+                        <option value="">Select Subject</option>
+                        {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="edit_question_text">Question</label>
+                    <input
+                        type="text"
+                        id="edit_question_text"
+                        name="question_text"
+                        required
+                    >
+                </div>
+
+                <div class="field">
+                    <label for="edit_option_1">Option 1</label>
+                    <div class="option">
+                        <input type="text" id="edit_option_1" name="option_1" required>
+                        <label>
+                            <input type="radio" name="correct_option" id="edit_correct_1" value="1" required>
+                            Correct
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="edit_option_2">Option 2</label>
+                    <div class="option">
+                        <input type="text" id="edit_option_2" name="option_2" required>
+                        <label>
+                            <input type="radio" name="correct_option" id="edit_correct_2" value="2" required>
+                            Correct
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="edit_option_3">Option 3</label>
+                    <div class="option">
+                        <input type="text" id="edit_option_3" name="option_3" required>
+                        <label>
+                            <input type="radio" name="correct_option" id="edit_correct_3" value="3" required>
+                            Correct
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="edit_option_4">Option 4</label>
+                    <div class="option">
+                        <input type="text" id="edit_option_4" name="option_4" required>
+                        <label>
+                            <input type="radio" name="correct_option" id="edit_correct_4" value="4" required>
+                            Correct
+                        </label>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn save-btn">Save Changes</button>
+                    <button type="button" class="btn cancel-btn" onclick="closeModal('editQuestionModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteQuestionModal" onclick="closeModalOnBackdrop(event, 'deleteQuestionModal')">
+        <div class="delete-question-modal-dialog" onclick="event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <h2 id="deleteQuestionHeading" style="margin-top: 0; margin-bottom: 12px;">Delete Question</h2>
+                <button type="button" class="modal-close-btn" onclick="closeModal('deleteQuestionModal')" title="Close">&times;</button>
+            </div>
+
+            <p style="font-size: 15px; color: #1e293b; margin: 8px 0 14px; font-weight: 500;">
+                Are you sure you want to delete this question?
+            </p>
+
+            <div class="delete-preview-box">
+                <div class="delete-subject-label" id="deleteQuestionSubjectDisplay">Subject</div>
+                <div class="delete-text-preview" id="deleteQuestionTextDisplay">Question text</div>
+            </div>
+
+            <form method="POST" id="deleteQuestionForm" action="">
+                {% csrf_token %}
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="btn-delete-no" onclick="closeModal('deleteQuestionModal')">No</button>
+                    <button type="submit" class="btn-delete-yes">Yes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{ questions_data|json_script:"questions-data-script" }}
+
+    <script>
+        const questionsData = JSON.parse(document.getElementById('questions-data-script').textContent || '{}');
+
+        function openEditQuestionModal(questionId) {
+            const q = questionsData[String(questionId)];
+            if (!q) return;
+
+            const modal = document.getElementById('editQuestionModal');
+            const form = document.getElementById('editQuestionForm');
+            const heading = document.getElementById('editQuestionHeading');
+            const subjectSelect = document.getElementById('edit_subject');
+            const questionTextInput = document.getElementById('edit_question_text');
+
+            if (form) form.action = '/questions/' + q.id + '/edit/';
+            if (heading) heading.textContent = 'Edit Question #' + q.id;
+            if (subjectSelect) subjectSelect.value = q.subject_id;
+            if (questionTextInput) questionTextInput.value = q.question_text;
+
+            for (let i = 1; i <= 4; i++) {
+                const input = document.getElementById('edit_option_' + i);
+                const radio = document.getElementById('edit_correct_' + i);
+                const opt = q.options && q.options[i - 1];
+                if (input) input.value = opt ? opt.text : '';
+                if (radio) radio.checked = opt ? !!opt.is_answer : false;
+            }
+
+            if (modal) {
+                modal.classList.add('active');
+                if (questionTextInput) questionTextInput.focus();
+            }
+        }
+
+        function openDeleteQuestionModal(questionId) {
+            const q = questionsData[String(questionId)];
+            if (!q) return;
+
+            const modal = document.getElementById('deleteQuestionModal');
+            const form = document.getElementById('deleteQuestionForm');
+            const heading = document.getElementById('deleteQuestionHeading');
+            const subjectDisplay = document.getElementById('deleteQuestionSubjectDisplay');
+            const textDisplay = document.getElementById('deleteQuestionTextDisplay');
+
+            if (form) form.action = '/questions/' + q.id + '/delete/';
+            if (heading) heading.textContent = 'Delete Question #' + q.id;
+            if (subjectDisplay) subjectDisplay.textContent = q.subject_name;
+            if (textDisplay) textDisplay.textContent = q.question_text;
+
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.remove('active');
+        }
+
+        function closeModalOnBackdrop(event, id) {
+            if (event.target.id === id) {
+                closeModal(id);
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+            }
+        });
+    </script>
 
 </body>
 </html>

@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.db.models import Count
+from django.db.models import Count, Prefetch
 from django.db import transaction
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -56,12 +56,28 @@ def question_bank(request):
     subjects = Subject.objects.all().order_by('name')
     selected_subject_id = request.GET.get('subject', '').strip()
 
-    questions = Question.objects.select_related('subject').prefetch_related('option_set').all()
+    questions = Question.objects.select_related('subject').prefetch_related(
+        Prefetch('option_set', queryset=Option.objects.order_by('id'))
+    ).all()
 
     if selected_subject_id:
         questions = questions.filter(subject_id=selected_subject_id)
 
     questions = questions.order_by('subject__name', 'id')
+
+    questions_data = {
+        str(q.id): {
+            'id': q.id,
+            'subject_id': q.subject_id,
+            'subject_name': q.subject.name,
+            'question_text': q.question_text,
+            'options': [
+                {'id': opt.id, 'text': opt.option_text, 'is_answer': opt.is_answer}
+                for opt in q.option_set.all()
+            ]
+        }
+        for q in questions
+    }
 
     return render(
         request,
@@ -70,6 +86,7 @@ def question_bank(request):
             'subjects': subjects,
             'selected_subject_id': selected_subject_id,
             'questions': questions,
+            'questions_data': questions_data,
             'total_questions_count': questions.count(),
         }
     )
@@ -658,6 +675,7 @@ def edit_question(request, question_id):
 
         for error in errors:
             messages.error(request, error)
+        return redirect('question_bank')
 
     return render(request, 'reports/edit_question.html', {
         'question': question,
