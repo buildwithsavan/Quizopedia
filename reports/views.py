@@ -11,7 +11,7 @@ from django.conf import settings
 from datetime import timedelta
 import random
 import time
-from .models import Admin, Student, Question, Subject, Option, PendingProfileUpdate, StudentOTP
+from .models import Admin, Student, Question, Subject, Option, PendingProfileUpdate, StudentOTP, Contact
 from .forms import StudentProfileForm
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -1299,3 +1299,43 @@ def delete_question(request, question_id):
     if next_url and next_url.startswith('/'):
         return redirect(next_url)
     return redirect('question_bank')
+
+@login_required
+def contact_us(request):
+    if request.user.is_staff:
+        return redirect('dashboard')
+
+    student = getattr(request.user, 'student_profile', None)
+
+    if request.method == 'POST':
+        subject = request.POST.get('subject', '').strip()
+        message_text = request.POST.get('message', '').strip()
+
+        if not subject or not message_text:
+            messages.error(request, 'Please enter both a subject and a message.')
+        else:
+            if not student:
+                student, _ = Student.objects.get_or_create(
+                    user=request.user,
+                    defaults={
+                        'name': request.user.get_full_name() or request.user.username,
+                        'email': request.user.email or '',
+                        'phone': '',
+                        'approval_status': 'approved',
+                    }
+                )
+
+            Contact.objects.create(
+                sender=request.user,
+                name=student.name,
+                email=student.email or request.user.email,
+                subject=subject,
+                message=message_text,
+            )
+
+            messages.success(request, 'Your message has been submitted successfully!')
+            return redirect('contact_us')
+
+    return render(request, 'reports/contact_us.html', {
+        'student': student,
+    })

@@ -486,6 +486,10 @@
                     <a href="{% url 'admin_login' %}" class="footer-admin-link">Admin Login</a>
                 {% endif %}
                 <span class="footer-dot">&middot;</span>
+                {% if user.is_authenticated and not user.is_staff %}
+                    <a href="{% url 'contact_us' %}" class="footer-admin-link">Contact Us</a>
+                    <span class="footer-dot">&middot;</span>
+                {% endif %}
                 <span class="footer-copy">&copy; 2026 Quizopedia &middot; Academic Quiz &amp; Student Report System</span>
             </div>
         </div>
