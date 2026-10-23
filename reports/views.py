@@ -15,6 +15,7 @@ from .models import Admin, Student, Question, Subject, Option, PendingProfileUpd
 from .forms import StudentProfileForm
 from django.utils import timezone
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 OTP_RESEND_COOLDOWN = 30
 
@@ -55,15 +56,38 @@ def question_bank(request):
 
     subjects = Subject.objects.all().order_by('name')
     selected_subject_id = request.GET.get('subject', '').strip()
+    search_query = request.GET.get('q', '').strip()
 
-    questions = Question.objects.select_related('subject').prefetch_related(
+    questions = Question.objects.select_related(
+        'subject'
+    ).prefetch_related(
         Prefetch('option_set', queryset=Option.objects.order_by('id'))
-    ).all()
+    )
 
     if selected_subject_id:
         questions = questions.filter(subject_id=selected_subject_id)
 
+    if search_query:
+        questions = questions.filter(
+            Q(question_text__icontains=search_query)
+            | Q(subject__name__icontains=search_query)
+            | Q(option__option_text__icontains=search_query)
+        ).distinct()
+
     questions = questions.order_by('subject__name', 'id')
+
+    total_questions_count = questions.count()
+
+    paginator = Paginator(questions, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    try:
+        elided_page_range = paginator.get_elided_page_range(
+            page_obj.number, on_each_side=1, on_ends=1
+        )
+    except Exception:
+        elided_page_range = paginator.page_range
 
     questions_data = {
         str(q.id): {
@@ -72,11 +96,15 @@ def question_bank(request):
             'subject_name': q.subject.name,
             'question_text': q.question_text,
             'options': [
-                {'id': opt.id, 'text': opt.option_text, 'is_answer': opt.is_answer}
+                {
+                    'id': opt.id,
+                    'text': opt.option_text,
+                    'is_answer': opt.is_answer,
+                }
                 for opt in q.option_set.all()
-            ]
+            ],
         }
-        for q in questions
+        for q in page_obj.object_list
     }
 
     return render(
@@ -85,11 +113,16 @@ def question_bank(request):
         {
             'subjects': subjects,
             'selected_subject_id': selected_subject_id,
-            'questions': questions,
+            'search_query': search_query,
+            'questions': page_obj.object_list,
             'questions_data': questions_data,
-            'total_questions_count': questions.count(),
+            'total_questions_count': total_questions_count,
+            'page_obj': page_obj,
+            'paginator': paginator,
+            'elided_page_range': elided_page_range,
         }
     )
+
 
 
 
@@ -671,10 +704,16 @@ def edit_question(request, question_id):
                     extra_option.delete()
 
             messages.success(request, 'Question updated successfully!')
+            next_url = request.POST.get('next')
+            if next_url and next_url.startswith('/'):
+                return redirect(next_url)
             return redirect('question_bank')
 
         for error in errors:
             messages.error(request, error)
+        next_url = request.POST.get('next')
+        if next_url and next_url.startswith('/'):
+            return redirect(next_url)
         return redirect('question_bank')
 
     return render(request, 'reports/edit_question.html', {
@@ -1256,4 +1295,7 @@ def delete_question(request, question_id):
         request,
         'Question and its options deleted successfully!'
     )
+    next_url = request.POST.get('next')
+    if next_url and next_url.startswith('/'):
+        return redirect(next_url)
     return redirect('question_bank')

@@ -102,18 +102,102 @@
             background: #4338ca;
         }
 
-        /* Filter Bar */
+        /* Filter & Search Bar */
         .filter-bar {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
-            padding: 16px 20px;
+            padding: 18px 20px;
             margin-bottom: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .search-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 14px;
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 260px;
+            max-width: 640px;
+        }
+
+        .search-input {
+            flex: 1;
+            height: 40px;
+            padding: 0 14px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .search-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
+
+        .btn-search {
+            height: 40px;
+            padding: 0 18px;
+            border-radius: 8px;
+            background: #4f46e5;
+            color: #ffffff;
+            border: none;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-search:hover {
+            background: #4338ca;
+        }
+
+        .btn-clear-search {
+            height: 40px;
+            padding: 0 16px;
+            display: inline-flex;
+            align-items: center;
+            border-radius: 8px;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            font-size: 13.5px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-clear-search:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            padding-top: 14px;
+            border-top: 1px solid #f1f5f9;
         }
 
         .filter-left {
@@ -182,6 +266,14 @@
             font-size: 13px;
             color: #64748b;
             font-weight: 500;
+        }
+
+        .search-badge {
+            background: #ede9fe;
+            color: #4f46e5;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
         }
 
         /* Filter Table Card */
@@ -297,6 +389,24 @@
             font-size: 16px;
             color: #1e293b;
             margin-bottom: 6px;
+        }
+
+        .empty-box p {
+            font-size: 14px;
+            color: #64748b;
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .empty-action-link {
+            color: #4f46e5;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .empty-action-link:hover {
+            color: #3730a3;
         }
 
 
@@ -586,6 +696,81 @@
                 flex-wrap: wrap;
             }
         }
+
+        /* Pagination Controls */
+        .pagination-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 22px;
+            padding: 4px 2px;
+        }
+
+        .pagination-info {
+            font-size: 13.5px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .pagination-info strong {
+            color: #1e293b;
+        }
+
+        .pagination-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 12px;
+            border-radius: 7px;
+            font-size: 13.5px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #334155;
+            transition: all 0.15s;
+        }
+
+        .page-btn:hover:not(.disabled):not(.active) {
+            border-color: #cbd5e1;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .page-btn.active {
+            background: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+            cursor: default;
+        }
+
+        .page-btn.disabled {
+            background: #f8fafc;
+            color: #94a3b8;
+            border-color: #e2e8f0;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .page-btn.ellipsis {
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: default;
+            pointer-events: none;
+        }
+
     </style>
 </head>
 <body>
@@ -618,33 +803,63 @@
             </div>
 
             <div class="filter-bar">
-                <div class="filter-left">
-                    <span class="filter-label">Filter Subject:</span>
-                    <form method="get" id="subject-filter-form" style="display: inline-block;">
-                        <select name="subject" class="filter-select" onchange="document.getElementById('subject-filter-form').submit();">
-                            <option value="">All Subjects</option>
-                            {% for subj in subjects %}
-                                <option value="{{ subj.id }}" {% if selected_subject_id == subj.id|stringformat:"s" %}selected{% endif %}>
-                                    {{ subj.name }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                <div class="search-row">
+                    <form method="get" action="{% url 'question_bank' %}" class="search-form">
+                        {% if selected_subject_id %}
+                            <input type="hidden" name="subject" value="{{ selected_subject_id }}">
+                        {% endif %}
+                        <input
+                            type="search"
+                            name="q"
+                            value="{{ search_query }}"
+                            placeholder="Search questions, options, or subjects..."
+                            aria-label="Search questions"
+                            class="search-input"
+                        >
+                        <button type="submit" class="btn-search">Search</button>
+                        {% if search_query %}
+                            <a href="{% url 'question_bank' %}{% if selected_subject_id %}?subject={{ selected_subject_id }}{% endif %}" class="btn-clear-search">
+                                Clear
+                            </a>
+                        {% endif %}
                     </form>
 
-                    <div class="filter-pills">
-                        <a href="{% url 'question_bank' %}" class="filter-pill {% if not selected_subject_id %}active{% endif %}">
-                            All
-                        </a>
-                        {% for subj in subjects %}
-                            <a href="{% url 'question_bank' %}?subject={{ subj.id }}" class="filter-pill {% if selected_subject_id == subj.id|stringformat:"s" %}active{% endif %}">
-                                {{ subj.name }}
-                            </a>
-                        {% endfor %}
+                    <div class="filter-count">
+                        Showing <strong>{{ total_questions_count }}</strong> Question{{ total_questions_count|pluralize }}
+                        {% if search_query %}
+                            matching <span class="search-badge">"{{ search_query }}"</span>
+                        {% endif %}
                     </div>
                 </div>
 
-                <div class="filter-count">
-                    Showing <strong>{{ total_questions_count }}</strong> Question{{ total_questions_count|pluralize }}
+                <div class="filter-row">
+                    <div class="filter-left">
+                        <span class="filter-label">Filter Subject:</span>
+                        <form method="get" id="subject-filter-form" style="display: inline-block;">
+                            {% if search_query %}
+                                <input type="hidden" name="q" value="{{ search_query }}">
+                            {% endif %}
+                            <select name="subject" class="filter-select" onchange="document.getElementById('subject-filter-form').submit();">
+                                <option value="">All Subjects</option>
+                                {% for subj in subjects %}
+                                    <option value="{{ subj.id }}" {% if selected_subject_id == subj.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ subj.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </form>
+
+                        <div class="filter-pills">
+                            <a href="{% url 'question_bank' %}{% if search_query %}?q={{ search_query|urlencode }}{% endif %}" class="filter-pill {% if not selected_subject_id %}active{% endif %}">
+                                All
+                            </a>
+                            {% for subj in subjects %}
+                                <a href="{% url 'question_bank' %}?subject={{ subj.id }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}" class="filter-pill {% if selected_subject_id == subj.id|stringformat:"s" %}active{% endif %}">
+                                    {{ subj.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -700,13 +915,63 @@
                         {% empty %}
                             <tr>
                                 <td colspan="5" class="empty-box">
-                                    <h3>No questions found</h3>
+                                    {% if search_query and selected_subject_id %}
+                                        <h3>No matching questions found</h3>
+                                        <p>No questions matched "{{ search_query }}" in this subject. <a href="{% url 'question_bank' %}?q={{ search_query|urlencode }}" class="empty-action-link">Search in all subjects</a> or <a href="{% url 'question_bank' %}?subject={{ selected_subject_id }}" class="empty-action-link">clear search</a>.</p>
+                                    {% elif search_query %}
+                                        <h3>No questions matching "{{ search_query }}"</h3>
+                                        <p>Try different keywords or <a href="{% url 'question_bank' %}" class="empty-action-link">clear search</a> to view all questions.</p>
+                                    {% elif selected_subject_id %}
+                                        <h3>No questions found for this subject</h3>
+                                        <p>No questions have been added to this subject yet.</p>
+                                    {% else %}
+                                        <h3>No questions found</h3>
+                                        <p>Click "+ Create Question" above to add your first question.</p>
+                                    {% endif %}
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+
+            {% if page_obj.has_other_pages %}
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing <strong>{{ page_obj.start_index }}–{{ page_obj.end_index }}</strong> of <strong>{{ total_questions_count }}</strong> question{{ total_questions_count|pluralize }}
+                    </div>
+
+                    <nav class="pagination-nav" aria-label="Question Bank Pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}{% if selected_subject_id %}&subject={{ selected_subject_id|urlencode }}{% endif %}" class="page-btn">
+                                Previous
+                            </a>
+                        {% else %}
+                            <span class="page-btn disabled">Previous</span>
+                        {% endif %}
+
+                        {% for p in elided_page_range %}
+                            {% if p == paginator.ELLIPSIS %}
+                                <span class="page-btn ellipsis">…</span>
+                            {% elif p == page_obj.number %}
+                                <span class="page-btn active">{{ p }}</span>
+                            {% else %}
+                                <a href="?page={{ p }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}{% if selected_subject_id %}&subject={{ selected_subject_id|urlencode }}{% endif %}" class="page-btn">
+                                    {{ p }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}{% if selected_subject_id %}&subject={{ selected_subject_id|urlencode }}{% endif %}" class="page-btn">
+                                Next
+                            </a>
+                        {% else %}
+                            <span class="page-btn disabled">Next</span>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
 
         </div>
     </main>
@@ -720,6 +985,7 @@
 
             <form method="POST" id="editQuestionForm" action="">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
 
                 <div class="field">
                     <label for="edit_subject">Subject</label>
@@ -811,6 +1077,7 @@
 
             <form method="POST" id="deleteQuestionForm" action="">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 <div style="display: flex; gap: 12px; justify-content: flex-end;">
                     <button type="button" class="btn-delete-no" onclick="closeModal('deleteQuestionModal')">No</button>
                     <button type="submit" class="btn-delete-yes">Yes</button>
