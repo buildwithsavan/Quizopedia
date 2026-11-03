@@ -12,7 +12,7 @@ from datetime import timedelta
 import random
 import time
 from .models import Admin, Student, Question, Subject, Option, PendingProfileUpdate, StudentOTP, Contact
-from .forms import StudentProfileForm
+from .forms import StudentProfileForm, ContactForm
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -48,6 +48,198 @@ def dashboard(request):
         }
     )
 
+@login_required
+def contact_messages(request):
+    if not request.user.is_staff:
+        return redirect('profile')
+
+    status_filter = request.GET.get('status', 'all').strip().lower()
+
+    all_messages = Contact.objects.select_related(
+        'sender', 'replied_by'
+    ).order_by('-submitted_at')
+
+    total_count = all_messages.count()
+    pending_count = all_messages.filter(is_replied=False).count()
+    replied_count = all_messages.filter(is_replied=True).count()
+
+    if status_filter == 'pending':
+        contact_messages = all_messages.filter(is_replied=False)
+    elif status_filter == 'replied':
+        contact_messages = all_messages.filter(is_replied=True)
+    else:
+        status_filter = 'all'
+        contact_messages = all_messages
+
+    messages_data = {
+        str(c.id): {
+            'id': c.id,
+            'name': c.name,
+            'email': c.email,
+            'subject': c.subject,
+            'message': c.message,
+            'submitted_at': c.submitted_at.strftime("%d %b %Y, %I:%M %p"),
+            'is_replied': c.is_replied,
+            'reply': c.reply or '',
+            'replied_at': c.replied_at.strftime("%d %b %Y, %I:%M %p") if c.replied_at else '',
+            'replied_by': c.replied_by.username if c.replied_by else '',
+            'reply_url': f'/contact-messages/{c.id}/',
+        }
+        for c in contact_messages
+    }
+
+    return render(
+        request,
+        'reports/admin_contact_messages.html',
+        {
+            'contact_messages': contact_messages,
+            'messages_data': messages_data,
+            'status_filter': status_filter,
+            'total_count': total_count,
+            'pending_count': pending_count,
+            'replied_count': replied_count,
+        }
+    )
+
+
+@login_required
+def contact_message_detail(request, contact_id):
+    if not request.user.is_staff:
+        return redirect('profile')
+
+    contact = get_object_or_404(Contact, pk=contact_id)
+
+    if request.method == 'POST':
+        reply_text = request.POST.get('reply', '').strip()
+
+        if not reply_text:
+            messages.error(
+                request,
+                'Please enter a reply message before submitting.'
+            )
+        else:
+            try:
+                send_contact_reply_email(contact, reply_text)
+
+                contact.reply = reply_text
+                contact.is_replied = True
+                contact.replied_at = timezone.now()
+                contact.replied_by = request.user
+                contact.save()
+
+                messages.success(
+                    request,
+                    f'Reply sent to {contact.email} successfully!'
+                )
+
+            except Exception as e:
+                messages.error(
+                    request,
+                    f'Email could not be sent. Please try again. Error: {e}'
+                )
+
+            next_url = request.POST.get('next')
+            if next_url and next_url.startswith('/'):
+                return redirect(next_url)
+
+            return redirect('contact_messages')
+
+    return render(
+        request,
+        'reports/admin_contact.html',
+        {
+            'contact': contact,
+        }
+    )
+
+
+
+def send_contact_submission_emails(contact, request=None):
+    
+    if contact.email:
+        try:
+            send_mail(
+                subject=f'Quizopedia — Message Submitted: {contact.subject}',
+                message=(
+                    f'Hello {contact.name},\n\n'
+                    'Thank you for contacting Quizopedia support. Your message has been received:\n\n'
+                    f'Subject: {contact.subject}\n'
+                    f'Date: {contact.submitted_at.strftime("%d %b %Y, %I:%M %p")}\n\n'
+                    'Your Message:\n'
+                    f'{contact.message}\n\n'
+                    'Our administration team will review your message and reply soon.\n\n'
+                    'Best regards,\n'
+                    'The Quizopedia Team'
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[contact.email],
+                fail_silently=True,
+            )
+        except Exception:
+            pass
+
+    
+    admin_emails = set()
+    for adm in Admin.objects.exclude(email='').values_list('email', flat=True):
+        if adm and '@' in adm:
+            admin_emails.add(adm.strip())
+    for staff in User.objects.filter(is_staff=True).exclude(email='').values_list('email', flat=True):
+        if staff and '@' in staff:
+            admin_emails.add(staff.strip())
+    if settings.DEFAULT_FROM_EMAIL and '@' in settings.DEFAULT_FROM_EMAIL:
+        admin_emails.add(settings.DEFAULT_FROM_EMAIL.strip())
+
+    if admin_emails:
+        try:
+            send_mail(
+                subject=f'Quizopedia — New Student Message: {contact.subject}',
+                message=(
+                    'Hello Admin,\n\n'
+                    'A new contact message has been submitted by a student on Quizopedia:\n\n'
+                    f'Student Name: {contact.name}\n'
+                    f'Student Email: {contact.email}\n'
+                    f'Subject: {contact.subject}\n'
+                    f'Date: {contact.submitted_at.strftime("%d %b %Y, %I:%M %p")}\n\n'
+                    'Message:\n'
+                    f'{contact.message}\n\n'
+                    'You can view and reply to this message directly in the Quizopedia Admin Panel.\n\n'
+                    'Best regards,\n'
+                    'Quizopedia Notification System'
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=list(admin_emails),
+                fail_silently=True,
+            )
+        except Exception:
+            pass
+
+
+def send_contact_reply_email(contact, reply_text):
+    if not contact.email:
+        raise ValueError('Student email address is missing.')
+
+    send_mail(
+        subject=f'Quizopedia — Response to your message: {contact.subject}',
+        message=(
+            f'Hello {contact.name},\n\n'
+            'An administrator has replied to your message on Quizopedia:\n\n'
+            '--------------------------------------------------\n'
+            'Your Original Message:\n'
+            f'Subject: {contact.subject}\n'
+            f'{contact.message}\n\n'
+            '--------------------------------------------------\n'
+            'Admin Response:\n'
+            f'{reply_text}\n\n'
+            '--------------------------------------------------\n'
+            'If you have further questions, feel free to submit '
+            'another message through the Contact Us page.\n\n'
+            'Best regards,\n'
+            'The Quizopedia Team'
+        ),
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[contact.email],
+        fail_silently=False,
+    )
 
 @login_required
 def question_bank(request):
@@ -1306,6 +1498,27 @@ def contact_us(request):
         return redirect('dashboard')
 
     student = getattr(request.user, 'student_profile', None)
+    if not student:
+        student, _ = Student.objects.get_or_create(
+            user=request.user,
+            defaults={
+                'name': request.user.get_full_name() or request.user.username,
+                'email': request.user.email or '',
+                'phone': '',
+                'approval_status': 'approved',
+            }
+        )
+
+    sender_name = (
+        (student.name if student and student.name else '')
+        or request.user.get_full_name()
+        or request.user.username
+    )
+    sender_email = (
+        (student.email if student and student.email else '')
+        or request.user.email
+        or ''
+    )
 
     if request.method == 'POST':
         subject = request.POST.get('subject', '').strip()
@@ -1314,28 +1527,23 @@ def contact_us(request):
         if not subject or not message_text:
             messages.error(request, 'Please enter both a subject and a message.')
         else:
-            if not student:
-                student, _ = Student.objects.get_or_create(
-                    user=request.user,
-                    defaults={
-                        'name': request.user.get_full_name() or request.user.username,
-                        'email': request.user.email or '',
-                        'phone': '',
-                        'approval_status': 'approved',
-                    }
-                )
-
-            Contact.objects.create(
+            contact = Contact.objects.create(
                 sender=request.user,
-                name=student.name,
-                email=student.email or request.user.email,
+                name=sender_name,
+                email=sender_email,
                 subject=subject,
                 message=message_text,
             )
 
+            send_contact_submission_emails(contact, request)
+
             messages.success(request, 'Your message has been submitted successfully!')
             return redirect('contact_us')
 
+    form = ContactForm()
     return render(request, 'reports/contact_us.html', {
         'student': student,
+        'sender_name': sender_name,
+        'sender_email': sender_email,
+        'form': form,
     })

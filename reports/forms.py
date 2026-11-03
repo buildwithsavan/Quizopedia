@@ -1,6 +1,42 @@
 import re
 from django import forms
-from .models import Student
+from .models import Student, Contact
+
+
+class ContactForm(forms.ModelForm):
+    class Meta:
+        model = Contact
+        fields = ['subject', 'message']
+        widgets = {
+            'subject': forms.TextInput(
+                attrs={
+                    'class': 'form-input',
+                    'placeholder': 'Enter your subject',
+                    'maxlength': '200',
+                    'required': True,
+                }
+            ),
+            'message': forms.Textarea(
+                attrs={
+                    'class': 'form-textarea',
+                    'placeholder': 'Write your message here...',
+                    'rows': 5,
+                    'required': True,
+                }
+            ),
+        }
+
+    def clean_subject(self):
+        subject = self.cleaned_data.get('subject', '').strip()
+        if not subject:
+            raise forms.ValidationError('Subject is required.')
+        return subject
+
+    def clean_message(self):
+        message = self.cleaned_data.get('message', '').strip()
+        if not message:
+            raise forms.ValidationError('Message is required.')
+        return message
 
 
 class StudentProfileForm(forms.ModelForm):

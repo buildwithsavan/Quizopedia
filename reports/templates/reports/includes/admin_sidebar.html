@@ -225,7 +225,7 @@
                 <div class="brand-icon">Q</div>
                 <div>
                     <div class="brand-text">Quizopedia</div>
-                    <span class="brand-pill">Admin Suite</span>
+                    
                 </div>
             </a>
         </div>
@@ -268,6 +268,16 @@
                     </a>
                 </li>
                 
+            </ul>
+
+            <div class="sidebar-heading">Help &amp; Support</div>
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="{% url 'contact_messages' %}"
+                       class="sidebar-link {% if active_page == 'contact_messages' %}active{% endif %}">
+                        <span>Contact Messages</span>
+                    </a>
+                </li>
             </ul>
 
             <div class="sidebar-heading">System &amp; Access</div>

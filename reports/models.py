@@ -149,6 +149,16 @@ class Contact(models.Model):
     subject = models.CharField(max_length=200)
     message = models.TextField()
     submitted_at = models.DateTimeField(auto_now_add=True)
+    reply = models.TextField(blank=True, default='')
+    replied_at = models.DateTimeField(null=True, blank=True)
+    replied_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='contact_replies'
+    )
+    is_replied = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.subject} - {self.name}"
