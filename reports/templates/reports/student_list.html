@@ -20,7 +20,6 @@
             display: flex;
         }
 
-        /* Main Content Layout */
         .admin-main {
             flex: 1;
             min-width: 0;
@@ -54,7 +53,6 @@
             margin-top: 2px;
         }
 
-        /* Message Banner */
         .message-box {
             padding: 12px 18px;
             border-radius: 10px;
@@ -76,7 +74,6 @@
             border-color: #fecaca;
         }
 
-        /* Section Cards */
         .section-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -148,7 +145,6 @@
             background-color: #f8fafc;
         }
 
-        /* Status Badges */
         .badge {
             display: inline-block;
             padding: 4px 10px;
@@ -223,6 +219,7 @@
                                 <th>Email Address</th>
                                 <th>Phone Number</th>
                                 <th>Account Status</th>
+                                <th style="text-align: right; width: 140px;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -239,10 +236,15 @@
                                         <span class="badge badge-approved">Approved</span>
                                     {% endif %}
                                 </td>
+                                <td style="text-align: right;">
+                                    <a href="{% url 'student_test_history_detail' student.id %}" style="display: inline-block; text-decoration: none; padding: 6px 12px; font-size: 12.5px; font-weight: 600; border-radius: 6px; background: #eef2ff; color: #4f46e5; border: 1px solid #c7d2fe;">
+                                        Test History &rarr;
+                                    </a>
+                                </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="5" class="empty-box">
+                                <td colspan="6" class="empty-box">
                                     No student records found in database.
                                 </td>
                             </tr>

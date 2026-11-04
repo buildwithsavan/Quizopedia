@@ -40,4 +40,7 @@ urlpatterns = [
     path('password-reset/complete/', views.password_reset_complete, name='password_reset_complete'),
     path('profile-update/<int:update_id>/approve/', views.approve_profile_update, name='approve_profile_update'),
     path('profile-update/<int:update_id>/reject/', views.reject_profile_update, name='reject_profile_update'),
+    path('test-history/', views.student_test_history, name='student_test_history'),
+    path('test-history/<int:student_id>/', views.student_test_history, name='student_test_history_detail'),
+    path('students/<int:student_id>/test-history/', views.student_test_history, name='admin_student_test_history'),
 ]

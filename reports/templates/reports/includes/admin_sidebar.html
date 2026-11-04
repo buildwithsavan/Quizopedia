@@ -1,6 +1,5 @@
 
 <style>
-    /* Admin Left Sidebar */
     .admin-sidebar {
         width: 270px;
         min-width: 270px;
@@ -73,7 +72,6 @@
         margin-top: 2px;
     }
 
-    /* Sidebar Navigation Links */
     .sidebar-nav {
         padding: 16px 14px;
         flex: 1;
@@ -138,7 +136,6 @@
         color: #4f46e5;
     }
 
-    /* Sidebar Footer */
     .sidebar-footer {
         padding: 16px;
         border-top: 1px solid #f1f5f9;
@@ -267,7 +264,11 @@
                         <span>Pending Approvals</span>
                     </a>
                 </li>
-                
+                <li>
+                    <a href="{% url 'student_test_history' %}" class="sidebar-link {% if active_page == 'test_history' %}active{% endif %}">
+                        <span>Test History</span>
+                    </a>
+                </li>
             </ul>
 
             <div class="sidebar-heading">Help &amp; Support</div>

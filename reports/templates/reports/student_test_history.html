@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizopedia | Student Test History</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .admin-main {
+            flex: 1;
+            min-width: 0;
+            padding: 32px 36px 60px;
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+
+        .header-subtext {
+            font-size: 13.5px;
+            color: #64748b;
+        }
+
+        .card-custom {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+            transition: border-color 0.15s ease;
+        }
+
+        .card-custom:hover {
+            border-color: #cbd5e1;
+        }
+
+        .student-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e0e7ff, #ede9fe);
+            color: #4f46e5;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #c7d2fe;
+            flex-shrink: 0;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            padding: 20px 22px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            height: 100%;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+            transition: border-color 0.15s;
+        }
+
+        .stat-card:hover {
+            border-color: #cbd5e1;
+        }
+
+        .stat-card-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .stat-card-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.1;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .stat-card-subtext {
+            font-size: 12.5px;
+            color: #94a3b8;
+            display: block;
+        }
+
+        .nav-pills-custom .nav-link {
+            color: #64748b;
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+
+        .nav-pills-custom .nav-link:hover {
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .nav-pills-custom .nav-link.active {
+            background-color: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+        }
+
+        .table-custom {
+            margin-bottom: 0;
+            width: 100%;
+        }
+
+        .table-custom thead th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            padding: 14px 18px;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .table-custom tbody td {
+            padding: 16px 18px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13.5px;
+        }
+
+        .table-custom tbody tr:hover {
+            background-color: #fafbfd;
+        }
+
+        .progress-thin {
+            height: 6px;
+            border-radius: 3px;
+            background-color: #e2e8f0;
+        }
+
+        .progress-thin .progress-bar {
+            background-color: #4f46e5 !important;
+        }
+
+        .badge-pill-soft {
+            padding: 5px 12px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .admin-main {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    {% include 'reports/includes/admin_sidebar.html' with active_page='test_history' %}
+
+    <main class="admin-main">
+        <div class="main-container">
+
+            <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+                <div>
+                    <h1>Student Test History</h1>
+                    <div class="header-subtext">View and manage individual student test attempts, scores, and performance history</div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2 bg-white p-2 border rounded-3 shadow-sm">
+                    <label for="studentSelector" class="form-label mb-0 text-muted small fw-bold text-nowrap">
+                        Student:
+                    </label>
+                    <select id="studentSelector" class="form-select form-select-sm" style="min-width: 220px;" onchange="window.location.href=this.value;">
+                        {% for s in all_students %}
+                            <option value="{% url 'student_test_history_detail' s.id %}" {% if student and student.id == s.id %}selected{% endif %}>
+                                {{ s.name }} ({{ s.email }})
+                            </option>
+                        {% empty %}
+                            <option value="">No Students Available</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            {% if not student %}
+                <div class="card card-custom p-5 text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-person-x text-muted" style="font-size: 48px;"></i>
+                    </div>
+                    <h4 class="fw-bold">No Student Records Found</h4>
+                    <p class="text-muted">There are no student accounts registered in the database yet.</p>
+                </div>
+            {% else %}
+
+                <div class="card card-custom p-4 mb-4">
+                    <div class="row align-items-center g-3">
+                        
+
+                        <div class="col">
+                            <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                <h3 class="h4 fw-bold mb-0 text-dark">{{ student.name }}</h3>
+                                    Student ID: #{{ student.id }}
+                            </div>
+
+                            <div class="d-flex align-items-center gap-4 flex-wrap text-muted small mt-2">
+                                <span>
+                                    <strong>Email:</strong> {{ student.email|default:"Not Available" }}
+                                </span>
+                                <span>
+                                    <strong>Phone:</strong> {{ student.phone|default:"Not Available" }}
+                                </span>
+                                {% if student.user %}
+                                    <span>
+                                        <i class="bi bi-person-badge me-1 text-primary"></i>
+                                        <strong>Username:</strong> @{{ student.user.username }}
+                                    </span>
+                                {% else %}
+                                    <span>
+                                        <strong>Account:</strong> Direct Student Record
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-auto text-md-end">
+                            <div class="p-2 px-3 bg-light rounded-3 border text-center">
+                                <span class="d-block text-muted small fw-semibold text-uppercase">Total Attempts</span>
+                                <span class="h4 fw-bold text-dark mb-0" style="color: #0f172a !important;">{{ total_attempts }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="stat-card">
+                            <span class="stat-card-label">Total Attempts</span>
+                            <span class="stat-card-value">{{ total_attempts }}</span>
+                            <span class="stat-card-subtext">{{ completed_attempts }} completed</span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="stat-card">
+                            <span class="stat-card-label">Pass Rate</span>
+                            <span class="stat-card-value">{{ pass_rate }}%</span>
+                            <span class="stat-card-subtext">{{ passed_count }} passed / {{ failed_count }} failed</span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="stat-card">
+                            <span class="stat-card-label">Average Score</span>
+                            <span class="stat-card-value">{{ avg_percentage }}%</span>
+                            <span class="stat-card-subtext">Avg Score: {{ avg_score }} pts</span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="stat-card">
+                            <span class="stat-card-label">Top Performance</span>
+                            <span class="stat-card-value">{{ highest_percentage }}%</span>
+                            <span class="stat-card-subtext">Peak Score: {{ highest_score }} pts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-custom mb-4">
+                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <div>
+                            <h3 class="h5 fw-bold mb-0 text-dark">
+                                Subject-Wise Performance Overview
+                            </h3>
+                        </div>
+                            {{ subject_summary|length }} Subject{{ subject_summary|length|pluralize }} Attempted
+                        </span>
+                    </div>
+
+                    <div class="card-body p-4">
+                        {% if subject_summary %}
+                            <div class="row g-3">
+                                {% for item in subject_summary %}
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="p-3 border rounded-3 bg-light h-100 d-flex flex-column justify-content-between">
+                                            <div>
+                                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                                    <h4 class="h6 fw-bold mb-0 text-dark">{{ item.subject.name }}</h4>
+                                                    {% if item.passed_count > 0 and item.failed_count == 0 %}
+                                                        Passed
+                                                    {% elif item.failed_count > 0 %}
+                                                        Needs Review
+                                                    {% else %}
+                                                        In Progress
+                                                    {% endif %}
+                                                </div>
+
+                                                <div class="small text-muted mb-3">
+                                                    <span>{{ item.total_attempts }} Attempt{{ item.total_attempts|pluralize }}</span> &middot;
+                                                    <span>Avg: <strong>{{ item.avg_percentage }}%</strong></span>
+                                                </div>
+
+                                                <div class="d-flex align-items-center justify-content-between small text-muted mb-1">
+                                                    <span>Mastery</span>
+                                                    <span class="fw-bold">{{ item.avg_percentage }}%</span>
+                                                </div>
+                                                <div class="progress progress-thin mb-3">
+                                                    <div class="progress-bar"
+                                                         role="progressbar"
+                                                         style="width: {{ item.avg_percentage }}%; background-color: #4f46e5 !important;"
+                                                         aria-valuenow="{{ item.avg_percentage }}"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="pt-2 border-top d-flex align-items-center justify-content-between small">
+                                                <span class="text-muted">Best Score: <strong>{{ item.highest_score }} pts</strong></span>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4 text-muted">
+                                <i class="bi bi-journal-x fs-1 d-block mb-2"></i>
+                                No subject-wise test attempts recorded for this student yet.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card card-custom">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                            <div>
+                                <h3 class="h5 fw-bold mb-0 text-dark">
+                                    Test Attempts History
+                                </h3>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-1 flex-wrap nav-pills-custom">
+                                <a href="{% url 'student_test_history_detail' student.id %}"
+                                   class="nav-link {% if not selected_subject_id %}active{% endif %}">
+                                    All Subjects ({{ all_attempts|length }})
+                                </a>
+                                {% for subj in attempted_subjects %}
+                                    <a href="{% url 'student_test_history_detail' student.id %}?subject={{ subj.id }}"
+                                       class="nav-link {% if selected_subject_id == subj.id %}active{% endif %}">
+                                        {{ subj.name }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th style="width: 90px;">Attempt</th>
+                                    <th>Subject</th>
+                                    <th>Test Date</th>
+                                    <th>Score</th>
+                                    <th>Percentage</th>
+                                    <th>Pass / Fail Status</th>
+                                    <th>Test Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attempt in attempts %}
+                                    <tr>
+                                        <td>
+                                            <span class="fw-bold text-dark">#{{ attempt.id }}</span>
+                                        </td>
+
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                {{ attempt.subject.name }}
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div class="text-dark fw-medium">
+                                                {{ attempt.start_time|date:"d M Y" }}
+                                            </div>
+                                            
+                                        </td>
+
+                                        <td>
+                                            <div>
+                                                <strong class="text-dark fs-6">{{ attempt.score }}</strong>
+                                            </div>
+                                        </td>
+
+                                        <td style="min-width: 140px;">
+                                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                                <span class="fw-bold text-dark">
+                                                    {% if attempt.result %}
+                                                        {{ attempt.result.percentage }}%
+                                                    {% else %}
+                                                        {{ attempt.score }}%
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                            <div class="progress progress-thin">
+                                                {% with pct=attempt.result.percentage|default:attempt.score %}
+                                                    <div class="progress-bar"
+                                                         role="progressbar"
+                                                         style="width: {{ pct }}%; background-color: #4f46e5 !important;"
+                                                         aria-valuenow="{{ pct }}"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                {% endwith %}
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            {% if attempt.result %}
+                                                {% if attempt.result.passed %}
+                                                        Passed
+                                                {% else %}
+                                                        Failed
+                                                {% endif %}
+                                            {% else %}
+                                                {% if attempt.score >= 3.0 %}
+                                                        Passed
+                                                {% else %}
+                                                        Failed
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if attempt.is_completed %}
+                                                    Completed
+                                            {% else %}
+                                                    In Progress
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-5 text-muted">
+                                            <i class="bi bi-inbox fs-2 d-block mb-2 text-muted"></i>
+                                            <p class="mb-1 fw-semibold">No test attempts found for the selected filter.</p>
+                                            <p class="small text-muted mb-0">Try clearing the subject filter or select another student.</p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            {% endif %}
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

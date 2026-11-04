@@ -11,7 +11,7 @@ from django.conf import settings
 from datetime import timedelta
 import random
 import time
-from .models import Admin, Student, Question, Subject, Option, PendingProfileUpdate, StudentOTP, Contact
+from .models import Admin, Student, Question, Subject, Option, PendingProfileUpdate, StudentOTP, Contact, TestAttempt, TestResult
 from .forms import StudentProfileForm, ContactForm
 from django.utils import timezone
 from django.core.paginator import Paginator
@@ -1547,3 +1547,118 @@ def contact_us(request):
         'sender_email': sender_email,
         'form': form,
     })
+
+
+def student_test_history(request, student_id=None):
+    student = None
+    if student_id:
+        student = get_object_or_404(Student, pk=student_id)
+    elif request.GET.get('student_id'):
+        try:
+            student = Student.objects.get(pk=int(request.GET.get('student_id')))
+        except (ValueError, Student.DoesNotExist):
+            student = None
+
+    if not student and request.user.is_authenticated and not request.user.is_staff:
+        student = getattr(request.user, 'student_profile', None)
+
+    if not student:
+        student = Student.objects.filter(test_attempts__isnull=False).distinct().first()
+        if not student:
+            student = Student.objects.first()
+
+    all_students = Student.objects.all().order_by('name')
+
+    if not student:
+        return render(request, 'reports/student_test_history.html', {
+            'student': None,
+            'all_students': [],
+            'attempts': [],
+            'all_attempts': [],
+            'total_attempts': 0,
+            'completed_attempts': 0,
+            'passed_count': 0,
+            'failed_count': 0,
+            'avg_percentage': 0,
+            'avg_score': 0,
+            'highest_score': 0,
+            'highest_percentage': 0,
+            'pass_rate': 0,
+            'subject_summary': [],
+            'attempted_subjects': [],
+            'selected_subject_id': None,
+            'active_page': 'test_history',
+        })
+
+    attempts_qs = student.test_attempts.select_related('subject', 'result').order_by('-start_time')
+
+    selected_subject_id = request.GET.get('subject')
+    if selected_subject_id and selected_subject_id.isdigit():
+        filtered_attempts = attempts_qs.filter(subject_id=int(selected_subject_id))
+    else:
+        filtered_attempts = attempts_qs
+
+    total_attempts = attempts_qs.count()
+    completed_attempts = attempts_qs.filter(is_completed=True).count()
+
+    results_list = []
+    for att in attempts_qs:
+        res = getattr(att, 'result', None)
+        if res:
+            results_list.append(res)
+
+    results_count = len(results_list)
+    passed_count = sum(1 for r in results_list if r.passed)
+    failed_count = sum(1 for r in results_list if not r.passed)
+    avg_percentage = round(sum(r.percentage for r in results_list) / results_count, 1) if results_count else 0.0
+    avg_score = round(sum(r.score for r in results_list) / results_count, 1) if results_count else 0.0
+    highest_score = max((r.score for r in results_list), default=0.0)
+    highest_percentage = max((r.percentage for r in results_list), default=0.0)
+    pass_rate = round((passed_count / results_count) * 100, 1) if results_count else 0.0
+
+    attempted_subject_ids = attempts_qs.values_list('subject_id', flat=True).distinct()
+    attempted_subjects = Subject.objects.filter(id__in=attempted_subject_ids).order_by('name')
+
+    subject_summary = []
+    for subj in attempted_subjects:
+        subj_attempts = [a for a in attempts_qs if a.subject_id == subj.id]
+        subj_results = [a.result for a in subj_attempts if hasattr(a, 'result') and a.result]
+        subj_total = len(subj_attempts)
+        subj_passed = sum(1 for r in subj_results if r.passed)
+        subj_failed = sum(1 for r in subj_results if not r.passed)
+        subj_avg_pct = round(sum(r.percentage for r in subj_results) / len(subj_results), 1) if subj_results else 0.0
+        subj_avg_score = round(sum(r.score for r in subj_results) / len(subj_results), 1) if subj_results else 0.0
+        subj_high_score = max((r.score for r in subj_results), default=0.0)
+
+        subject_summary.append({
+            'subject': subj,
+            'total_attempts': subj_total,
+            'passed_count': subj_passed,
+            'failed_count': subj_failed,
+            'avg_percentage': subj_avg_pct,
+            'avg_score': subj_avg_score,
+            'highest_score': subj_high_score,
+            'attempts': subj_attempts,
+        })
+
+    context = {
+        'student': student,
+        'all_students': all_students,
+        'attempts': filtered_attempts,
+        'all_attempts': attempts_qs,
+        'total_attempts': total_attempts,
+        'completed_attempts': completed_attempts,
+        'passed_count': passed_count,
+        'failed_count': failed_count,
+        'avg_percentage': avg_percentage,
+        'avg_score': avg_score,
+        'highest_score': highest_score,
+        'highest_percentage': highest_percentage,
+        'pass_rate': pass_rate,
+        'subject_summary': subject_summary,
+        'attempted_subjects': attempted_subjects,
+        'selected_subject_id': int(selected_subject_id) if (selected_subject_id and selected_subject_id.isdigit()) else None,
+        'active_page': 'test_history',
+    }
+    return render(request, 'reports/student_test_history.html', context)
+
