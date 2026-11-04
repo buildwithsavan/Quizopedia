@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Admin, Student, Subject, Question, Option, StudentOTP, PendingProfileUpdate
+from .models import (
+    Admin, Student, Subject, Question, Option, StudentOTP,
+    PendingProfileUpdate, Contact, TestAttempt, TestResult
+)
 
 from django.core.mail import send_mail
 from django.conf import settings
@@ -111,3 +114,24 @@ class StudentOTPAdmin(admin.ModelAdmin):
 class PendingProfileUpdateAdmin(admin.ModelAdmin):
     list_display = ('student', 'name', 'email', 'phone', 'status', 'submitted_at', 'reviewed_at')
     list_filter = ('status', 'submitted_at')
+
+
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'email', 'subject', 'is_replied', 'submitted_at', 'replied_at')
+    list_filter = ('is_replied', 'submitted_at')
+    search_fields = ('name', 'email', 'subject', 'message')
+
+
+@admin.register(TestAttempt)
+class TestAttemptAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'subject', 'status', 'is_completed', 'score', 'total_questions', 'start_time')
+    list_filter = ('status', 'is_completed', 'subject', 'start_time')
+    search_fields = ('student__name', 'subject__name')
+
+
+@admin.register(TestResult)
+class TestResultAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'subject', 'score', 'percentage', 'passed', 'correct_answers', 'total_questions', 'submitted_at')
+    list_filter = ('passed', 'subject', 'submitted_at')
+    search_fields = ('student__name', 'subject__name')

@@ -162,3 +162,91 @@ class Contact(models.Model):
 
     def __str__(self):
         return f"{self.subject} - {self.name}"
+
+
+class TestAttempt(models.Model):
+    STATUS_CHOICES = [
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('abandoned', 'Abandoned'),
+    ]
+
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        related_name='test_attempts'
+    )
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.CASCADE,
+        related_name='test_attempts'
+    )
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(null=True, blank=True)
+    is_completed = models.BooleanField(default=False)
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='in_progress'
+    )
+    total_questions = models.PositiveIntegerField(default=0)
+    score = models.FloatField(default=0.0)
+
+    class Meta:
+        ordering = ['-start_time']
+
+    def __str__(self):
+        return f"{self.student.name} - {self.subject.name} (Attempt #{self.id})"
+
+    @property
+    def duration(self):
+        if self.start_time and self.end_time:
+            return self.end_time - self.start_time
+        return None
+
+
+class TestResult(models.Model):
+    test_attempt = models.OneToOneField(
+        TestAttempt,
+        on_delete=models.CASCADE,
+        related_name='result'
+    )
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        related_name='test_results',
+        null=True,
+        blank=True
+    )
+    subject = models.ForeignKey(
+        Subject,
+        on_delete=models.CASCADE,
+        related_name='test_results',
+        null=True,
+        blank=True
+    )
+    total_questions = models.PositiveIntegerField(default=0)
+    correct_answers = models.PositiveIntegerField(default=0)
+    wrong_answers = models.PositiveIntegerField(default=0)
+    score = models.FloatField(default=0.0)
+    percentage = models.FloatField(default=0.0)
+    passed = models.BooleanField(default=False)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-submitted_at']
+
+    def save(self, *args, **kwargs):
+        if self.test_attempt:
+            if not self.student:
+                self.student = self.test_attempt.student
+            if not self.subject:
+                self.subject = self.test_attempt.subject
+            if self.total_questions > 0 and self.percentage == 0.0 and self.correct_answers > 0:
+                self.percentage = round((self.correct_answers / self.total_questions) * 100, 2)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        student_name = self.student.name if self.student else (self.test_attempt.student.name if self.test_attempt else "Unknown")
+        subject_name = self.subject.name if self.subject else (self.test_attempt.subject.name if self.test_attempt else "Unknown")
+        return f"Result: {student_name} - {subject_name} ({self.score} pts / {self.percentage}%)"
