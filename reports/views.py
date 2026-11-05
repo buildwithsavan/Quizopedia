@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login, logout as auth_logout
@@ -1671,10 +1672,24 @@ def student_test_history(request, student_id=None):
             'attempts': subj_attempts,
         })
 
+    paginator = Paginator(filtered_attempts, 10)
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    try:
+        elided_page_range = paginator.get_elided_page_range(
+            page_obj.number, on_each_side=1, on_ends=1
+        )
+    except Exception:
+        elided_page_range = paginator.page_range
+
     context = {
         'student': student,
         'all_students': all_students,
-        'attempts': filtered_attempts,
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'elided_page_range': elided_page_range,
+        'attempts': page_obj,
         'all_attempts': attempts_qs,
         'total_attempts': total_attempts,
         'completed_attempts': completed_attempts,
@@ -1693,4 +1708,29 @@ def student_test_history(request, student_id=None):
         'active_page': 'test_history',
     }
     return render(request, 'reports/student_test_history.html', context)
+
+
+@login_required
+def test_attempt_detail(request, attempt_id):
+    attempt = get_object_or_404(TestAttempt.objects.select_related('student', 'subject', 'result'), pk=attempt_id)
+    if not request.user.is_staff:
+        student = getattr(request.user, 'student_profile', None)
+        if not student or attempt.student_id != student.id:
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+
+    res = getattr(attempt, 'result', None)
+    return JsonResponse({
+        'id': attempt.id,
+        'student_name': attempt.student.name,
+        'student_email': attempt.student.email,
+        'subject': attempt.subject.name,
+        'date': attempt.start_time.strftime('%d %b %Y, %I:%M %p') if attempt.start_time else '',
+        'score': attempt.score,
+        'total_questions': res.total_questions if res else attempt.total_questions,
+        'correct_answers': res.correct_answers if res else 0,
+        'wrong_answers': res.wrong_answers if res else 0,
+        'percentage': res.percentage if res else attempt.score,
+        'passed': res.passed if res else (attempt.score >= 3.0),
+        'is_completed': attempt.is_completed,
+    })
 

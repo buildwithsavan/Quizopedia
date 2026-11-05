@@ -323,13 +323,6 @@
             <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
                 <div>
                     <h1>Student Test History</h1>
-                    <div class="header-subtext">
-                        {% if is_admin_view %}
-                            View and manage individual student test attempts, scores, and performance history
-                        {% else %}
-                            Overview of your academic quiz attempts, subject-wise scores, and progress
-                        {% endif %}
-                    </div>
                 </div>
 
                 {% if is_admin_view %}
@@ -362,27 +355,12 @@
 
                 <div class="card card-custom p-4 mb-4">
                     <div class="row align-items-center g-3">
-                        <div class="col-auto">
-                            <div class="student-avatar shadow-sm">
-                                {{ student.name|slice:":2"|upper }}
-                            </div>
-                        </div>
+                        
 
                         <div class="col">
                             <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                                <h3 class="h4 fw-bold mb-0 text-dark">{{ student.name }}</h3>
-                                <span class="badge bg-light text-dark border">
-                                    Student ID: #{{ student.id }}
-                                </span>
-                                {% if student.approval_status == 'approved' %}
-                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                        Approved
-                                    </span>
-                                {% else %}
-                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
-                                        Pending Approval
-                                    </span>
-                                {% endif %}
+                                <h2 class="h4 fw-bold mb-0 text-dark">Student ID: {{ student.id }}  -  </h2>
+                                <h3 class="h4 fw-bold mb-0 text-dark"> {{ student.name }}</h3>   
                             </div>
 
                             <div class="d-flex align-items-center gap-4 flex-wrap text-muted small mt-2">
@@ -401,13 +379,6 @@
                                         <strong>Account:</strong> Direct Student Record
                                     </span>
                                 {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="col-md-auto text-md-end">
-                            <div class="p-2 px-3 bg-light rounded-3 border text-center">
-                                <span class="d-block text-muted small fw-semibold text-uppercase">Total Attempts</span>
-                                <span class="h4 fw-bold text-dark mb-0" style="color: #0f172a !important;">{{ total_attempts }}</span>
                             </div>
                         </div>
                     </div>
@@ -453,11 +424,7 @@
                             <h3 class="h5 fw-bold mb-0 text-dark">
                                 Subject-Wise Performance Overview
                             </h3>
-                            <p class="text-muted small mb-0">Summary of quiz attempts and performance grouped by academic subject.</p>
                         </div>
-                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fw-semibold">
-                            {{ subject_summary|length }} Subject{{ subject_summary|length|pluralize }} Attempted
-                        </span>
                     </div>
 
                     <div class="card-body p-4">
@@ -469,17 +436,6 @@
                                             <div>
                                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                                     <h4 class="h6 fw-bold mb-0 text-dark">{{ item.subject.name }}</h4>
-                                                    {% if item.passed_count > 0 and item.failed_count == 0 %}
-                                                        <span class="badge bg-success-subtle text-success border border-success-subtle">
-                                                            Passed
-                                                        </span>
-                                                    {% elif item.failed_count > 0 %}
-                                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
-                                                            Needs Review
-                                                        </span>
-                                                    {% else %}
-                                                        <span class="badge bg-secondary-subtle text-secondary">In Progress</span>
-                                                    {% endif %}
                                                 </div>
 
                                                 <div class="small text-muted mb-3">
@@ -504,9 +460,6 @@
 
                                             <div class="pt-2 border-top d-flex align-items-center justify-content-between small">
                                                 <span class="text-muted">Best Score: <strong>{{ item.highest_score }} pts</strong></span>
-                                                <a href="?subject={{ item.subject.id }}{% if sort_by %}&sort={{ sort_by }}{% endif %}" class="text-primary text-decoration-none fw-semibold">
-                                                    Filter Tests &rarr;
-                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -528,7 +481,6 @@
                                 <h3 class="h5 fw-bold mb-0 text-dark">
                                     Test Attempts History
                                 </h3>
-                                <p class="text-muted small mb-0">Chronological listing of test attempts with scores, dates, and evaluation outcomes.</p>
                             </div>
 
                             <div class="d-flex align-items-center gap-3 flex-wrap">
@@ -588,6 +540,7 @@
                                     <th>Percentage</th>
                                     <th>Pass / Fail Status</th>
                                     <th>Test Status</th>
+                                    <th style="text-align: right; width: 130px;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -612,13 +565,7 @@
                                         <td>
                                             <div>
                                                 <strong class="text-dark fs-6">{{ attempt.score }}</strong>
-                                                <span class="text-muted">/ {{ attempt.result.total_questions|default:attempt.total_questions }} pts</span>
                                             </div>
-                                            {% if attempt.result %}
-                                                <span class="small text-muted">
-                                                    {{ attempt.result.correct_answers }} correct &middot; {{ attempt.result.wrong_answers }} wrong
-                                                </span>
-                                            {% endif %}
                                         </td>
 
                                         <td style="min-width: 140px;">
@@ -647,13 +594,9 @@
                                         <td>
                                             {% if attempt.result %}
                                                 {% if attempt.result.passed %}
-                                                    <span class="badge-pill-soft bg-success-subtle text-success border border-success-subtle">
                                                         Passed
-                                                    </span>
                                                 {% else %}
-                                                    <span class="badge-pill-soft bg-danger-subtle text-danger border border-danger-subtle">
                                                         Failed
-                                                    </span>
                                                 {% endif %}
                                             {% else %}
                                                 {% if attempt.score >= 3.0 %}
@@ -670,19 +613,23 @@
 
                                         <td>
                                             {% if attempt.is_completed %}
-                                                <span class="badge bg-light text-secondary border">
                                                     Completed
-                                                </span>
                                             {% else %}
-                                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
                                                     In Progress
-                                                </span>
                                             {% endif %}
+                                        </td>
+
+                                        <td style="text-align: right;">
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-primary fw-semibold text-nowrap"
+                                                    onclick="openResultModal('{{ attempt.id }}')">
+                                                View Result
+                                            </button>
                                         </td>
                                     </tr>
                                 {% empty %}
                                     <tr>
-                                        <td colspan="7" class="text-center py-5 text-muted">
+                                        <td colspan="8" class="text-center py-5 text-muted">
                                             <p class="mb-1 fw-semibold">No test attempts found for the selected filter.</p>
                                             <p class="small text-muted mb-0">Try clearing the subject filter.</p>
                                         </td>
@@ -692,15 +639,57 @@
                         </table>
                     </div>
 
-                    <div class="card-footer bg-white py-3 border-top d-flex align-items-center justify-content-between flex-wrap gap-2 text-muted small">
-                        <div>
-                            Showing <strong>{{ attempts|length }}</strong> of <strong>{{ all_attempts|length }}</strong> Total Attempt{{ all_attempts|length|pluralize }}
+                    <div class="card-footer bg-white py-3 border-top d-flex align-items-center justify-content-between flex-wrap gap-3">
+                        <div class="text-muted small">
+                            Showing <strong>{{ page_obj.start_index|default:0 }}-{{ page_obj.end_index|default:0 }}</strong> of <strong>{{ paginator.count|default:total_attempts }}</strong> Test Attempt{{ paginator.count|default:total_attempts|pluralize }}
+                            {% if selected_subject_id %}
+                                &middot; <a href="?{% if sort_by %}sort={{ sort_by }}{% endif %}" class="text-primary text-decoration-none">Clear Subject Filter</a>
+                            {% endif %}
                         </div>
-                        {% if selected_subject_id %}
-                            <a href="?{% if sort_by %}sort={{ sort_by }}{% endif %}" class="btn btn-outline-secondary btn-sm">
-                                Clear Subject Filter
-                            </a>
-                        {% endif %}
+
+                        <nav aria-label="Test History Pagination">
+                            <ul class="pagination pagination-sm mb-0">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_subject_id %}&subject={{ selected_subject_id }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" aria-label="Previous">
+                                            &laquo; Previous
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">&laquo; Previous</span>
+                                    </li>
+                                {% endif %}
+
+                                {% for p in elided_page_range %}
+                                    {% if p == paginator.ELLIPSIS %}
+                                        <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                                    {% elif p == page_obj.number %}
+                                        <li class="page-item active" aria-current="page">
+                                            <span class="page-link" style="background-color: #4f46e5; border-color: #4f46e5;">{{ p }}</span>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ p }}{% if selected_subject_id %}&subject={{ selected_subject_id }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">
+                                                {{ p }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_subject_id %}&subject={{ selected_subject_id }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" aria-label="Next">
+                                            Next &raquo;
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">Next &raquo;</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
                     </div>
                 </div>
 
@@ -713,12 +702,149 @@
         </main>
     {% endif %}
 
+    <div class="modal fade" id="viewResultModal" tabindex="-1" aria-labelledby="viewResultModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-bottom py-3" style="background-color: #f8fafc;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0" id="viewResultModalLabel">Test Result Details</h5>
+                            <small class="text-muted" id="modalAttemptSubtitle">Attempt #</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
+                        <div class="col-sm-6">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 11px;">Student Name</small>
+                            <span class="fw-bold text-dark fs-6" id="modalStudentName">{{ student.name }}</span>
+                            <div class="small text-muted" id="modalStudentEmail">{{ student.email }}</div>
+                        </div>
+                        <div class="col-sm-6 text-sm-end">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 11px;">Subject</small>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-6 px-3 py-1" id="modalSubjectName">Subject</span>
+                            <div class="small text-muted mt-1" id="modalTestDate">Date</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 border rounded-3 bg-white text-center">
+                                <span class="text-muted small d-block">Score</span>
+                                <span class="fs-4 fw-bold text-dark d-block" id="modalScore">0</span>
+                                <small class="text-muted" id="modalTotalQuestions">out of 5 pts</small>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 border rounded-3 bg-white text-center">
+                                <span class="text-muted small d-block">Percentage</span>
+                                <span class="fs-4 fw-bold text-dark d-block" id="modalPercentage">0%</span>
+                                <small class="text-muted">overall grade</small>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 border rounded-3 bg-white text-center">
+                                <span class="text-muted small d-block">Correct Answers</span>
+                                <span class="fs-4 fw-bold text-success d-block" id="modalCorrect">0</span>
+                                <small class="text-muted">questions right</small>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 border rounded-3 bg-white text-center">
+                                <span class="text-muted small d-block">Wrong Answers</span>
+                                <span class="fs-4 fw-bold text-danger d-block" id="modalWrong">0</span>
+                                <small class="text-muted">questions wrong</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 border rounded-3 mb-3 bg-white">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="fw-semibold text-dark">Evaluation Result</span>
+                            <span id="modalStatusBadge" class="badge px-3 py-2 fs-6">Passed</span>
+                        </div>
+                        <div class="progress progress-thin mb-2">
+                            <div id="modalProgressBar" class="progress-bar" role="progressbar" style="width: 0%; background-color: #4f46e5 !important;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted">
+                            <span id="modalPerformanceSummary">Performance Summary</span>
+                            <span id="modalCompletionStatus">Completed</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top py-3" style="background-color: #f8fafc;">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function applySort(val) {
             const url = new URL(window.location.href);
             url.searchParams.set('sort', val);
+            url.searchParams.set('page', '1');
             window.location.href = url.toString();
+        }
+
+        const attemptsData = {
+            {% for attempt in attempts %}
+                "{{ attempt.id }}": {
+                    "id": "{{ attempt.id }}",
+                    "subject": "{{ attempt.subject.name|escapejs }}",
+                    "date": "{{ attempt.start_time|date:'d M Y, h:i A'|escapejs }}",
+                    "score": "{{ attempt.score }}",
+                    "total_questions": "{{ attempt.result.total_questions|default:attempt.total_questions }}",
+                    "correct_answers": "{{ attempt.result.correct_answers|default:0 }}",
+                    "wrong_answers": "{{ attempt.result.wrong_answers|default:0 }}",
+                    "percentage": "{{ attempt.result.percentage|default:attempt.score }}",
+                    "passed": {% if attempt.result.passed or attempt.score >= 3.0 %}true{% else %}false{% endif %},
+                    "is_completed": {% if attempt.is_completed %}true{% else %}false{% endif %},
+                    "student_name": "{{ student.name|escapejs }}",
+                    "student_email": "{{ student.email|default:'Not Available'|escapejs }}",
+                    "student_id": "{{ student.id }}"
+                }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        };
+
+        function openResultModal(attemptId) {
+            const data = attemptsData[attemptId];
+            if (!data) return;
+
+            document.getElementById('modalAttemptSubtitle').textContent = 'Attempt #' + data.id + ' · ' + data.subject;
+            document.getElementById('modalStudentName').textContent = data.student_name;
+            document.getElementById('modalStudentEmail').textContent = data.student_email;
+            document.getElementById('modalSubjectName').textContent = data.subject;
+            document.getElementById('modalTestDate').textContent = data.date;
+
+            document.getElementById('modalScore').textContent = data.score;
+            document.getElementById('modalTotalQuestions').textContent = 'out of ' + data.total_questions + ' pts';
+            document.getElementById('modalPercentage').textContent = data.percentage + '%';
+            document.getElementById('modalCorrect').textContent = data.correct_answers;
+            document.getElementById('modalWrong').textContent = data.wrong_answers;
+
+            const statusBadge = document.getElementById('modalStatusBadge');
+            if (data.passed) {
+                statusBadge.className = 'badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6';
+                statusBadge.textContent = 'Passed';
+            } else {
+                statusBadge.className = 'badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fs-6';
+                statusBadge.textContent = 'Failed';
+            }
+
+            const progressBar = document.getElementById('modalProgressBar');
+            progressBar.style.width = data.percentage + '%';
+            progressBar.setAttribute('aria-valuenow', data.percentage);
+
+            document.getElementById('modalPerformanceSummary').textContent = 'Score: ' + data.score + ' / ' + data.total_questions + ' (' + data.percentage + '%)';
+            document.getElementById('modalCompletionStatus').textContent = data.is_completed ? 'Test Completed' : 'In Progress';
+
+            const modal = new bootstrap.Modal(document.getElementById('viewResultModal'));
+            modal.show();
         }
     </script>
 </body>

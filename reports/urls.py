@@ -43,4 +43,5 @@ urlpatterns = [
     path('test-history/', views.student_test_history, name='student_test_history'),
     path('test-history/<int:student_id>/', views.student_test_history, name='student_test_history_detail'),
     path('students/<int:student_id>/test-history/', views.student_test_history, name='admin_student_test_history'),
+    path('test-history/attempt/<int:attempt_id>/', views.test_attempt_detail, name='test_attempt_detail'),
 ]
