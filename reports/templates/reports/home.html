@@ -409,6 +409,7 @@
         <nav class="nav-links">
             {% if user.is_authenticated %}
                 {% if not user.is_staff %}
+                    <a href="{% url 'student_test_history' %}" class="nav-link">Test History</a>
                     <a href="{% url 'profile' %}" class="nav-link">My Profile</a>
                     <a href="{% url 'contact_us' %}" class="nav-link">Contact Us</a>
                 {% endif %}

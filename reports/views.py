@@ -1549,25 +1549,38 @@ def contact_us(request):
     })
 
 
+@login_required
 def student_test_history(request, student_id=None):
-    student = None
-    if student_id:
-        student = get_object_or_404(Student, pk=student_id)
-    elif request.GET.get('student_id'):
-        try:
-            student = Student.objects.get(pk=int(request.GET.get('student_id')))
-        except (ValueError, Student.DoesNotExist):
-            student = None
-
-    if not student and request.user.is_authenticated and not request.user.is_staff:
+    if not request.user.is_staff:
         student = getattr(request.user, 'student_profile', None)
-
-    if not student:
-        student = Student.objects.filter(test_attempts__isnull=False).distinct().first()
         if not student:
-            student = Student.objects.first()
+            student, _ = Student.objects.get_or_create(
+                user=request.user,
+                defaults={
+                    'name': request.user.get_full_name() or request.user.username,
+                    'email': request.user.email or '',
+                    'approval_status': 'approved',
+                }
+            )
+        is_admin_view = False
+        all_students = []
+    else:
+        is_admin_view = True
+        student = None
+        if student_id:
+            student = get_object_or_404(Student, pk=student_id)
+        elif request.GET.get('student_id'):
+            try:
+                student = Student.objects.get(pk=int(request.GET.get('student_id')))
+            except (ValueError, Student.DoesNotExist):
+                student = None
 
-    all_students = Student.objects.all().order_by('name')
+        if not student:
+            student = Student.objects.filter(test_attempts__isnull=False).distinct().first()
+            if not student:
+                student = Student.objects.first()
+
+        all_students = Student.objects.all().order_by('name')
 
     if not student:
         return render(request, 'reports/student_test_history.html', {
@@ -1587,16 +1600,33 @@ def student_test_history(request, student_id=None):
             'subject_summary': [],
             'attempted_subjects': [],
             'selected_subject_id': None,
+            'sort_by': 'date_desc',
+            'is_admin_view': is_admin_view,
             'active_page': 'test_history',
         })
 
-    attempts_qs = student.test_attempts.select_related('subject', 'result').order_by('-start_time')
+    attempts_qs = student.test_attempts.select_related('subject', 'result').all()
 
     selected_subject_id = request.GET.get('subject')
     if selected_subject_id and selected_subject_id.isdigit():
         filtered_attempts = attempts_qs.filter(subject_id=int(selected_subject_id))
     else:
         filtered_attempts = attempts_qs
+
+    sort_by = request.GET.get('sort', 'date_desc')
+    if sort_by == 'date_asc':
+        filtered_attempts = filtered_attempts.order_by('start_time')
+    elif sort_by == 'score_desc':
+        filtered_attempts = filtered_attempts.order_by('-score', '-start_time')
+    elif sort_by == 'score_asc':
+        filtered_attempts = filtered_attempts.order_by('score', '-start_time')
+    elif sort_by == 'subject_asc':
+        filtered_attempts = filtered_attempts.order_by('subject__name', '-start_time')
+    elif sort_by == 'subject_desc':
+        filtered_attempts = filtered_attempts.order_by('-subject__name', '-start_time')
+    else:
+        sort_by = 'date_desc'
+        filtered_attempts = filtered_attempts.order_by('-start_time')
 
     total_attempts = attempts_qs.count()
     completed_attempts = attempts_qs.filter(is_completed=True).count()
@@ -1658,6 +1688,8 @@ def student_test_history(request, student_id=None):
         'subject_summary': subject_summary,
         'attempted_subjects': attempted_subjects,
         'selected_subject_id': int(selected_subject_id) if (selected_subject_id and selected_subject_id.isdigit()) else None,
+        'sort_by': sort_by,
+        'is_admin_view': is_admin_view,
         'active_page': 'test_history',
     }
     return render(request, 'reports/student_test_history.html', context)

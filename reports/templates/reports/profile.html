@@ -773,6 +773,7 @@
             {% if user.is_staff %}
                 <a href="{% url 'dashboard' %}" class="nav-link">Admin Dashboard</a>
             {% else %}
+                <a href="{% url 'student_test_history' %}" class="nav-link">Test History</a>
                 <a href="{% url 'profile' %}" class="nav-link active">My Profile</a>
             {% endif %}
 
@@ -820,7 +821,10 @@
 
                 {% if profile_type == 'Student' %}
                     <div class="profile-actions">
-                        <a href="{% url 'student_profile_update' %}" class="btn-primary-action">
+                        <a href="{% url 'student_test_history' %}" class="btn-primary-action">
+                            View Test History
+                        </a>
+                        <a href="{% url 'student_profile_update' %}" class="btn-secondary-action">
                             Edit Profile
                         </a>
                         <a href="{% url 'home' %}#subjects" class="btn-secondary-action">
